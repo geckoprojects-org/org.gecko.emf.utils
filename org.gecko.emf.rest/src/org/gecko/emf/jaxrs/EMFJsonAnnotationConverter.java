@@ -84,8 +84,8 @@ public class EMFJsonAnnotationConverter implements AnnotationConverter {
 			if(!"".contentEquals(config.typeFieldName())) {
 				options.put(EMFJs.OPTION_TYPE_FIELD, config.typeFieldName());
 			}
-			if(!"".contentEquals(config.typePackageUri())) {
-				options.put(EMFJs.OPTION_TYPE_PACKAGE_URI, config.typePackageUri());
+			if(config.typePackageUris().length > 0) {
+				options.put(EMFJs.OPTION_TYPE_PACKAGE_URIS, config.typePackageUris());
 			}
 		}
 	}

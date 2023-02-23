@@ -1,0 +1,9 @@
+{
+  "eClass" : "http://datainmotion.com/emf/util/examplemodel/1.0#//Building",
+  "@id" : null,
+  "location" : {
+    "eClass" : "http://datainmotion.com/emf/util/examplemodel/1.0#//Polygon",
+    "@id" : null,
+    "coordinates" : [ [ [ 100.0, 0.0 ], [ 101.0, 0.0 ], [ 101.0, 1.0 ], [ 100.0, 1.0 ], [ 100.0, 0.0 ] ] ]
+  }
+}

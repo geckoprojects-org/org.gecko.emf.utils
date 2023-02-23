@@ -11,6 +11,7 @@
  */
 package org.gecko.emf.json.tests;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -23,18 +24,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.gecko.emf.json.configuration.ConfigurableJsonResource;
-import org.gecko.emf.json.configuration.ConfigurableJsonResourceFactory;
 import org.gecko.emf.json.constants.EMFJs;
 import org.gecko.emf.osgi.example.model.basic.BasicFactory;
 import org.gecko.emf.osgi.example.model.basic.BasicPackage;
 import org.gecko.emf.osgi.example.model.basic.Person;
-import org.gecko.emf.osgi.example.model.basic.impl.BasicPackageImpl;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.osgi.test.common.annotation.InjectService;
+import org.osgi.test.common.service.ServiceAware;
 
 /**
  * 
@@ -43,22 +42,20 @@ import org.junit.jupiter.api.Test;
  */
 public class RootElementTest {
 	
-	private ResourceSetImpl resourceSet;
-	private BasicPackage packageImpl;
-	private BasicFactory factoryImpl;
-
-	@BeforeEach
-	public void beforeEach() {
-		resourceSet = new ResourceSetImpl();
-		resourceSet.getPackageRegistry().put(EcorePackage.eNS_URI, EcorePackage.eINSTANCE);
-		packageImpl = BasicPackageImpl.init();
-		factoryImpl = BasicFactory.eINSTANCE;
-		resourceSet.getPackageRegistry().put(BasicPackage.eNS_URI, packageImpl);
-		resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put("json", new ConfigurableJsonResourceFactory());
-	}
-	
 	@Test
-	public void testSaveJson() {
+	public void testSaveJson(@InjectService(timeout = 2000) ServiceAware<ResourceSet> rsAware,
+			@InjectService(timeout = 2000) ServiceAware<BasicFactory> bfAware) {
+		
+		assertNotNull(rsAware);
+		assertThat(rsAware.getServices()).hasSize(1);
+		ResourceSet resourceSet = rsAware.getService();
+		assertNotNull(resourceSet);
+		
+		assertNotNull(bfAware);
+		assertThat(bfAware.getServices()).hasSize(1);
+		BasicFactory factoryImpl = bfAware.getService();
+		assertNotNull(factoryImpl);
+		
 		Resource resource = resourceSet.createResource(URI.createURI("test.json"));
 		assertNotNull(resource);
 		assertTrue(resource instanceof ConfigurableJsonResource);
@@ -78,8 +75,16 @@ public class RootElementTest {
 		System.out.println(result);
 	}
 	
+
+	
 	@Test
-	public void testLoadJsonError() {
+	public void testLoadJsonError(@InjectService(timeout = 2000) ServiceAware<ResourceSet> rsAware) {
+		
+		assertNotNull(rsAware);
+		assertThat(rsAware.getServices()).hasSize(1);
+		ResourceSet resourceSet = rsAware.getService();
+		assertNotNull(resourceSet);
+		
 		String json = "{\n"
 				+ "  \"firstName\" : \"Emil\",\n"
 				+ "  \"lastName\" : \"Tester\"\n"
@@ -97,8 +102,21 @@ public class RootElementTest {
 		}
 	}
 	
+	
 	@Test
-	public void testLoadJson() {
+	public void testLoadJson(@InjectService(timeout = 2000) ServiceAware<ResourceSet> rsAware,
+			@InjectService(timeout = 2000) ServiceAware<BasicPackage> basicPackageAware) {
+		
+		assertNotNull(rsAware);
+		assertThat(rsAware.getServices()).hasSize(1);
+		ResourceSet resourceSet = rsAware.getService();
+		assertNotNull(resourceSet);
+		
+		assertNotNull(basicPackageAware);
+		assertThat(basicPackageAware.getServices()).hasSize(1);
+		BasicPackage packageImpl = basicPackageAware.getService();
+		assertNotNull(packageImpl);
+		
 		String json = "{\n"
 				+ "  \"firstName\" : \"Emil\",\n"
 				+ "  \"lastName\" : \"Tester\"\n"

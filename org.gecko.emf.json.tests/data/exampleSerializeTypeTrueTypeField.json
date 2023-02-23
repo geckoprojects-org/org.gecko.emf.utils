@@ -1,0 +1,7 @@
+{
+  "new_type_field" : "http://datainmotion.com/emf/util/examplemodel/1.0#//Building",
+  "location" : {
+    "new_type_field" : "http://datainmotion.com/emf/util/examplemodel/1.0#//Polygon",
+    "coordinates" : [ [ [ 100.0, 0.0 ], [ 101.0, 0.0 ], [ 101.0, 1.0 ], [ 100.0, 1.0 ], [ 100.0, 0.0 ] ] ]
+  }
+}

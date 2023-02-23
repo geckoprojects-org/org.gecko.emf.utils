@@ -11,6 +11,7 @@
  */
 package org.gecko.emf.bson.tests;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -24,9 +25,7 @@ import java.io.IOException;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.gecko.emf.osgi.ResourceFactoryConfigurator;
 import org.gecko.emf.osgi.example.model.basic.BasicFactory;
 import org.gecko.emf.osgi.example.model.basic.BasicPackage;
 import org.gecko.emf.osgi.example.model.basic.Contact;
@@ -35,6 +34,7 @@ import org.gecko.emf.osgi.example.model.basic.ContactType;
 import org.gecko.emf.osgi.example.model.basic.GenderType;
 import org.gecko.emf.osgi.example.model.basic.Person;
 import org.gecko.emf.osgi.example.model.basic.util.BasicResourceFactoryImpl;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.osgi.service.cm.Configuration;
@@ -52,6 +52,11 @@ import de.undercouch.bson4jackson.BsonFactory;
 @ExtendWith(BundleContextExtension.class)
 @ExtendWith(ServiceExtension.class)
 public class BsonConfiguratorTest {
+	
+	@BeforeEach
+	public void beforeEach(@InjectService(timeout = 2000) BasicFactory bp) {
+		System.out.println("Test");
+	}
 
 	@Test
 	public void testBson(@InjectService ConfigurationAdmin ca) throws IOException {
@@ -67,14 +72,18 @@ public class BsonConfiguratorTest {
 		System.out.println(c.getPid());//foo~bar
 		System.out.println(c.getFactoryPid());//foo
 	}
-
+	
 	@Test
-	public void testBson(@InjectService(filter = "(component.name=EMFBsonConfigurator)") ServiceAware<ResourceFactoryConfigurator>  sa, @InjectService BasicFactory bf, @InjectService BasicPackage bp) {
+	public void testBson(@InjectService(timeout = 2000) ServiceAware<ResourceSet> rsAware,
+			@InjectService BasicFactory bf, 
+			@InjectService BasicPackage bp) {
 		
-		System.out.println(sa.getServiceReference().getPropertyKeys());
-		ResourceSet resourceSet = createResourceSet(bp);
-		ResourceFactoryConfigurator configurator  = sa.getService();
-		configurator.configureResourceFactory(resourceSet.getResourceFactoryRegistry());
+		assertNotNull(rsAware);
+		assertThat(rsAware.getServices()).hasSize(1);
+		ResourceSet resourceSet = rsAware.getService();
+		assertNotNull(resourceSet);
+		
+		resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put("test", new BasicResourceFactoryImpl());
 	
 		Person p = createSamplePerson(bf);
 		Resource xmiResource = resourceSet.createResource(URI.createURI("person.test"));
@@ -154,17 +163,4 @@ public class BsonConfiguratorTest {
 		p.getContact().add(email);
 		return p;
 	}
-
-	/**
-	 * @param bp 
-	 * @return
-	 */
-	private ResourceSet createResourceSet(BasicPackage bp) {
-		ResourceSet resourceSet = new ResourceSetImpl();
-		resourceSet.getPackageRegistry().put(BasicPackage.eNS_URI, bp);
-		resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put("test", new BasicResourceFactoryImpl());
-		resourceSet.getResourceFactoryRegistry().getContentTypeToFactoryMap().put(BasicPackage.eCONTENT_TYPE, new BasicResourceFactoryImpl());
-		return resourceSet;
-	}
-
 }

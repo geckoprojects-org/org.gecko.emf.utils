@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="examplemodel" nsURI="http://datainmotion.com/emf/util/examplemodel/1.0"
+    nsPrefix="examplemodel">
+  <eClassifiers xsi:type="ecore:EClass" name="Geometry"/>
+  <eClassifiers xsi:type="ecore:EDataType" name="Array1D" instanceClassName="java.lang.Double[]"/>
+  <eClassifiers xsi:type="ecore:EDataType" name="Array2D" instanceClassName="java.lang.Double[][]"/>
+  <eClassifiers xsi:type="ecore:EDataType" name="Array3D" instanceClassName="java.lang.Double[][][]"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Point" eSuperTypes="#//Geometry">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="coordinates" upperBound="3"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="LineString" eSuperTypes="#//Geometry">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="coordinates" upperBound="-1"
+        eType="#//Array1D"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="MultiPoint" eSuperTypes="#//Geometry">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="coordinates" upperBound="-1"
+        eType="#//Array1D"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Polygon" eSuperTypes="#//Geometry">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="coordinates" upperBound="-1"
+        eType="#//Array2D"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="MultiLineString" eSuperTypes="#//Geometry">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="coordinates" upperBound="-1"
+        eType="#//Array2D"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="MultiPolygon" eSuperTypes="#//Geometry">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="coordinates" upperBound="-1"
+        eType="#//Array3D"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Building">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" eType="#//BuildingType"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="location" eType="#//Geometry"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="startDate" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDate"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="BuildingType">
+    <eLiterals name="Building"/>
+  </eClassifiers>
+</ecore:EPackage>

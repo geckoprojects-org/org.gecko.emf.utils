@@ -10,4 +10,11 @@ Bundle-Version: 1.0.1.SNAPSHOT
 	org.gecko.emf.osgi.component,\
 	org.eclipse.emf.ecore.xmi,\
 	org.eclipse.emf.ecore,\
-	org.gecko.emf.osgi.example.model.basic
+	org.gecko.emf.osgi.example.model.basic,\
+	org.gecko.emf.util.example.model;version=latest
+	
+-includeresource.resources: \
+	data=data/
+	
+-runproperties.properties: \
+	base.path=${.}
