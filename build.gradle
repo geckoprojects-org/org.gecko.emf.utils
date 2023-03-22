@@ -7,6 +7,7 @@ plugins {
 
 sonarqube {
   properties {
+    property "sonar.ce.javaOpts", "-Xmx2G"
     property "sonar.projectName", "Gecko EMF Utilities"
     property "sonar.projectKey", "geckoprojects-org_org.gecko.emf.utils"
     property "sonar.organization", "geckoprojects-org"

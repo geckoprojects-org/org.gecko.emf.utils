@@ -7,9 +7,7 @@
 	org.apache.felix.configadmin;version='[1.9.22,1.9.23)',\
 	org.eclipse.emf.ecore.xmi;version='[2.16.0,2.16.1)',\
 	org.opentest4j;version='[1.2.0,1.2.1)',\
-	org.osgi.service.component;version='[1.4.0,1.4.1)',\
 	org.osgi.util.function;version='[1.1.0,1.1.1)',\
-	org.osgi.util.promise;version='[1.1.1,1.1.2)',\
 	com.fasterxml.jackson.core.jackson-annotations;version='[2.13.2,2.13.3)',\
 	com.fasterxml.jackson.core.jackson-core;version='[2.13.2,2.13.3)',\
 	com.fasterxml.jackson.core.jackson-databind;version='[2.13.2,2.13.3)',\
@@ -23,7 +21,6 @@
 	org.gecko.emf.osgi.example.model.basic;version='[4.1.1,4.1.2)',\
 	com.fasterxml.jackson.dataformat.jackson-dataformat-properties;version='[2.13.2,2.13.3)',\
 	com.fasterxml.jackson.dataformat.jackson-dataformat-yaml;version='[2.13.2,2.13.3)',\
-	emfjson-jackson;version='[2.1.0,2.1.1)',\
 	org.gecko.emf.bson;version=snapshot,\
 	org.gecko.emf.json;version=snapshot,\
 	org.yaml.snakeyaml;version='[1.30.0,1.30.1)',\
@@ -31,4 +28,8 @@
 	junit-jupiter-api;version='[5.8.2,5.8.3)',\
 	junit-jupiter-params;version='[5.8.2,5.8.3)',\
 	org.osgi.test.common;version='[1.1.0,1.1.1)',\
-	org.osgi.test.junit5;version='[1.1.0,1.1.1)'
+	org.osgi.test.junit5;version='[1.1.0,1.1.1)',\
+	org.apache.felix.converter;version='[1.0.18,1.0.19)',\
+	org.eclipse.emfcloud.emfjson-jackson;version='[2.1.0,2.1.1)',\
+	org.osgi.service.cm;version='[1.6.0,1.6.1)',\
+	org.osgi.util.promise;version='[1.2.0,1.2.1)'

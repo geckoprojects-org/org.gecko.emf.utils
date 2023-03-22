@@ -1,0 +1,7 @@
+javac.source: 11
+javac.target: 11
+
+-library: enable-emf
+
+Bundle-Version: 1.0.0.SNAPSHOT
+Export-Package: org.gecko.emf.util.documentation.generators.apis

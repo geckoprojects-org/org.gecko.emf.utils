@@ -1,0 +1,13 @@
+Bundle-Name: Xtend Generator for Mermaid
+Bundle-Description: Xtend Generator for Mermaid
+Bundle-Version: 1.0.0-SNAPSHOT
+
+src.xtend-gen=xtend-gen
+
+-buildpath: \
+	org.eclipse.xtext.xbase.lib,\
+	org.gecko.emf.util.documentation.generators.apis;version=latest
+	
+-library: \
+	enable-emf
+Export-Package: org.gecko.emf.util.documentation.generators.mermaid
