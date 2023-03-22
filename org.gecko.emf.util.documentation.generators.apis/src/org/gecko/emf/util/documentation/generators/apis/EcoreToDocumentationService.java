@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EPackage;
 import org.osgi.annotation.versioning.ProviderType;
 
@@ -33,15 +34,42 @@ public interface EcoreToDocumentationService{
 	String getOutputFileExtension();
 	String getOutputFolder(EcoreToDocumentationOptions mode);
 	OutputStream doGenerateDocumentation(EPackage ePackage, EcoreToDocumentationOptions mode, String outputFolderRoot) throws IOException;
+	
+	/**
+	 * @param eClass
+	 * @param mode
+	 * @param outputFolderRoot
+	 * @return
+	 * @throws IOException
+	 * @deprecated use {@link doGenerateDocumentation(EClassifier eClassifier, EcoreToDocumentationOptions mode, String outputFolderRoot)} instead
+	 */
+	@Deprecated
 	OutputStream doGenerateDocumentation(EClass eClass, EcoreToDocumentationOptions mode, String outputFolderRoot) throws IOException;
+	
+	OutputStream doGenerateDocumentation(EClassifier eClassifier, EcoreToDocumentationOptions mode, String outputFolderRoot) throws IOException;
 
 	default File generateOutputFile(EPackage ePackage, CharSequence generatedDoc, EcoreToDocumentationOptions mode, String outputFolderRoot) throws IOException {
 		String outputFileName = ePackage.getName().concat(getOutputFileExtension());
 		return doCreateOutputFile(outputFileName, generatedDoc, mode, outputFolderRoot);
 	}
 	
+	/**
+	 * @param eClass
+	 * @param generatedDoc
+	 * @param mode
+	 * @param outputFolderRoot
+	 * @return
+	 * @throws IOException
+	 * @deprecated use {@link generateOutputFile(EClassifier eClassifier, CharSequence generatedDoc, EcoreToDocumentationOptions mode, String outputFolderRoot) } instead
+	 */
+	@Deprecated
 	default File generateOutputFile(EClass eClass, CharSequence generatedDoc, EcoreToDocumentationOptions mode, String outputFolderRoot) throws IOException {
 		String outputFileName = eClass.getEPackage().getName().concat("_").concat(eClass.getName()).concat(getOutputFileExtension());
+		return doCreateOutputFile(outputFileName, generatedDoc, mode, outputFolderRoot);
+	}
+	
+	default File generateOutputFile(EClassifier eClassifier, CharSequence generatedDoc, EcoreToDocumentationOptions mode, String outputFolderRoot) throws IOException {
+		String outputFileName = eClassifier.getEPackage().getName().concat("_").concat(eClassifier.getName()).concat(getOutputFileExtension());
 		return doCreateOutputFile(outputFileName, generatedDoc, mode, outputFolderRoot);
 	}
 	

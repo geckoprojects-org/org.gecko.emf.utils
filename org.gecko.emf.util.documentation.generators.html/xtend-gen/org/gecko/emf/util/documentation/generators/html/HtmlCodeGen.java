@@ -399,4 +399,38 @@ public class HtmlCodeGen implements EcoreToDocumentationCodeGenerator {
     }
     return _xblockexpression;
   }
+
+  @Override
+  public CharSequence generateDocumentation(final EClassifier eClassifier, final EcoreToDocumentationOptions docGenOption) {
+    CharSequence _xblockexpression = null;
+    {
+      boolean _equals = EcoreToDocumentationOptions.HTML_WITH_MERMAID_CLASS_DIAGRAM.equals(docGenOption);
+      if (_equals) {
+        MermaidClassDiagramCodeGen _mermaidClassDiagramCodeGen = new MermaidClassDiagramCodeGen();
+        this.classDiagramCodeGen = _mermaidClassDiagramCodeGen;
+        this.diagramStartSyntax = "<div class=\'mermaid\'>";
+        this.diagramEndSyntax = "</div>";
+      }
+      StringConcatenation _builder = new StringConcatenation();
+      _builder.append(this.docStart);
+      _builder.newLineIfNotEmpty();
+      {
+        if ((eClassifier instanceof EClass)) {
+          CharSequence _classOverview = this.toClassOverview(((EClass) eClassifier));
+          _builder.append(_classOverview);
+          _builder.newLineIfNotEmpty();
+        } else {
+          if ((eClassifier instanceof EEnum)) {
+            CharSequence _enumOverview = this.toEnumOverview(((EEnum) eClassifier));
+            _builder.append(_enumOverview);
+            _builder.newLineIfNotEmpty();
+          }
+        }
+      }
+      _builder.append(this.docEnd);
+      _builder.newLineIfNotEmpty();
+      _xblockexpression = _builder;
+    }
+    return _xblockexpression;
+  }
 }

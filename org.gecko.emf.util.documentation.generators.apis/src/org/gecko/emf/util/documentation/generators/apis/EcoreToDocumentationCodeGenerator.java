@@ -14,6 +14,7 @@
 package org.gecko.emf.util.documentation.generators.apis;
 
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EPackage;
 
 /**
@@ -25,6 +26,15 @@ public interface EcoreToDocumentationCodeGenerator {
 	
 	CharSequence generateDocumentation(EPackage ePackage, EcoreToDocumentationOptions docGenOption);
 		
+	/**
+	 * @param eClass
+	 * @param docGenOption
+	 * @return
+	 * @deprecated use {@link generateDocumentation(EClassifier eClassifier, EcoreToDocumentationOptions docGenOption)} instead
+	 */
+	@Deprecated
 	CharSequence generateDocumentation(EClass eClass, EcoreToDocumentationOptions docGenOption);
+	
+	CharSequence generateDocumentation(EClassifier eClassifier, EcoreToDocumentationOptions docGenOption);
 
 }

@@ -79,6 +79,15 @@ var List<EEnum> enums = eclassifiers.filter[ec | ec instanceof EEnum].map[ec | e
 «ENDIF»	
 	'''
 	
+	def toClassDiagram(EClassifier eclassifier) 
+	'''
+«IF eclassifier instanceof EClass»
+«toClassDiagram(eclassifier as EClass)»
+«ELSEIF eclassifier instanceof EEnum»	
+«toEnumerator(eclassifier as EEnum)»
+«ENDIF»	
+	'''
+	
 	def toClassMembers(EClass eclass)
 	'''
 «FOR attribute: eclass.EAttributes»
@@ -198,6 +207,14 @@ end note
 		'''
 «startPlantumlClassDiagram()»
 «toClassDiagram(eClass)»
+«endPlantumlClassDiagram()»
+		'''
+	}
+	
+	override generateClassDiagram(EClassifier eClassifier) {
+		'''
+«startPlantumlClassDiagram()»
+«toClassDiagram(eClassifier)»
 «endPlantumlClassDiagram()»
 		'''
 	}

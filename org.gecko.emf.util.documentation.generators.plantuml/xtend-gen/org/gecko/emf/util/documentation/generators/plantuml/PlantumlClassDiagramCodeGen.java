@@ -158,6 +158,24 @@ public class PlantumlClassDiagramCodeGen implements EcoreToClassDiagramCodeGener
     return _builder;
   }
 
+  public CharSequence toClassDiagram(final EClassifier eclassifier) {
+    StringConcatenation _builder = new StringConcatenation();
+    {
+      if ((eclassifier instanceof EClass)) {
+        CharSequence _classDiagram = this.toClassDiagram(((EClass) eclassifier));
+        _builder.append(_classDiagram);
+        _builder.newLineIfNotEmpty();
+      } else {
+        if ((eclassifier instanceof EEnum)) {
+          CharSequence _enumerator = this.toEnumerator(((EEnum) eclassifier));
+          _builder.append(_enumerator);
+          _builder.newLineIfNotEmpty();
+        }
+      }
+    }
+    return _builder;
+  }
+
   public CharSequence toClassMembers(final EClass eclass) {
     StringConcatenation _builder = new StringConcatenation();
     {
@@ -406,6 +424,21 @@ public class PlantumlClassDiagramCodeGen implements EcoreToClassDiagramCodeGener
     _builder.append(_startPlantumlClassDiagram);
     _builder.newLineIfNotEmpty();
     CharSequence _classDiagram = this.toClassDiagram(eClass);
+    _builder.append(_classDiagram);
+    _builder.newLineIfNotEmpty();
+    CharSequence _endPlantumlClassDiagram = this.endPlantumlClassDiagram();
+    _builder.append(_endPlantumlClassDiagram);
+    _builder.newLineIfNotEmpty();
+    return _builder;
+  }
+
+  @Override
+  public CharSequence generateClassDiagram(final EClassifier eClassifier) {
+    StringConcatenation _builder = new StringConcatenation();
+    CharSequence _startPlantumlClassDiagram = this.startPlantumlClassDiagram();
+    _builder.append(_startPlantumlClassDiagram);
+    _builder.newLineIfNotEmpty();
+    CharSequence _classDiagram = this.toClassDiagram(eClassifier);
     _builder.append(_classDiagram);
     _builder.newLineIfNotEmpty();
     CharSequence _endPlantumlClassDiagram = this.endPlantumlClassDiagram();

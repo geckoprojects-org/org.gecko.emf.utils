@@ -14,6 +14,7 @@
 package org.gecko.emf.util.documentation.generators.apis;
 
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EPackage;
 
 /**
@@ -25,6 +26,16 @@ public interface EcoreToClassDiagramCodeGenerator {
 	
 	CharSequence generateClassDiagram(EPackage ePackage);
 
+	
+	/**
+	 * 
+	 * @param eClass
+	 * @return
+	 * @deprecated use {@link generateClassDiagram(EClassifier eClassifier)} instead
+	 */
+	@Deprecated()
 	CharSequence generateClassDiagram(EClass eClass);
+	
+	CharSequence generateClassDiagram(EClassifier eClassifier);
 		
 }

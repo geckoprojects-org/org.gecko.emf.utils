@@ -183,4 +183,22 @@ None.
 		toClassOverview(eClass);
 	}
 	
+	override generateDocumentation(EClassifier eClassifier, EcoreToDocumentationOptions docGenOption) {
+		if(EcoreToDocumentationOptions.MARKDOWN_WITH_MERMAID_CLASS_DIAGRAM.equals(docGenOption)) {
+			classDiagramCodeGen = new MermaidClassDiagramCodeGen();
+			diagramStartSyntax = "```mermaid";
+		}
+		else if(EcoreToDocumentationOptions.MARKDOWN_WITH_PLANTUML_CLASS_DIAGRAM.equals(docGenOption)) {
+			classDiagramCodeGen = new PlantumlClassDiagramCodeGen();
+			diagramStartSyntax = "```plantuml";
+		}
+		'''
+«IF eClassifier instanceof EClass»
+«toClassOverview(eClassifier as EClass)»
+«ELSEIF eClassifier instanceof EEnum»	
+«toEnumOverview(eClassifier as EEnum)»
+«ENDIF»	
+		'''
+	}
+	
 }

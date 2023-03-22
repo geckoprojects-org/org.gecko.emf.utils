@@ -72,6 +72,15 @@ var List<EEnum> enums = eclassifiers.filter[ec | ec instanceof EEnum].map[ec | e
 «ENDIF»	
 	'''
 	
+	def toClassDiagram(EClassifier eclassifier) 
+	'''
+«IF eclassifier instanceof EClass»
+«toClassDiagram(eclassifier as EClass)»
+«ELSEIF eclassifier instanceof EEnum»	
+«toEnumerator(eclassifier as EEnum)»
+«ENDIF»	
+	'''
+	
 	def toClassMembers(EClass eclass)
 	'''
 «IF eclass.EAttributes.isEmpty»
@@ -159,4 +168,12 @@ var List<EEnum> enums = eclassifiers.filter[ec | ec instanceof EEnum].map[ec | e
 «toClassDiagram(eClass)»
 		'''
 	}
+	
+	override generateClassDiagram(EClassifier eClassifier) {
+		'''
+«startMermaidClassDiagram()»
+«toClassDiagram(eClassifier)»
+		'''
+	}
+	
 }

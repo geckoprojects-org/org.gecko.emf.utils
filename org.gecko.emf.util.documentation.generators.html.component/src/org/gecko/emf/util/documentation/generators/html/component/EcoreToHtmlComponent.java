@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EPackage;
 import org.gecko.emf.util.documentation.generators.apis.EcoreToDocumentationCodeGenerator;
 import org.gecko.emf.util.documentation.generators.apis.EcoreToDocumentationOptions;
@@ -92,6 +93,22 @@ public class EcoreToHtmlComponent implements EcoreToDocumentationService {
 		EcoreToDocumentationCodeGenerator mdCodeGenerator = new HtmlCodeGen();
 		CharSequence cs = mdCodeGenerator.generateDocumentation(eClass, mode);
 		File outputFile = generateOutputFile(eClass, cs, mode, outputFolderRoot);
+		try(InputStream is = new FileInputStream(outputFile); OutputStream os = new ByteArrayOutputStream();) {
+			os.write(is.readAllBytes());			
+			return os;
+		}
+	}
+
+	/* 
+	 * (non-Javadoc)
+	 * @see org.gecko.emf.util.documentation.generators.apis.EcoreToDocumentationService#doGenerateDocumentation(org.eclipse.emf.ecore.EClassifier, org.gecko.emf.util.documentation.generators.apis.EcoreToDocumentationOptions, java.lang.String)
+	 */
+	@Override
+	public OutputStream doGenerateDocumentation(EClassifier eClassifier, EcoreToDocumentationOptions mode,
+			String outputFolderRoot) throws IOException {
+		EcoreToDocumentationCodeGenerator mdCodeGenerator = new HtmlCodeGen();
+		CharSequence cs = mdCodeGenerator.generateDocumentation(eClassifier, mode);
+		File outputFile = generateOutputFile(eClassifier, cs, mode, outputFolderRoot);
 		try(InputStream is = new FileInputStream(outputFile); OutputStream os = new ByteArrayOutputStream();) {
 			os.write(is.readAllBytes());			
 			return os;

@@ -139,6 +139,24 @@ public class MermaidClassDiagramCodeGen implements EcoreToClassDiagramCodeGenera
     return _builder;
   }
 
+  public CharSequence toClassDiagram(final EClassifier eclassifier) {
+    StringConcatenation _builder = new StringConcatenation();
+    {
+      if ((eclassifier instanceof EClass)) {
+        CharSequence _classDiagram = this.toClassDiagram(((EClass) eclassifier));
+        _builder.append(_classDiagram);
+        _builder.newLineIfNotEmpty();
+      } else {
+        if ((eclassifier instanceof EEnum)) {
+          CharSequence _enumerator = this.toEnumerator(((EEnum) eclassifier));
+          _builder.append(_enumerator);
+          _builder.newLineIfNotEmpty();
+        }
+      }
+    }
+    return _builder;
+  }
+
   public CharSequence toClassMembers(final EClass eclass) {
     StringConcatenation _builder = new StringConcatenation();
     {
@@ -312,6 +330,18 @@ public class MermaidClassDiagramCodeGen implements EcoreToClassDiagramCodeGenera
     _builder.append(_startMermaidClassDiagram);
     _builder.newLineIfNotEmpty();
     CharSequence _classDiagram = this.toClassDiagram(eClass);
+    _builder.append(_classDiagram);
+    _builder.newLineIfNotEmpty();
+    return _builder;
+  }
+
+  @Override
+  public CharSequence generateClassDiagram(final EClassifier eClassifier) {
+    StringConcatenation _builder = new StringConcatenation();
+    CharSequence _startMermaidClassDiagram = this.startMermaidClassDiagram();
+    _builder.append(_startMermaidClassDiagram);
+    _builder.newLineIfNotEmpty();
+    CharSequence _classDiagram = this.toClassDiagram(eClassifier);
     _builder.append(_classDiagram);
     _builder.newLineIfNotEmpty();
     return _builder;

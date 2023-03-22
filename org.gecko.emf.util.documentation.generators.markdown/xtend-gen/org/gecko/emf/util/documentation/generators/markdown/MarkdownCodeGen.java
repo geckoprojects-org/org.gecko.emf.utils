@@ -343,4 +343,40 @@ public class MarkdownCodeGen implements EcoreToDocumentationCodeGenerator {
     }
     return _xblockexpression;
   }
+
+  @Override
+  public CharSequence generateDocumentation(final EClassifier eClassifier, final EcoreToDocumentationOptions docGenOption) {
+    CharSequence _xblockexpression = null;
+    {
+      boolean _equals = EcoreToDocumentationOptions.MARKDOWN_WITH_MERMAID_CLASS_DIAGRAM.equals(docGenOption);
+      if (_equals) {
+        MermaidClassDiagramCodeGen _mermaidClassDiagramCodeGen = new MermaidClassDiagramCodeGen();
+        this.classDiagramCodeGen = _mermaidClassDiagramCodeGen;
+        this.diagramStartSyntax = "```mermaid";
+      } else {
+        boolean _equals_1 = EcoreToDocumentationOptions.MARKDOWN_WITH_PLANTUML_CLASS_DIAGRAM.equals(docGenOption);
+        if (_equals_1) {
+          PlantumlClassDiagramCodeGen _plantumlClassDiagramCodeGen = new PlantumlClassDiagramCodeGen();
+          this.classDiagramCodeGen = _plantumlClassDiagramCodeGen;
+          this.diagramStartSyntax = "```plantuml";
+        }
+      }
+      StringConcatenation _builder = new StringConcatenation();
+      {
+        if ((eClassifier instanceof EClass)) {
+          CharSequence _classOverview = this.toClassOverview(((EClass) eClassifier));
+          _builder.append(_classOverview);
+          _builder.newLineIfNotEmpty();
+        } else {
+          if ((eClassifier instanceof EEnum)) {
+            CharSequence _enumOverview = this.toEnumOverview(((EEnum) eClassifier));
+            _builder.append(_enumOverview);
+            _builder.newLineIfNotEmpty();
+          }
+        }
+      }
+      _xblockexpression = _builder;
+    }
+    return _xblockexpression;
+  }
 }

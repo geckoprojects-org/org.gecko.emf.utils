@@ -213,4 +213,21 @@ None.
 		
 	}
 	
+	override generateDocumentation(EClassifier eClassifier, EcoreToDocumentationOptions docGenOption) {
+		if(EcoreToDocumentationOptions.HTML_WITH_MERMAID_CLASS_DIAGRAM.equals(docGenOption)) {
+			classDiagramCodeGen = new MermaidClassDiagramCodeGen();
+			diagramStartSyntax = "<div class='mermaid'>";
+			diagramEndSyntax = "</div>";
+		}
+		'''
+«docStart»
+«IF eClassifier instanceof EClass»
+«toClassOverview(eClassifier as EClass)»
+«ELSEIF eClassifier instanceof EEnum»	
+«toEnumOverview(eClassifier as EEnum)»
+«ENDIF»	
+«docEnd»
+		'''
+	}
+	
 }
