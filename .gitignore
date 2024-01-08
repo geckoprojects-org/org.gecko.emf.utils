@@ -6,3 +6,4 @@ generated/
 cnf/release/
 src-gen
 **/ARCHIVE/**
+/org.gecko.emf.util.odf.model/

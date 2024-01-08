@@ -38,9 +38,7 @@
 	slf4j.jcl;version='[1.7.36,1.7.37)',\
 	org.gecko.emf.exporter;version=snapshot
 
--runrequires: \
-	bnd.identity;id='org.gecko.emf.exporter.r_lang',\
-	bnd.identity;id='org.gecko.emf.r_lang.tests'
+-runrequires: bnd.identity;id='org.gecko.emf.r_lang.tests'
 
 -runee: JavaSE-17
 

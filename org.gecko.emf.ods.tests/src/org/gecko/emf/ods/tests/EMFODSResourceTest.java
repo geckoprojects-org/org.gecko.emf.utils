@@ -28,6 +28,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.gecko.emf.exporter.EMFExportOptions;
+import org.gecko.emf.ods.annotation.RequireEMFODS;
 import org.gecko.emf.ods.configuration.EMFODSResource;
 import org.gecko.emf.osgi.example.model.basic.BasicFactory;
 import org.gecko.emf.osgi.example.model.basic.BusinessPerson;
@@ -48,6 +49,7 @@ import org.osgi.test.junit5.service.ServiceExtension;
  */
 @ExtendWith(BundleContextExtension.class)
 @ExtendWith(ServiceExtension.class)
+@RequireEMFODS
 public class EMFODSResourceTest {
 
 	@Order(value = -1)

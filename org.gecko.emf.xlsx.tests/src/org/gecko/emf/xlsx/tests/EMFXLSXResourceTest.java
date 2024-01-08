@@ -31,6 +31,7 @@ import org.gecko.emf.exporter.EMFExportOptions;
 import org.gecko.emf.osgi.example.model.basic.BasicFactory;
 import org.gecko.emf.osgi.example.model.basic.BusinessPerson;
 import org.gecko.emf.osgi.example.model.basic.Family;
+import org.gecko.emf.xlsx.annotation.RequireEMFXLSX;
 import org.gecko.emf.xlsx.configuration.EMFXLSXResource;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -48,6 +49,7 @@ import org.osgi.test.junit5.service.ServiceExtension;
  */
 @ExtendWith(BundleContextExtension.class)
 @ExtendWith(ServiceExtension.class)
+@RequireEMFXLSX
 public class EMFXLSXResourceTest {
 
 	@Order(value = -1)

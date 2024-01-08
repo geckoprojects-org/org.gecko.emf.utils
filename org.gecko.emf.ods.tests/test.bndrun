@@ -48,9 +48,7 @@
 	org.osgi.util.converter;version='[1.0.8,1.0.9)',\
 	slf4j.jcl;version='[1.7.36,1.7.37)'
 
--runrequires: \
-	bnd.identity;id='org.gecko.emf.exporter.ods',\
-	bnd.identity;id='org.gecko.emf.ods.tests'
+-runrequires: bnd.identity;id='org.gecko.emf.ods.tests'
 
 -runee: JavaSE-17
 

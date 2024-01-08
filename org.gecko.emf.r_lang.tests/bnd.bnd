@@ -1,8 +1,6 @@
 -enable-junit5: true
 -library: enable-emf
 
-javac.source: 11
-javac.target: 11
 
 Bundle-Version: 1.0.0.SNAPSHOT
 
@@ -11,6 +9,6 @@ Bundle-Version: 1.0.0.SNAPSHOT
 	org.eclipse.emf.ecore.xmi,\
 	org.eclipse.emf.ecore,\
 	org.gecko.emf.osgi.example.model.basic,\
-	org.gecko.emf.exporter;version=latest,\
-	org.gecko.emf.exporter.r_lang.api;version=latest,\
+	org.gecko.emf.exporter;version=snapshot,\
+	org.gecko.emf.exporter.r_lang.api;version=snapshot,\
 	org.apache.commons.commons-text

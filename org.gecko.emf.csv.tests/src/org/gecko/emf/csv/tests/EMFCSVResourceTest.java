@@ -27,6 +27,7 @@ import java.util.Map;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.gecko.emf.csv.annotation.RequireEMFCSV;
 import org.gecko.emf.csv.configuration.EMFCSVResource;
 import org.gecko.emf.exporter.EMFExportOptions;
 import org.gecko.emf.exporter.csv.api.EMFCSVExportMode;
@@ -50,6 +51,7 @@ import org.osgi.test.junit5.service.ServiceExtension;
  */
 @ExtendWith(BundleContextExtension.class)
 @ExtendWith(ServiceExtension.class)
+@RequireEMFCSV
 public class EMFCSVResourceTest {
 
 	@Order(value = -1)

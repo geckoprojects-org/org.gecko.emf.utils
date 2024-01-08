@@ -32,6 +32,7 @@ import org.gecko.emf.exporter.r_lang.api.EMFRLangExportOptions;
 import org.gecko.emf.osgi.example.model.basic.BasicFactory;
 import org.gecko.emf.osgi.example.model.basic.BusinessPerson;
 import org.gecko.emf.osgi.example.model.basic.Family;
+import org.gecko.emf.r_lang.annotation.RequireEMFRLang;
 import org.gecko.emf.r_lang.configuration.EMFRLangResource;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -49,6 +50,7 @@ import org.osgi.test.junit5.service.ServiceExtension;
  */
 @ExtendWith(BundleContextExtension.class)
 @ExtendWith(ServiceExtension.class)
+@RequireEMFRLang
 public class EMFRLangResourceTest {
 
 	@Order(value = -1)

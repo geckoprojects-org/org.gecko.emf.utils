@@ -1,9 +1,6 @@
 -enable-junit5: true
 -library: enable-emf
 
-javac.source: 11
-javac.target: 11
-
 Bundle-Version: 1.0.1.SNAPSHOT
 
 -buildpath: \
