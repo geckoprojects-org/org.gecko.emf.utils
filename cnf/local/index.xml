@@ -1,5 +1,43 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<repository xmlns="http://www.osgi.org/xmlns/repository/v1.0.0" name="Local" increment="1705682865214">
+<repository xmlns="http://www.osgi.org/xmlns/repository/v1.0.0" name="Local" increment="1705409091791">
+  <resource>
+    <capability namespace="osgi.identity">
+      <attribute name="osgi.identity" value="de.siegmar.fastcsv"/>
+      <attribute name="type" value="osgi.bundle"/>
+      <attribute name="version" value="2.2.2" type="Version"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="bundle-symbolic-name" value="de.siegmar.fastcsv"/>
+      <attribute name="bundle-version" value="2.2.2" type="Version"/>
+      <attribute name="osgi.wiring.package" value="de.siegmar.fastcsv.reader"/>
+      <attribute name="version" value="2.2.2" type="Version"/>
+      <attribute name="bnd.hashes" value="-1901923904,-1690706222,-73316078,-1593229662,1809435209,2027955732,758076521,-354192348,939712043,919553531,245419856,759928429,1600268336,2000715872,-1321348323" type="List&lt;Long&gt;"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="bundle-symbolic-name" value="de.siegmar.fastcsv"/>
+      <attribute name="bundle-version" value="2.2.2" type="Version"/>
+      <attribute name="osgi.wiring.package" value="de.siegmar.fastcsv.writer"/>
+      <attribute name="version" value="2.2.2" type="Version"/>
+      <attribute name="bnd.hashes" value="-202213534,-1521398322,1964840441,-1165707181,696269295" type="List&lt;Long&gt;"/>
+    </capability>
+    <capability namespace="osgi.wiring.bundle">
+      <attribute name="bundle-version" value="2.2.2" type="Version"/>
+      <attribute name="osgi.wiring.bundle" value="de.siegmar.fastcsv"/>
+    </capability>
+    <capability namespace="osgi.wiring.host">
+      <attribute name="bundle-version" value="2.2.2" type="Version"/>
+      <attribute name="osgi.wiring.host" value="de.siegmar.fastcsv"/>
+    </capability>
+    <capability namespace="osgi.content">
+      <attribute name="size" value="54004" type="Long"/>
+      <attribute name="mime" value="application/vnd.osgi.bundle"/>
+      <attribute name="url" value="de.siegmar.fastcsv/de.siegmar.fastcsv-2.2.2.jar"/>
+      <attribute name="osgi.content" value="3CC1BE03964BC0617D0C0C4420A8A6F6F0CC6EF8C40148BB0BA4364BB14817B9"/>
+    </capability>
+    <requirement namespace="osgi.ee">
+      <directive name="filter" value="(&amp;(osgi.ee=JavaSE)(version=1.8))"/>
+    </requirement>
+  </resource>
   <resource>
     <capability namespace="osgi.identity">
       <attribute name="license" value="&quot;The Unlicense&quot;;link=&quot;https://github.com/miachm/SODS/blob/master/LICENSE&quot;"/>
@@ -38,44 +76,6 @@
       <directive name="filter" value="(osgi.wiring.package=javax.xml.stream)"/>
       <attribute name="osgi.wiring.package" value="javax.xml.stream"/>
     </requirement>
-    <requirement namespace="osgi.ee">
-      <directive name="filter" value="(&amp;(osgi.ee=JavaSE)(version=1.8))"/>
-    </requirement>
-  </resource>
-  <resource>
-    <capability namespace="osgi.identity">
-      <attribute name="osgi.identity" value="de.siegmar.fastcsv"/>
-      <attribute name="type" value="osgi.bundle"/>
-      <attribute name="version" value="2.2.2" type="Version"/>
-    </capability>
-    <capability namespace="osgi.wiring.package">
-      <attribute name="bundle-symbolic-name" value="de.siegmar.fastcsv"/>
-      <attribute name="bundle-version" value="2.2.2" type="Version"/>
-      <attribute name="osgi.wiring.package" value="de.siegmar.fastcsv.reader"/>
-      <attribute name="version" value="2.2.2" type="Version"/>
-      <attribute name="bnd.hashes" value="-1901923904,-1690706222,-73316078,-1593229662,1809435209,2027955732,758076521,-354192348,939712043,919553531,245419856,759928429,1600268336,2000715872,-1321348323" type="List&lt;Long&gt;"/>
-    </capability>
-    <capability namespace="osgi.wiring.package">
-      <attribute name="bundle-symbolic-name" value="de.siegmar.fastcsv"/>
-      <attribute name="bundle-version" value="2.2.2" type="Version"/>
-      <attribute name="osgi.wiring.package" value="de.siegmar.fastcsv.writer"/>
-      <attribute name="version" value="2.2.2" type="Version"/>
-      <attribute name="bnd.hashes" value="-202213534,-1521398322,1964840441,-1165707181,696269295" type="List&lt;Long&gt;"/>
-    </capability>
-    <capability namespace="osgi.wiring.bundle">
-      <attribute name="bundle-version" value="2.2.2" type="Version"/>
-      <attribute name="osgi.wiring.bundle" value="de.siegmar.fastcsv"/>
-    </capability>
-    <capability namespace="osgi.wiring.host">
-      <attribute name="bundle-version" value="2.2.2" type="Version"/>
-      <attribute name="osgi.wiring.host" value="de.siegmar.fastcsv"/>
-    </capability>
-    <capability namespace="osgi.content">
-      <attribute name="size" value="54004" type="Long"/>
-      <attribute name="mime" value="application/vnd.osgi.bundle"/>
-      <attribute name="url" value="de.siegmar.fastcsv/de.siegmar.fastcsv-2.2.2.jar"/>
-      <attribute name="osgi.content" value="3CC1BE03964BC0617D0C0C4420A8A6F6F0CC6EF8C40148BB0BA4364BB14817B9"/>
-    </capability>
     <requirement namespace="osgi.ee">
       <directive name="filter" value="(&amp;(osgi.ee=JavaSE)(version=1.8))"/>
     </requirement>

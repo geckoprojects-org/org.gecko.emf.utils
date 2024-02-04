@@ -1,0 +1,31 @@
+-library: enable-emf
+
+-buildpath: \
+	org.eclipse.m2m.qvt.oml,\
+	org.eclipse.m2m.qvt.oml.ecore.imperativeocl,\
+	org.gecko.util.pool,\
+	org.osgi.resource;version=latest,\
+	org.osgi.framework;version=latest,\
+	org.osgi.service.component;version=latest,\
+	org.osgi.service.cm;version=latest,\
+	org.osgi.util.tracker;version=latest,\
+	org.osgi.namespace.extender;version=latest,\
+	org.osgi.service.coordinator;version=latest,\
+	org.eclipse.emf.compare,\
+	org.eclipse.m2m.qvt.oml.common,\
+	org.eclipse.m2m.qvt.oml.cst.parser,\
+	org.eclipse.m2m.qvt.oml.emf.util,\
+	org.eclipse.m2m.qvt.oml.ocl,\
+	org.eclipse.ocl,\
+	org.eclipse.ocl.common,\
+	org.eclipse.ocl.ecore
+
+-dsannotations-options: inherit
+
+javac.source: 1.8
+javac.target: 1.8
+
+Bundle-Version: 2.0.0.SNAPSHOT
+-sub: *.bnd
+
+-workingset: qvt

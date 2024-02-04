@@ -1,0 +1,11 @@
+Fragment-Host: org.eclipse.emf.ecore
+
+Import-Package: org.eclipse.core.runtime.spi
+
+Provide-Capability: emf.m2m.companion;emf.m2m.companion=ecore.fragment
+
+Require-Bundle: org.eclipse.core.runtime
+
+-workingset: qvt
+
+Bundle-Version: 2.0.0.SNAPSHOT

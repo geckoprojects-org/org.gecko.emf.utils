@@ -1,0 +1,14 @@
+modeltype ECORE "strict" uses ecore('http://www.eclipse.org/emf/2002/Ecore');
+modeltype TEST uses "http://gecko.org/example/model/basic";
+
+transformation PersonTransformation(in rawIn : TEST, out rawOut : TEST);
+
+main() {
+	rawIn.rootObjects()[Person]->map mapToFemalePerson();
+}
+
+mapping Person::mapToFemalePerson() : Person {
+	firstName := self.firstName + "in";
+	lastName := self.lastName + "in";
+	gender := GenderType::FEMALE;
+}

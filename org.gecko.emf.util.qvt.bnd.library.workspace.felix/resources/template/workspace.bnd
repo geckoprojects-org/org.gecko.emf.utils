@@ -1,0 +1,24 @@
+-plugin.geckoUtilQVT: \
+	aQute.bnd.repository.maven.provider.MavenBndRepository;\
+		releaseUrl			= "https://repo.maven.apache.org/maven2/,https://devel.data-in-motion.biz/nexus/repository/dim-release/"; \
+		snapshotUrl			= "https://devel.data-in-motion.biz/nexus/repository/dim-snapshot/";\
+		index            	= "${.}/geckoUtilQVT.maven" ;\
+		readOnly            = true;\
+		poll.time 			= -1;\
+		name				="GeckoUtil QVT M2M"
+		
+-plugin.geckoUtilQVT.dimruntime: \
+	aQute.bnd.repository.osgi.OSGiRepository; \
+		locations = https://devel.data-in-motion.biz/repository/p2/obr/dim-core-runtime/index.xml;\
+		max.stale=-1;\
+		readonly = true;\
+		name = "DIM Eclipse Runtime Shade";\
+		cache=${build}/cache/DimEclipseRuntime
+
+-plugin.geckoUtilQVT.QVT: \
+ 	aQute.bnd.repository.p2.provider.P2Repository; \
+ 		url = ${fileuri;${.}}qvt.target; \
+ 		name = "QVT P2 Dependencies";\
+ 		poll.time = -1		
+		
+-require-bnd: "(version>=7.0.0)"

@@ -1,0 +1,19 @@
+-resourceonly: true
+-include: ${.}/buildpath.bnd	
+mavendeps: ${sjoin;\n; ${template;-maven-dependencies;${@}}}
+
+-includeresource: resources,\
+	{template/geckoUtilQVT.maven=resources/template/geckoUtilQVT.maven},\
+	 template/qvt.target=${.}/../cnf/qvt.target
+	
+Provide-Capability: \
+	${gecko-base}
+
+gecko-base:\
+    bnd.library;\
+        bnd.library     = geckoUtilQVT; \
+        path            = template
+Bundle-Description: Gecko QVT Workspace Libarary
+Bundle-Version: 2.0.0.SNAPSHOT
+
+-workingset: qvt

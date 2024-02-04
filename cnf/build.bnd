@@ -7,7 +7,8 @@
 	geckoEMF,\
 	geckoOSGi-Test,\
 	geckoDIMC,\
-	geckoJacoco
+	geckoJacoco,\
+	geckoUtil
 
 # Needed because we enabled library 'gecko-dimc' 	
 github-project: org.gecko.emf.util
@@ -49,8 +50,28 @@ javac.target: 11
         readOnly=true;\
 		name=Baseline
 
+-plugin.dimrelease: \
+	aQute.bnd.repository.maven.provider.MavenBndRepository;\
+		snapshotUrl=https://devel.data-in-motion.biz/nexus/repository/dim-snapshot/;\
+		releaseUrl=https://devel.data-in-motion.biz/nexus/repository/dim-release/;\
+		index=${.}/dim_release.maven;\
+		name='DIM_Release'
+
+-plugin.dimruntime: \
+	aQute.bnd.repository.osgi.OSGiRepository; \
+		locations = https://devel.data-in-motion.biz/repository/p2/obr/dim-core-runtime/index.xml;\
+		max.stale=-1;\
+		readonly = true;\
+		name = "DIM Eclipse Runtime Shade";\
+		cache=${build}/cache/DimEclipseRuntime
+
+-plugin.z.target: \
+ 	aQute.bnd.repository.p2.provider.P2Repository; \
+ 		url = ${fileuri;${.}}qvt.target; \
+ 		name = Targetdefinition;\
+ 		poll.time = -1
+
+
 -baselinerepo: Baseline
 -baseline: \
 	*
-
--diffignore.module: 

@@ -1,0 +1,7 @@
+Fragment-Host: org.eclipse.ocl
+
+Import-Package: org.osgi.framework
+Bundle-Version: 2.0.0.SNAPSHOT
+Provide-Capability: emf.m2m.companion;emf.m2m.companion=ocl.fragment
+
+-workingset: qvt
