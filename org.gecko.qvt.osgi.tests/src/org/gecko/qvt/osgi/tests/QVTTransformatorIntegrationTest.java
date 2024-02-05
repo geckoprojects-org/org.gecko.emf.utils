@@ -80,7 +80,7 @@ public class QVTTransformatorIntegrationTest  {
 		ModelTransformator transformator = transformatorAware.waitForService(500);
 		assertNotNull(transformator);
 		
-		EObject result = transformator.startTransformation(p1);
+		EObject result = transformator.doTransformation(p1);
 		assertNotNull(result);
 		assertTrue(result instanceof Person);
 		Person resultPerson = (Person) result;
@@ -111,7 +111,7 @@ public class QVTTransformatorIntegrationTest  {
 		ModelTransformator transformator = transformatorAware.waitForService(500);
 		assertNotNull(transformator);
 		
-		EObject result = transformator.startTransformation(p1);
+		EObject result = transformator.doTransformation(p1);
 		assertNotNull(result);
 		assertTrue(result instanceof Person);
 		Person resultPerson = (Person) result;
@@ -146,7 +146,7 @@ public class QVTTransformatorIntegrationTest  {
 		ModelTransformator transformator = transformatorAware.waitForService(500);
 		assertNotNull(transformator);
 		
-		EObject result = transformator.startTransformation(p1);
+		EObject result = transformator.doTransformation(p1);
 		assertNotNull(result);
 		assertTrue(result instanceof Person);
 		Person resultPerson = (Person) result;
@@ -190,7 +190,7 @@ public class QVTTransformatorIntegrationTest  {
 		ModelTransformator transformator = transformatorAware.waitForService(500);
 		assertNotNull(transformator);
 		
-		EObject result = transformator.startTransformation(p1);
+		EObject result = transformator.doTransformation(p1);
 		assertNotNull(result);
 		assertTrue(result instanceof Person);
 		Person resultPerson = (Person) result;
@@ -234,7 +234,7 @@ public class QVTTransformatorIntegrationTest  {
 		ModelTransformator transformator = transformatorAware.waitForService(500);
 		assertNotNull(transformator);
 		
-		EObject result = transformator.startTransformation(p1);
+		EObject result = transformator.doTransformation(p1);
 		assertNotNull(result);
 		assertTrue(result instanceof Person);
 		Person resultPerson = (Person) result;
@@ -277,7 +277,7 @@ public class QVTTransformatorIntegrationTest  {
 		
 		ModelTransformator transformator = transformatorAware.waitForService(500);
 		assertNotNull(transformator);
-		EObject result = transformator.startTransformation(p1);
+		EObject result = transformator.doTransformation(p1);
 		assertNotNull(result);
 		assertTrue(result instanceof Person);
 		Person resultPerson = (Person) result;
@@ -320,7 +320,7 @@ public class QVTTransformatorIntegrationTest  {
 		
 		ModelTransformator transformator = transformatorAware.waitForService(500);
 		assertNotNull(transformator);
-		EObject result = transformator.startTransformation(p1);
+		EObject result = transformator.doTransformation(p1);
 		assertNotNull(result);
 		assertTrue(result instanceof Person);
 		Person resultPerson = (Person) result;
@@ -371,7 +371,7 @@ public class QVTTransformatorIntegrationTest  {
 		ModelTransformator transformator= transformatorAware.waitForService(500);
 		assertNotNull(transformator);
 
-		EObject result = transformator.startTransformation(p1);
+		EObject result = transformator.doTransformation(p1);
 		assertNotNull(result);
 		assertTrue(result instanceof Person);
 		Person resultPerson = (Person) result;
@@ -407,7 +407,7 @@ public class QVTTransformatorIntegrationTest  {
 		ModelTransformator transformator= transformatorAware.waitForService(1000);
 		assertNotNull(transformator);
 
-		EObject result = transformator.startTransformation(p1);
+		EObject result = transformator.doTransformation(p1);
 		assertNotNull(result);
 		assertTrue(result instanceof Person);
 		Person resultPerson = (Person) result;

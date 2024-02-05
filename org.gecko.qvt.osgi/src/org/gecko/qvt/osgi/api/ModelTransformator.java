@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2012 - 2017 Data In Motion and others.
+ * Copyright (c) 2012 - 2024 Data In Motion and others.
  * All rights reserved. 
  * 
  * This program and the accompanying materials are made available under the terms of the 
@@ -18,6 +18,7 @@ import org.eclipse.emf.ecore.EObject;
 /**
  * Model transformator that can be used for model-2-model-transformation
  * @author Mark Hoffmann
+ * @author Juergen Albert
  * @since 20.10.2017
  */
 public interface ModelTransformator {
@@ -29,7 +30,7 @@ public interface ModelTransformator {
 	 * The objects are detached after the transformation. 
 	 * @param inObjects list of objects to transform as batch
 	 */
-	public <T extends EObject> List<T> startTransformations(List<? extends EObject> inObjects);
+	public <T extends EObject> List<T> doTransformations(List<? extends EObject> inObjects);
 	
 	/**
 	 * Starts the transformation programmatic 
@@ -38,7 +39,7 @@ public interface ModelTransformator {
 	 * The object is detached after the transformation.
 	 * @param inObject the object to be transformed
 	 */
-	public <T extends EObject> T startTransformation(EObject inObject);
+	public <T extends EObject> T doTransformation(EObject inObject);
 	
 	/**
 	 * Starts the transformation programmatic 
@@ -47,5 +48,5 @@ public interface ModelTransformator {
 	 * The object is  detached after the transformation. 
 	 * @param inObject the object to be transformed
 	 */
-	public <T extends EObject> T startTransformation(List<? extends EObject> inObjects);
+	public <T extends EObject> T doTransformation(List<? extends EObject> inObjects);
 }

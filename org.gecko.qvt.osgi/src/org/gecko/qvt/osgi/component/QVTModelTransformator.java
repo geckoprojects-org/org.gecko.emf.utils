@@ -126,7 +126,7 @@ public class QVTModelTransformator implements ModelTransformator, ModelTransform
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends EObject> List<T> startTransformations(List<? extends EObject> inObjects) {
+	public <T extends EObject> List<T> doTransformations(List<? extends EObject> inObjects) {
 		if (inObjects == null) {
 			throw new IllegalStateException("Error transforming object with null instance or no resource set");
 		}
@@ -156,8 +156,8 @@ public class QVTModelTransformator implements ModelTransformator, ModelTransform
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends EObject> T startTransformation(List<? extends EObject> inObjects) {
-		List<? extends EObject> outObjects = startTransformations(inObjects);
+	public <T extends EObject> T doTransformation(List<? extends EObject> inObjects) {
+		List<? extends EObject> outObjects = doTransformations(inObjects);
 
 		if (outObjects.size() > 0) {
 			return (T) outObjects.get(0);
@@ -170,8 +170,8 @@ public class QVTModelTransformator implements ModelTransformator, ModelTransform
 	 * @see org.gecko.qvt.osgi.api.ModelTransformator#startTransformation(org.eclipse.emf.ecore.EObject)
 	 */
 	@Override
-	public <T extends EObject> T startTransformation(EObject inObject) {
-		return startTransformation(ECollections.singletonEList(inObject));
+	public <T extends EObject> T doTransformation(EObject inObject) {
+		return doTransformation(ECollections.singletonEList(inObject));
 	}
 	
     /**
