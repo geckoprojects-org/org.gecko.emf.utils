@@ -49,23 +49,5 @@ pipeline  {
                 sh "cp -r cnf/release/* $JENKINS_HOME/repo.gecko/snapshot/org.gecko.emf.util"
             }
         }
-        stage('Props') {
-            when { 
-                branch 'jakarta'
-            }
-            steps  {
-                echo "I am building on ${env.JOB_NAME}"
-                sh "./gradlew org.gecko.emf.bson:bndproperties -Drelease.dir=$JENKINS_HOME/repo.gecko/jakarta/org.gecko.emf.util --info --stacktrace -Dmaven.repo.local=${WORKSPACE}/.m2"
-            }
-        }
-        stage('Jakarta branch release') {
-            when { 
-                branch 'jakarta'
-            }
-            steps  {
-                echo "I am building on ${env.JOB_NAME}"
-                sh "./gradlew clean build release -Drelease.dir=$JENKINS_HOME/repo.gecko/jakarta/org.gecko.emf.util --info --stacktrace -Dmaven.repo.local=${WORKSPACE}/.m2"
-            }
-        }
     }
 }
