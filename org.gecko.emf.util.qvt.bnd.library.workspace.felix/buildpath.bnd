@@ -2,8 +2,14 @@
 
 -buildpath: ${-runbundles}
 -buildpath.extra: \
+	lpg.runtime.java;version=latest,\
+	org.gecko.qvt.osgi.api;version=snapshot,\
+	org.gecko.qvt.osgi.component;version=snapshot,\
+	org.eclipse.emf.ecore.change;version='latest',\
 	org.osgi.service.condition;version=latest,\
 	org.osgi.service.component.annotations;version=latest,\
 	org.osgi.framework;version=latest,\
 	org.osgi.annotation.versioning;version=latest,\
-	org.osgi.annotation.bundle;version=latest
+	org.osgi.annotation.bundle;version=latest,\
+	org.eclipse.emf.ecore.fragment;version=snapshot,\
+	org.eclipse.ocl.fragment;version=snapshot

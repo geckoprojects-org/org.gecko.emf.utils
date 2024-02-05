@@ -5,7 +5,4 @@
 #	bnd.identity;id='org.gecko.qvt.osgi.api',\
 #	bnd.identity;id='org.gecko.qvt.osgi.component'
 -runbundles: \
-	lpg.runtime.java;version='[2.0.17,2.0.18)',\
-	org.gecko.qvt.osgi.api;version=snapshot,\
-	org.gecko.qvt.osgi.component;version=snapshot
 	
