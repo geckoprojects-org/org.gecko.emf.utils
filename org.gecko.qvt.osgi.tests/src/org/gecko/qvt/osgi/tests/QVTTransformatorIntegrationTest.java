@@ -388,7 +388,7 @@ public class QVTTransformatorIntegrationTest  {
 	public void testBlackboxWithTrafoRegistration(
 			@InjectService ResourceSet rs, 
 			@InjectService BasicFactory factory,
-			@InjectService(cardinality = 0, filter = "(" + ModelTransformationConstants.TRANSFORMATOR_ID + "=org.gecko.qvt.osgi.tests/PersonTransformationWithBlackboxComponentRegistration.qvto)") ServiceAware<ModelTransformator> transformatorAware
+			@InjectService(cardinality = 0, filter = "(" + ModelTransformationConstants.TRANSFORMATOR_ID + "=testTrafo)") ServiceAware<ModelTransformator> transformatorAware
 			) throws InterruptedException, IOException{
 		Resource r1 = rs.createResource(URI.createURI("tmp.test"));
 		Person p1 = BasicFactory.eINSTANCE.createPerson();

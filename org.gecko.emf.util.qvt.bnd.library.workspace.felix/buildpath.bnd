@@ -12,4 +12,7 @@
 	org.osgi.annotation.versioning;version=latest,\
 	org.osgi.annotation.bundle;version=latest,\
 	org.eclipse.emf.ecore.fragment;version=snapshot,\
-	org.eclipse.ocl.fragment;version=snapshot
+	org.eclipse.ocl.fragment;version=snapshot,\
+	org.eclipse.equinox.registry;version=latest,\
+	org.eclipse.equinox.supplement;version=latest,\
+	org.eclipse.equinox.common;version=latest

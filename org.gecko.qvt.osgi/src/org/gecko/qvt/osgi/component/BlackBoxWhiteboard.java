@@ -165,9 +165,10 @@ public class BlackBoxWhiteboard {
 			String[] packageURIs = (annotation == null) ? new String[] {} : annotation.packageURIs();
 			
 			Dictionary<String, Object> props = new Hashtable<String, Object>();
-			String id = (String) reference.getProperty(ModelTransformationConstants.TRANSFORMATOR_ID);
-			String uri = (String) reference.getProperty(ModelTransformationConstants.TEMPLATE_URI);
-			String path = (String) reference.getProperty(ModelTransformationConstants.TEMPLATE_PATH);
+			
+			String id = getProperty(reference, ModelTransformationConstants.QVT_BLACKBOX_PREFIX + ModelTransformationConstants.TRANSFORMATOR_ID);
+			String uri = getProperty(reference, ModelTransformationConstants.TEMPLATE_URI);
+			String path = getProperty(reference, ModelTransformationConstants.TEMPLATE_PATH);
 			
 			if(id == null) {
 				id = uri == null ? path : uri;
@@ -184,6 +185,16 @@ public class BlackBoxWhiteboard {
 			
 			configuration.update(props);
 		}
+	}
+	
+	private String getProperty(ServiceReference<Object> reference, String key) {
+		Object property = reference.getProperty(key);
+		if(property instanceof String) {
+			return (String) property;
+		} else if(property instanceof String[]) {
+			return ((String[]) property)[0];
+		}
+		return null;
 	}
 	
 	/**

@@ -20,6 +20,11 @@ package org.gecko.qvt.osgi.api;
 public interface ModelTransformationConstants {
 	
 	/*
+	 * The property prefix
+	 */
+	public static final String QVT_BLACKBOX_PREFIX = "qvt.blackbox.";
+
+	/*
 	 * The property name of the blackbox registered service
 	 */
 	public static final String QVT_BLACKBOX_CONDITION = "qvt.blackbox.condition";

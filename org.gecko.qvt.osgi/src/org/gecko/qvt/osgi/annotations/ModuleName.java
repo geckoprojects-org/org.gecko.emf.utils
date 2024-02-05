@@ -18,6 +18,7 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import org.gecko.qvt.osgi.api.ModelTransformationConstants;
 import org.osgi.service.component.annotations.ComponentPropertyType;
 
 @Documented
@@ -39,7 +40,7 @@ public @interface ModuleName {
 	 * Prefix for the property name. This value is prepended to each property
 	 * name.
 	 */
-	String PREFIX_ = "qvt.blackbox.";
+	String PREFIX_ = ModelTransformationConstants.TRANSFORMATOR_ID;
 	
 	String value();
 	

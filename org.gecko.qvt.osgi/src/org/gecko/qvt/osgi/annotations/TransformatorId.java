@@ -18,6 +18,8 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import org.gecko.qvt.osgi.api.ModelTransformationConstants;
+import org.gecko.qvt.osgi.api.ModelTransformator;
 import org.osgi.service.component.annotations.ComponentPropertyType;
 
 @Documented
@@ -25,7 +27,7 @@ import org.osgi.service.component.annotations.ComponentPropertyType;
 @Target(TYPE)
 
 /**
- * Sets a list of templates to registered with this blackbox. 
+ * Sets the transformator id, the {@link ModelTransformator} will be registered with. . 
  * This will make sure, that the Blackbox is available to the templates on creation.
  * 
  * @author Juergen Albert
@@ -40,7 +42,7 @@ public @interface TransformatorId {
 	 * Prefix for the property name. This value is prepended to each property
 	 * name.
 	 */
-	String PREFIX_ = "qvt.blackbox.";
+	String PREFIX_ = ModelTransformationConstants.QVT_BLACKBOX_PREFIX;
 	
 	String[] value();
 	
