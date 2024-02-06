@@ -162,7 +162,7 @@ public class QVTModelTransformator implements ModelTransformator, ModelTransform
 		if (outObjects.size() > 0) {
 			return (T) outObjects.get(0);
 		}
-		throw new IllegalStateException("Transformation failed with no result object");
+		return null;
 	}
 
 	/* 
