@@ -15,7 +15,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
@@ -32,6 +31,7 @@ import org.eclipse.m2m.qvt.oml.ExecutionDiagnostic;
 import org.eclipse.m2m.qvt.oml.ModelExtent;
 import org.eclipse.m2m.qvt.oml.TransformationExecutor;
 import org.gecko.emf.osgi.annotation.require.RequireEMF;
+import org.gecko.qvt.osgi.annotations.ModelTransformatorConfig;
 import org.gecko.qvt.osgi.api.ModelTransformationConstants;
 import org.gecko.qvt.osgi.api.ModelTransformationNamespace;
 import org.gecko.qvt.osgi.api.ModelTransformator;
@@ -48,6 +48,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.metatype.annotations.Designate;
 
 /**
  * QVT Implementation of a model transformator
@@ -61,6 +62,7 @@ import org.osgi.service.component.annotations.Reference;
 @Requirement(namespace = ModelTransformationNamespace.COMPANION, name = "ecore.fragment")
 @Requirement(namespace = ModelTransformationNamespace.COMPANION, name = "ocl.fragment")
 @Component(name = ModelTransformationConstants.TRANSFORMATOR_COMPONENT_NAME, service = ModelTransformator.class, configurationPolicy = ConfigurationPolicy.REQUIRE, immediate = true)
+@Designate(ocd = ModelTransformatorConfig.class)
 public class QVTModelTransformator implements ModelTransformator, ModelTransformationConstants {
 
 	private static final String VALIDATION_MESSAGE = "%sSource: [%s] Message [%s]";
@@ -79,17 +81,13 @@ public class QVTModelTransformator implements ModelTransformator, ModelTransform
 	 * @throws URISyntaxException 
 	 */
 	@Activate
-	void init(ComponentContext componentContext, Map<String, Object> properties) throws URISyntaxException {
+	void init(ComponentContext componentContext, ModelTransformatorConfig config) throws URISyntaxException {
 		this.bundleContext = componentContext.getBundleContext();
-		if(properties.containsKey(TEMPLATE_URI)) {
-			String uriString = (String) properties.get(TEMPLATE_URI);
-			if(uriString != null && !uriString.trim().isEmpty()) {
-				templateUri = URI.createURI(TEMPLATE_URI);
-			}
+		if(!config.qvt_template_uri().trim().isEmpty()) {
+			templateUri = URI.createURI(config.qvt_template_uri());
 		} 
 		if(templateUri == null) {
-			String templatePath = (String) properties.get(TEMPLATE_PATH);
-			templateUri = getTemplateUri(templatePath);
+			templateUri = getTemplateUri(config.qvt_template_path());
 		}
 		if ( templateUri == null) {
 			throw new IllegalArgumentException("Error initializing QVT helper without template or/and resource set");

@@ -3,7 +3,6 @@
 -buildpath: \
 	org.eclipse.m2m.qvt.oml,\
 	org.eclipse.m2m.qvt.oml.ecore.imperativeocl,\
-	org.gecko.util.pool,\
 	org.osgi.resource;version=latest,\
 	org.osgi.framework;version=latest,\
 	org.osgi.service.component;version=latest,\
@@ -25,7 +24,11 @@
 javac.source: 1.8
 javac.target: 1.8
 
-Bundle-Version: 2.0.0.SNAPSHOT
+Bundle-Version: 2.1.0.SNAPSHOT
 -sub: *.bnd
+
+Export-Package: \
+	org.gecko.qvt.osgi.api,\
+	org.gecko.qvt.osgi.annotations
 
 -workingset: qvt
