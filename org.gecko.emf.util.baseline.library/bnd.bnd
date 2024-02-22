@@ -1,0 +1,52 @@
+-resourceonly: true
+
+
+mavendeps: ${sjoin;\n; ${template;-maven-dependencies;${@}}}
+
+-baseline: *
+-includeresource: resources,\
+	{template/geckoEMFUtil.maven=resources/template/geckoEMFUtil.maven}	
+	
+Provide-Capability: \
+	${gecko-base}
+
+gecko-base:\
+    bnd.library;\
+        bnd.library     = geckoEMFUtil-Baseline; \
+        path            = template
+        
+-dependson: org.gecko.com.github.miachm.sods
+
+Dependencies: ${-buildpath.*}
+-buildpath: \
+	org.eclipse.emf.ecore.fragment;version=latest,\
+	org.eclipse.ocl.fragment;version=latest,\
+	org.gecko.emf.bson;version=latest,\
+	org.gecko.emf.collections;version=latest,\
+	org.gecko.emf.csv;version=latest,\
+	org.gecko.emf.exporter;version=latest,\
+	org.gecko.emf.exporter.csv;version=latest,\
+	org.gecko.emf.exporter.csv.api;version=latest,\
+	org.gecko.emf.exporter.ods;version=latest,\
+	org.gecko.emf.exporter.ods.api;version=latest,\
+	org.gecko.emf.exporter.r_lang;version=latest,\
+	org.gecko.emf.exporter.r_lang.api;version=latest,\
+	org.gecko.emf.exporter.xlsx;version=latest,\
+	org.gecko.emf.exporter.xlsx.api;version=latest,\
+	org.gecko.emf.json;version=latest,\
+	org.gecko.emf.ods;version=latest,\
+	org.gecko.emf.pushstreams;version=latest,\
+	org.gecko.emf.r_lang;version=latest,\
+	org.gecko.emf.rest.jakartars;version=latest,\
+	org.gecko.emf.rest.jaxrs;version=latest,\
+	org.gecko.emf.trees.model;version=latest,\
+	org.gecko.emf.util.annotations;version=latest,\
+	org.gecko.emf.util.bnd.library.workspace;version=latest,\
+	org.gecko.emf.util.common;version=latest,\
+	org.gecko.emf.util.jakartars.bnd.library.workspace;version=latest,\
+	org.gecko.emf.util.jaxrs.bnd.library.workspace;version=latest,\
+	org.gecko.emf.util.model;version=latest,\
+	org.gecko.emf.util.qvt.bnd.library.workspace.felix;version=latest,\
+	org.gecko.emf.xlsx;version=latest,\
+	org.gecko.qvt.osgi.api;version=latest,\
+	org.gecko.qvt.osgi.component;version=latest
