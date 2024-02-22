@@ -74,5 +74,4 @@ javac.target: 11
 
 -baselinerepo: Baseline
 -baseline: \
-	!module-info.class,\
-	*
+	org.gecko.*
