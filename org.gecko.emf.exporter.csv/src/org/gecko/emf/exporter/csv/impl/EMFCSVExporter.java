@@ -1532,7 +1532,7 @@ public class EMFCSVExporter extends AbstractEMFExporter implements EMFExporter {
 				.collect(Collectors.toList());
 		// @formatter:on
 
-		csvWriter.writeRow(firstRowValuesAsString);
+		csvWriter.writeRecord(firstRowValuesAsString);
 	}
 
 	private void writeCSVData(Table<Integer, Integer, Object> matrix, CsvWriter csvWriter,
@@ -1551,7 +1551,7 @@ public class EMFCSVExporter extends AbstractEMFExporter implements EMFExporter {
 
 			List<String> rowValuesAsString = convertValues(row.values(), exportOptions);
 
-			csvWriter.writeRow(rowValuesAsString);
+			csvWriter.writeRecord(rowValuesAsString);
 		}
 	}
 

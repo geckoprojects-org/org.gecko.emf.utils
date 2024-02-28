@@ -183,3 +183,5 @@ lpg.runtime:java:2.0.17-v201004271640
 org.eclipse.equinox:org.eclipse.equinox.registry:3.5.101
 org.apache.felix:org.apache.felix.configadmin:1.9.26
 org.apache.felix:org.apache.felix.configurator:1.0.18
+
+de.siegmar:fastcsv:3.0.0
