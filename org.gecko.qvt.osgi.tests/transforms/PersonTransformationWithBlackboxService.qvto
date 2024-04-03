@@ -1,0 +1,18 @@
+import org.gecko.service.MyBB;
+//import org.eclipselabs.qvt.osgi.tests.bbox.BlackboxTest;
+	
+modeltype ECORE "strict" uses ecore('http://www.eclipse.org/emf/2002/Ecore');
+modeltype TEST uses "http://gecko.org/example/model/basic";
+
+transformation PersonTransformationWithBlackboxService(in rawIn : TEST, out rawOut : TEST);
+
+main() {
+	rawIn.rootObjects()[Person]->map mapToFemalePerson();
+}
+
+mapping Person::mapToFemalePerson() : Person {
+	firstName := self.firstName + "in";
+	lastName := self.lastName + "in";
+	gender := GenderType::FEMALE;
+	address := self.address.getCopyAddress();
+}

@@ -16,9 +16,9 @@ import org.gecko.emf.exporter.EMFExporter;
 import org.gecko.emf.ods.configuration.EMFODSResource;
 import org.gecko.emf.ods.configuration.EMFODSResourceFactory;
 import org.gecko.emf.ods.constants.EMFODSConstants;
-import org.gecko.emf.osgi.ResourceFactoryConfigurator;
-import org.gecko.emf.osgi.annotation.EMFResourceFactoryConfigurator;
-import org.gecko.emf.osgi.annotation.provide.ProvideEMFResourceConfigurator;
+import org.gecko.emf.osgi.annotation.ConfiguratorType;
+import org.gecko.emf.osgi.annotation.provide.EMFConfigurator;
+import org.gecko.emf.osgi.configurator.ResourceFactoryConfigurator;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -35,18 +35,9 @@ import org.osgi.service.component.annotations.Reference;
  */
 @Component(name = "EMFODSConfigurator", immediate = true, service = ResourceFactoryConfigurator.class)
 //@formatter:off
-@ProvideEMFResourceConfigurator(
-		name = EMFODSConstants.EMFODS_CAPABILITY_NAME, 
-		contentType = {
-				EMFODSConstants.EMFODS_CONTENT_TYPE
-				},
-		fileExtension = {
-				EMFODSConstants.EMFODS_FILE_EXTENSION
-				},
-	version = "1.0.0"
-)
-@EMFResourceFactoryConfigurator(
-		name = EMFODSConstants.EMFODS_CAPABILITY_NAME,
+@EMFConfigurator(
+		configuratorName  = EMFODSConstants.EMFODS_CAPABILITY_NAME,
+		configuratorType = ConfiguratorType.RESOURCE_FACTORY,
 		fileExtension = {
 				EMFODSConstants.EMFODS_FILE_EXTENSION
 				},

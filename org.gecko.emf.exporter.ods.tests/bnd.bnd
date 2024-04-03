@@ -4,15 +4,17 @@
 javac.source: 11
 javac.target: 11
 
-Bundle-Version: 1.0.2.SNAPSHOT
+Bundle-Version: 1.0.4.SNAPSHOT
 
 -buildpath: \
 	org.gecko.emf.osgi.component,\
 	org.eclipse.emf.ecore.xmi,\
 	org.eclipse.emf.ecore,\
 	org.gecko.emf.osgi.example.model.basic,\
-	org.gecko.emf.exporter;version=latest,\
-	org.gecko.emf.exporter.ods.api;version=latest,\
+	org.gecko.emf.exporter;version=snapshot,\
+	org.gecko.emf.exporter.ods.api;version=snapshot,\
 	org.apache.commons.commons-text,\
-	org.gecko.emf.util.model,\
-	org.gecko.emf.trees.model;version=latest
+	org.gecko.emf.util.model;version=snapshot,\
+	org.gecko.emf.trees.model;version=snapshot
+
+-dependson: org.gecko.emf.exporter.ods

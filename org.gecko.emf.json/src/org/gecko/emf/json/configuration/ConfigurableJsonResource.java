@@ -11,9 +11,9 @@
  */
 package org.gecko.emf.json.configuration;
 
-import static org.eclipse.emfcloud.jackson.databind.EMFContext.Attributes.ROOT_ELEMENT;
 import static org.eclipse.emfcloud.jackson.databind.EMFContext.Attributes.RESOURCE;
 import static org.eclipse.emfcloud.jackson.databind.EMFContext.Attributes.RESOURCE_SET;
+import static org.eclipse.emfcloud.jackson.databind.EMFContext.Attributes.ROOT_ELEMENT;
 
 import java.io.IOException;
 import java.io.InputStream;

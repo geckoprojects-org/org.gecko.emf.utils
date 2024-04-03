@@ -19,20 +19,16 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import org.gecko.emf.osgi.EMFNamespaces;
-import org.gecko.emf.osgi.ResourceSetConfigurator;
 import org.gecko.emf.osgi.annotation.require.RequireEMF;
+import org.gecko.emf.osgi.constants.EMFNamespaces;
 import org.gecko.emf.r_lang.constants.EMFRLangConstants;
 import org.osgi.annotation.bundle.Requirement;
 
 @Documented
 @Retention(CLASS)
 @Target({ TYPE, PACKAGE })
-@Requirement(
-		namespace = EMFNamespaces.EMF_CONFIGURATOR_NAMESPACE,
-		name = ResourceSetConfigurator.EMF_CONFIGURATOR_NAME,
-		filter = "(" + EMFNamespaces.EMF_CONFIGURATOR_NAME + "=" + EMFRLangConstants.EMFRLANG_CAPABILITY_NAME + ")"
-		)
+@Requirement(namespace = EMFNamespaces.EMF_CONFIGURATOR_NAMESPACE, name = "RESOURCE_FACTORY", filter = "("
+		+ EMFNamespaces.EMF_CONFIGURATOR_NAME + "=" + EMFRLangConstants.EMFRLANG_CAPABILITY_NAME + ")")
 @RequireEMF
 
 /**

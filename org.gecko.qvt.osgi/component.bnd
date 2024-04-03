@@ -1,0 +1,21 @@
+Bundle-Version: 1.1.0.SNAPSHOT
+Bundle-Copyright: Data In Motion Consulting
+Bundle-License: Eclipse Public License v1.0
+Bundle-Name: M2M QVT Component
+Bundle-Description: Model to Model QVT transformation service component
+Bundle-Vendor: Data In Motion Consulting GmbH
+Private-Package: \
+	org.gecko.qvt.osgi.component,\
+	org.gecko.qvt.osgi.util
+Require-Capability: \
+	osgi.identity;filter:='(osgi.identity=org.eclipse.emf.ecore.change)',\
+	osgi.identity;filter:='(osgi.identity=org.eclipse.m2m.qvt.oml)',\
+	osgi.identity;filter:='(osgi.identity=org.eclipse.m2m.qvt.oml.common)',\
+	osgi.identity;filter:='(osgi.identity=org.eclipse.m2m.qvt.oml.emf.util)',\
+	osgi.identity;filter:='(osgi.identity=org.eclipse.m2m.qvt.oml.ocl)',\
+	osgi.identity;filter:='(osgi.identity=org.eclipse.m2m.qvt.oml.ecore.imperativeocl)',\
+	osgi.identity;filter:='(osgi.identity=org.eclipse.m2m.qvt.oml.cst.parser)',\
+	osgi.identity;filter:='(osgi.identity=org.eclipse.ocl)',\
+	osgi.identity;filter:='(osgi.identity=org.eclipse.ocl.common)',\
+	osgi.identity;filter:='(osgi.identity=org.eclipse.ocl.ecore)',\
+	osgi.identity;filter:='(osgi.identity=lpg.runtime.java)'

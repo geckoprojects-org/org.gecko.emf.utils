@@ -27,6 +27,7 @@ import java.util.Map;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.gecko.emf.csv.annotation.RequireEMFCSV;
 import org.gecko.emf.csv.configuration.EMFCSVResource;
 import org.gecko.emf.exporter.EMFExportOptions;
 import org.gecko.emf.exporter.csv.api.EMFCSVExportMode;
@@ -50,6 +51,7 @@ import org.osgi.test.junit5.service.ServiceExtension;
  */
 @ExtendWith(BundleContextExtension.class)
 @ExtendWith(ServiceExtension.class)
+@RequireEMFCSV
 public class EMFCSVResourceTest {
 
 	@Order(value = -1)
@@ -93,7 +95,7 @@ public class EMFCSVResourceTest {
 		Path filePath = Files.createTempFile("testSaveResourceToCsvFlatMode", ".csv");
 
 		OutputStream fileOutputStream = Files.newOutputStream(filePath);
-		
+
 		// @formatter:off
 		resource.save(fileOutputStream, 
 				Map.of(
@@ -140,7 +142,7 @@ public class EMFCSVResourceTest {
 		OutputStream fileOutputStream = Files.newOutputStream(filePath);
 
 		// @formatter:off
-		resource.save(fileOutputStream, 
+		resource.save(fileOutputStream,
 				Map.of(
 						EMFExportOptions.OPTION_LOCALE, Locale.GERMANY,
 						EMFExportOptions.OPTION_EXPORT_NONCONTAINMENT, true, // defaults to false
@@ -151,5 +153,36 @@ public class EMFCSVResourceTest {
 						EMFCSVExportOptions.OPTION_EXPORT_MODE, EMFCSVExportMode.ZIP
 					));
 		// @formatter:on
+	}
+
+	@Test
+	public void testSaveResourceToNoOpts(@InjectService(timeout = 2000) ServiceAware<ResourceSet> rsAware,
+			@InjectService(timeout = 2000) ServiceAware<BasicFactory> bfAware) throws Exception {
+
+		assertNotNull(rsAware);
+		assertThat(rsAware.getServices()).hasSize(1);
+		ResourceSet resourceSet = rsAware.getService();
+		assertNotNull(resourceSet);
+
+		assertNotNull(bfAware);
+		assertThat(bfAware.getServices()).hasSize(1);
+		BasicFactory factoryImpl = bfAware.getService();
+		assertNotNull(factoryImpl);
+
+		Resource resource = resourceSet.createResource(URI.createURI("testSaveResourceToNoOpts.csv"));
+		assertNotNull(resource);
+		assertTrue(resource instanceof EMFCSVResource);
+
+		Family simpsonFamily = createSimpsonFamily(factoryImpl);
+		resource.getContents().add(simpsonFamily);
+
+		Family flintstonesFamily = createFlintstonesFamily(factoryImpl);
+		resource.getContents().add(flintstonesFamily);
+
+		Path filePath = Files.createTempFile("testSaveResourceToNoOpts", ".zip");
+
+		OutputStream fileOutputStream = Files.newOutputStream(filePath);
+
+		resource.save(fileOutputStream, Map.of()); // will use default options
 	}
 }

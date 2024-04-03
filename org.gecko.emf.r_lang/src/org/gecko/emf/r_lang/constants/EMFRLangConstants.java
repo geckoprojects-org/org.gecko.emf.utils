@@ -25,8 +25,4 @@ public interface EMFRLangConstants {
 	static final String EMFRLANG_FILE_EXTENSION = "RData";
 
 	static final String EMFRLANG_CONTENT_TYPE = "text/x-R";
-
-	static final String EMF_RESOURCEFACTORY_NAMESPACE = "emf.resourceFactory";
-
-	static final String EMF_RESOURCEFACTORY_NAME = "EMFRLangResourceFactory";
 }

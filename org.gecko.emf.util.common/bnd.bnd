@@ -1,0 +1,5 @@
+-library: enable-emf
+
+Bundle-Version: 1.0.0.${tstamp}-SNAPSHOT
+Bundle-Name: Gecko EMF Util Common
+Bundle-Description: Common EMF Helpers

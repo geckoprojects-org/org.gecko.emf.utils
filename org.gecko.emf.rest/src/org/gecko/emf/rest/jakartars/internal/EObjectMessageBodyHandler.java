@@ -17,15 +17,6 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.WebApplicationException;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.MultivaluedMap;
-import jakarta.ws.rs.ext.MessageBodyReader;
-import jakarta.ws.rs.ext.MessageBodyWriter;
-import jakarta.ws.rs.ext.Provider;
-
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -42,6 +33,15 @@ import org.osgi.service.jakartars.whiteboard.JakartarsWhiteboardConstants;
 import org.osgi.service.jakartars.whiteboard.propertytypes.JakartarsApplicationSelect;
 import org.osgi.service.jakartars.whiteboard.propertytypes.JakartarsExtension;
 import org.osgi.service.jakartars.whiteboard.propertytypes.JakartarsName;
+
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.ext.MessageBodyReader;
+import jakarta.ws.rs.ext.MessageBodyWriter;
+import jakarta.ws.rs.ext.Provider;
 
 /**
  * {@link MessageBodyReader} and {@link MessageBodyWriter} that handle {@link EObject}.

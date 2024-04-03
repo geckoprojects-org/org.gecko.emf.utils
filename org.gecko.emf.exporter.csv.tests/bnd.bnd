@@ -4,14 +4,14 @@
 javac.source: 11
 javac.target: 11
 
-Bundle-Version: 1.0.1.SNAPSHOT
+Bundle-Version: 1.0.2.SNAPSHOT
 
 -buildpath: \
 	org.gecko.emf.osgi.example.model.basic,\
 	org.gecko.emf.exporter;version=latest,\
 	org.gecko.emf.exporter.csv.api;version=latest,\
 	org.apache.commons.commons-text,\
-	org.gecko.emf.util.model,\
+	org.gecko.emf.util.model;version=latest,\
 	org.gecko.emf.trees.model;version=latest
 
 -privatepackage: \

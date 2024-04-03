@@ -2,15 +2,16 @@
 	enableOSGi-Test
 
 -buildpath: \
-	org.osgi.framework,\
-	org.osgi.service.cm,\
-	org.gecko.emf.osgi.example.model.basic,\
-	com.fasterxml.jackson.core.jackson-core,\
-	com.fasterxml.jackson.core.jackson-databind,\
-	de.undercouch.bson4jackson,\
-	org.gecko.emf.bson;version=project
+	org.osgi.framework;version=latest,\
+	org.osgi.service.cm;version=latest,\
+	org.gecko.emf.osgi.example.model.basic;version=latest,\
+	com.fasterxml.jackson.core.jackson-core;version=latest,\
+	com.fasterxml.jackson.core.jackson-databind;version=latest,\
+	de.undercouch.bson4jackson;version=latest,\
+	org.gecko.emf.json;version=snapshot,\
+	org.gecko.emf.bson;version=snapshot
 
 javac.source: 11
 javac.target: 11
 
-Bundle-Version: 1.0.4.SNAPSHOT
+Bundle-Version: 1.0.6.SNAPSHOT

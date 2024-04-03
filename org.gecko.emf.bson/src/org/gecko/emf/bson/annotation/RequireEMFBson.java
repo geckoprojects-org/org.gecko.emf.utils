@@ -19,9 +19,8 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import org.gecko.emf.osgi.EMFNamespaces;
-import org.gecko.emf.osgi.ResourceSetConfigurator;
 import org.gecko.emf.json.annotation.RequireEMFJson;
+import org.gecko.emf.osgi.constants.EMFNamespaces;
 import org.osgi.annotation.bundle.Requirement;
 
 @Documented
@@ -29,7 +28,7 @@ import org.osgi.annotation.bundle.Requirement;
 @Target({ TYPE, PACKAGE })
 @Requirement(
 		namespace = EMFNamespaces.EMF_CONFIGURATOR_NAMESPACE,
-		name = ResourceSetConfigurator.EMF_CONFIGURATOR_NAME,
+		name = "RESOURCE_FACTORY",
 		filter = "(" + EMFNamespaces.EMF_CONFIGURATOR_NAME + "=EMFBson)"
 		)
 /**

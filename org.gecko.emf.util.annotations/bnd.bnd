@@ -1,4 +1,4 @@
-Bundle-Version: 1.3.1-SNAPSHOT
+Bundle-Version: 1.5.0.SNAPSHOT
 
 -buildpath: \
 	org.gecko.emf.bson;version=snapshot,\
@@ -7,17 +7,28 @@ Bundle-Version: 1.3.1-SNAPSHOT
 	org.gecko.emf.csv;version=snapshot,\
 	org.gecko.emf.ods;version=snapshot,\
 	org.gecko.emf.xlsx;version=snapshot,\
+	org.gecko.emf.r_lang;version=snapshot,\
+	org.gecko.emf.exporter.csv.api;version=snapshot,\
+	org.gecko.emf.exporter.ods.api;version=snapshot,\
+	org.gecko.emf.exporter.xlsx.api;version=snapshot,\
+	org.gecko.emf.exporter.r_lang.api;version=snapshot,\
 	org.gecko.emf.osgi.api;version=latest
-	
+
 Export-Package: \
 	org.gecko.emf.bson.annotation,\
 	org.gecko.emf.json.annotation,\
 	org.gecko.emf.rest.annotations,\
 	org.gecko.emf.rest.annotations.json,\
+	org.gecko.emf.exporter.csv.api.annotations,\
+	org.gecko.emf.exporter.ods.api.annotations,\
+	org.gecko.emf.exporter.xlsx.api.annotations,\
+	org.gecko.emf.exporter.r_lang.api.annotations,\
 	org.gecko.emf.csv.annotation,\
 	org.gecko.emf.ods.annotation,\
 	org.gecko.emf.xlsx.annotation,\
+	org.gecko.emf.r_lang.annotation,\
 	org.gecko.emf.json.constants,\
 	org.gecko.emf.csv.constants,\
 	org.gecko.emf.ods.constants,\
-	org.gecko.emf.xlsx.constants
+	org.gecko.emf.xlsx.constants,\
+	org.gecko.emf.r_lang.constants

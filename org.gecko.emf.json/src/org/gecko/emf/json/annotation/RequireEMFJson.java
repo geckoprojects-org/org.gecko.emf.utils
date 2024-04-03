@@ -20,9 +20,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 import org.gecko.emf.json.constants.EMFJs;
-import org.gecko.emf.osgi.EMFNamespaces;
-import org.gecko.emf.osgi.ResourceSetConfigurator;
 import org.gecko.emf.osgi.annotation.require.RequireEMF;
+import org.gecko.emf.osgi.constants.EMFNamespaces;
 import org.osgi.annotation.bundle.Requirement;
 
 @Documented
@@ -30,7 +29,7 @@ import org.osgi.annotation.bundle.Requirement;
 @Target({ TYPE, PACKAGE })
 @Requirement(
 		namespace = EMFNamespaces.EMF_CONFIGURATOR_NAMESPACE,
-		name = ResourceSetConfigurator.EMF_CONFIGURATOR_NAME,
+		name = EMFJs.EMFJSON_CONFIGURATOR_TYPE,
 		filter = "(" + EMFNamespaces.EMF_CONFIGURATOR_NAME + "=" + EMFJs.EMFSJON_CAPABILITY_NAME + ")"
 		)
 @RequireEMF

@@ -1,0 +1,7 @@
+Bundle-Version: 1.6.2-SNAPSHOT
+-baseline: none
+-buildpath: com.github.miachm.sods
+
+Export-Package: com.github.miachm.sods
+
+Bundle-Description: This is a fork of https://github.com/miachm/SODS. We provide this, until https://github.com/miachm/SODS/pull/63 or something similar is avilable on maven central.

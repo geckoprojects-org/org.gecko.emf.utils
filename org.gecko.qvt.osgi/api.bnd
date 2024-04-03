@@ -1,0 +1,7 @@
+Bundle-Version: 5.1.0.SNAPSHOT
+Bundle-Copyright: Data In Motion Consulting
+Bundle-License: Eclipse Public License v1.0
+Bundle-Name: M2M QVT API
+Bundle-Description: Model to Model QVT Transformation API
+Bundle-Vendor: Data In Motion Consulting GmbH
+Require-Capability: emf.m2m;filter:='(emf.m2m=qvto)'

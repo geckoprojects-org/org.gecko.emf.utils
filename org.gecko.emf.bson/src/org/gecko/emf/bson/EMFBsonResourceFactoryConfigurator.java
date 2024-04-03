@@ -18,9 +18,10 @@ import java.util.TimeZone;
 import org.eclipse.emf.ecore.resource.Resource.Factory.Registry;
 import org.eclipse.emfcloud.jackson.module.EMFModule;
 import org.eclipse.emfcloud.jackson.resource.JsonResourceFactory;
-import org.gecko.emf.osgi.ResourceFactoryConfigurator;
-import org.gecko.emf.osgi.annotation.EMFResourceFactoryConfigurator;
-import org.gecko.emf.osgi.annotation.provide.ProvideEMFResourceConfigurator;
+import org.gecko.emf.json.configuration.ConfigurableJsonResourceFactory;
+import org.gecko.emf.osgi.annotation.ConfiguratorType;
+import org.gecko.emf.osgi.annotation.provide.EMFConfigurator;
+import org.gecko.emf.osgi.configurator.ResourceFactoryConfigurator;
 import org.osgi.service.component.annotations.Component;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -28,7 +29,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 import de.undercouch.bson4jackson.BsonFactory;
-import org.gecko.emf.json.configuration.ConfigurableJsonResourceFactory;
 
 /**
  * Implementation of the {@link IResourceSetConfigurator} to provide support for {@link JsResourceImpl}.
@@ -45,17 +45,9 @@ import org.gecko.emf.json.configuration.ConfigurableJsonResourceFactory;
  * @since 27.06.2014
  */
 @Component(name="EMFBsonConfigurator", immediate=true, service=ResourceFactoryConfigurator.class)
-@ProvideEMFResourceConfigurator(name="EMFBson", 
-	contentType = {
-			"application/bson"
-	},
-	fileExtension = {
-			"bson"
-	},
-	version = "1.0.1"
-)
-@EMFResourceFactoryConfigurator(
-		name ="EMFBson",
+@EMFConfigurator(
+		configuratorName = "EMFBson",
+		configuratorType = ConfiguratorType.RESOURCE_FACTORY,
 		fileExtension = {
 				"bson"
 		},

@@ -25,8 +25,4 @@ public interface EMFXLSXConstants {
 	static final String EMFXLSX_FILE_EXTENSION = "xlsx";
 
 	static final String EMFXLSX_CONTENT_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-
-	static final String EMF_RESOURCEFACTORY_NAMESPACE = "emf.resourceFactory";
-
-	static final String EMF_RESOURCEFACTORY_NAME = "EMFXLSXResourceFactory";
 }

@@ -1,4 +1,4 @@
-Bundle-Version: 1.0.1.SNAPSHOT
+Bundle-Version: 1.0.2.SNAPSHOT
 Bundle-Name: Gecko EMF CSV Extension
 Bundle-Description: Extension to save EMF objects to CSV
 

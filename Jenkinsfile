@@ -22,6 +22,12 @@ pipeline  {
                 checkout scm 
             }
         }
+        stage('Build and Test') {
+            steps {
+                echo "I am building on ${env.BRANCH_NAME}"
+                sh "./gradlew clean build itest --info --stacktrace -Dmaven.repo.local=${WORKSPACE}/.m2"
+            }
+        }
         stage('Main branch release') {
             when { 
                 branch 'main' 
@@ -41,24 +47,6 @@ pipeline  {
                 sh "mkdir -p $JENKINS_HOME/repo.gecko/snapshot/org.gecko.emf.util"
                 sh "rm -rf $JENKINS_HOME/repo.gecko/snapshot/org.gecko.emf.util/*"
                 sh "cp -r cnf/release/* $JENKINS_HOME/repo.gecko/snapshot/org.gecko.emf.util"
-            }
-        }
-        stage('Props') {
-            when { 
-                branch 'jakarta'
-            }
-            steps  {
-                echo "I am building on ${env.JOB_NAME}"
-                sh "./gradlew org.gecko.emf.bson:bndproperties -Drelease.dir=$JENKINS_HOME/repo.gecko/jakarta/org.gecko.emf.util --info --stacktrace -Dmaven.repo.local=${WORKSPACE}/.m2"
-            }
-        }
-        stage('Jakarta branch release') {
-            when { 
-                branch 'jakarta'
-            }
-            steps  {
-                echo "I am building on ${env.JOB_NAME}"
-                sh "./gradlew clean build release -Drelease.dir=$JENKINS_HOME/repo.gecko/jakarta/org.gecko.emf.util --info --stacktrace -Dmaven.repo.local=${WORKSPACE}/.m2"
             }
         }
     }

@@ -4,8 +4,8 @@
 javac.source: 11
 javac.target: 11
 
-Bundle-Version: 1.0.4.SNAPSHOT
+Bundle-Version: 1.0.5.SNAPSHOT
 -buildpath: \
 	org.eclipse.emfcloud.emfjson-jackson;version=latest,\
-	org.gecko.emf.osgi.example.model.basic,\
-	org.gecko.emf.json
+	org.gecko.emf.json;version=snapshot,\
+	org.gecko.emf.osgi.example.model.basic;version=latest

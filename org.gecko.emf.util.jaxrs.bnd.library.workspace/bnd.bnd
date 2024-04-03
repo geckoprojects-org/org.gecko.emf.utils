@@ -13,3 +13,7 @@ gecko-base:\
     bnd.library;\
         bnd.library     = geckoEMFUtil; \
         path            = template
+        
+-dependson: org.gecko.com.github.miachm.sods
+
+Dependencies: ${-buildpath.*}

@@ -17,8 +17,6 @@ import org.eclipse.emf.ecore.resource.impl.ResourceFactoryImpl;
 import org.gecko.emf.exporter.EMFExporter;
 import org.gecko.emf.exporter.EMFExporterConstants;
 import org.gecko.emf.exporter.xlsx.api.EMFXLSXExporterConstants;
-import org.gecko.emf.xlsx.constants.EMFXLSXConstants;
-import org.osgi.annotation.bundle.Capability;
 import org.osgi.annotation.bundle.Requirement;
 
 /**
@@ -28,7 +26,6 @@ import org.osgi.annotation.bundle.Requirement;
  */
 @Requirement(namespace = EMFExporterConstants.EMF_EXPORTER_NAMESPACE, filter = "("
 		+ EMFExporterConstants.EMF_EXPORTER_NAME + "=" + EMFXLSXExporterConstants.EMF_EXPORTER_NAME + ")")
-@Capability(namespace = EMFXLSXConstants.EMF_RESOURCEFACTORY_NAMESPACE, name = EMFXLSXConstants.EMF_RESOURCEFACTORY_NAME)
 public class EMFXLSXResourceFactory extends ResourceFactoryImpl {
 	private EMFExporter emfXLSXExporter;
 

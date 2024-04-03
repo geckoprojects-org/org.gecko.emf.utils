@@ -4,11 +4,13 @@
 javac.source: 11
 javac.target: 11
 
-Bundle-Version: 1.0.1.SNAPSHOT
+Bundle-Version: 1.0.2.SNAPSHOT
 
 -buildpath: \
 	org.gecko.emf.osgi.example.model.basic,\
-	org.gecko.emf.exporter;version=latest,\
-	org.gecko.emf.exporter.xlsx.api;version=latest,\
+	org.gecko.emf.exporter;version=snapshot,\
+	org.gecko.emf.exporter.xlsx.api;version=snapshot,\
 	org.apache.commons.commons-text,\
-	org.gecko.emf.xlsx
+	org.gecko.emf.xlsx;version=snapshot
+
+-dependson: org.gecko.emf.exporter.xlsx

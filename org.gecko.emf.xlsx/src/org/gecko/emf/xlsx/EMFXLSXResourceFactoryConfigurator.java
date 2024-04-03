@@ -13,9 +13,9 @@ package org.gecko.emf.xlsx;
 
 import org.eclipse.emf.ecore.resource.Resource.Factory.Registry;
 import org.gecko.emf.exporter.EMFExporter;
-import org.gecko.emf.osgi.ResourceFactoryConfigurator;
-import org.gecko.emf.osgi.annotation.EMFResourceFactoryConfigurator;
-import org.gecko.emf.osgi.annotation.provide.ProvideEMFResourceConfigurator;
+import org.gecko.emf.osgi.annotation.ConfiguratorType;
+import org.gecko.emf.osgi.annotation.provide.EMFConfigurator;
+import org.gecko.emf.osgi.configurator.ResourceFactoryConfigurator;
 import org.gecko.emf.xlsx.configuration.EMFXLSXResource;
 import org.gecko.emf.xlsx.configuration.EMFXLSXResourceFactory;
 import org.gecko.emf.xlsx.constants.EMFXLSXConstants;
@@ -35,18 +35,9 @@ import org.osgi.service.component.annotations.Reference;
  */
 @Component(name = "EMFXLSXConfigurator", immediate = true, service = ResourceFactoryConfigurator.class)
 //@formatter:off
-@ProvideEMFResourceConfigurator(
-		name = EMFXLSXConstants.EMFXLSX_CAPABILITY_NAME, 
-		contentType = {
-				EMFXLSXConstants.EMFXLSX_CONTENT_TYPE
-				},
-		fileExtension = {
-				EMFXLSXConstants.EMFXLSX_FILE_EXTENSION
-				},
-	version = "1.0.0"
-)
-@EMFResourceFactoryConfigurator(
-		name = EMFXLSXConstants.EMFXLSX_CAPABILITY_NAME,
+@EMFConfigurator(
+		configuratorName  = EMFXLSXConstants.EMFXLSX_CAPABILITY_NAME,
+		configuratorType = ConfiguratorType.RESOURCE_FACTORY,
 		fileExtension = {
 				EMFXLSXConstants.EMFXLSX_FILE_EXTENSION
 				},

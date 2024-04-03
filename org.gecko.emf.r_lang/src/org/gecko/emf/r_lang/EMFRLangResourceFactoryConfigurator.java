@@ -13,9 +13,9 @@ package org.gecko.emf.r_lang;
 
 import org.eclipse.emf.ecore.resource.Resource.Factory.Registry;
 import org.gecko.emf.exporter.EMFExporter;
-import org.gecko.emf.osgi.ResourceFactoryConfigurator;
-import org.gecko.emf.osgi.annotation.EMFResourceFactoryConfigurator;
-import org.gecko.emf.osgi.annotation.provide.ProvideEMFResourceConfigurator;
+import org.gecko.emf.osgi.annotation.ConfiguratorType;
+import org.gecko.emf.osgi.annotation.provide.EMFConfigurator;
+import org.gecko.emf.osgi.configurator.ResourceFactoryConfigurator;
 import org.gecko.emf.r_lang.configuration.EMFRLangResource;
 import org.gecko.emf.r_lang.configuration.EMFRLangResourceFactory;
 import org.gecko.emf.r_lang.constants.EMFRLangConstants;
@@ -36,18 +36,9 @@ import org.osgi.service.component.annotations.Reference;
  */
 @Component(name = "EMFRLangConfigurator", immediate = true, service = ResourceFactoryConfigurator.class)
 //@formatter:off
-@ProvideEMFResourceConfigurator(
-		name = EMFRLangConstants.EMFRLANG_CAPABILITY_NAME, 
-		contentType = {
-				EMFRLangConstants.EMFRLANG_CONTENT_TYPE
-				},
-		fileExtension = {
-				EMFRLangConstants.EMFRLANG_FILE_EXTENSION
-				},
-	version = "1.0.0"
-)
-@EMFResourceFactoryConfigurator(
-		name = EMFRLangConstants.EMFRLANG_CAPABILITY_NAME,
+@EMFConfigurator(
+		configuratorName  = EMFRLangConstants.EMFRLANG_CAPABILITY_NAME,
+		configuratorType = ConfiguratorType.RESOURCE_FACTORY,
 		fileExtension = {
 				EMFRLangConstants.EMFRLANG_FILE_EXTENSION
 				},

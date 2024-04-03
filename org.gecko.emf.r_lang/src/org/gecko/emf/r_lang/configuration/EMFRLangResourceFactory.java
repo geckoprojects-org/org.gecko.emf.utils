@@ -17,8 +17,6 @@ import org.eclipse.emf.ecore.resource.impl.ResourceFactoryImpl;
 import org.gecko.emf.exporter.EMFExporter;
 import org.gecko.emf.exporter.EMFExporterConstants;
 import org.gecko.emf.exporter.r_lang.api.EMFRLangExporterConstants;
-import org.gecko.emf.r_lang.constants.EMFRLangConstants;
-import org.osgi.annotation.bundle.Capability;
 import org.osgi.annotation.bundle.Requirement;
 
 /**
@@ -28,7 +26,6 @@ import org.osgi.annotation.bundle.Requirement;
  */
 @Requirement(namespace = EMFExporterConstants.EMF_EXPORTER_NAMESPACE, filter = "("
 		+ EMFExporterConstants.EMF_EXPORTER_NAME + "=" + EMFRLangExporterConstants.EMF_EXPORTER_NAME + ")")
-@Capability(namespace = EMFRLangConstants.EMF_RESOURCEFACTORY_NAMESPACE, name = EMFRLangConstants.EMF_RESOURCEFACTORY_NAME)
 public class EMFRLangResourceFactory extends ResourceFactoryImpl {
 	private EMFExporter emfRLangExporter;
 

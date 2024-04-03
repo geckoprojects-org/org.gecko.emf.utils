@@ -20,9 +20,9 @@ import org.eclipse.emfcloud.jackson.module.EMFModule;
 import org.eclipse.emfcloud.jackson.resource.JsonResourceFactory;
 import org.gecko.emf.json.configuration.ConfigurableJsonResourceFactory;
 import org.gecko.emf.json.constants.EMFJs;
-import org.gecko.emf.osgi.ResourceFactoryConfigurator;
-import org.gecko.emf.osgi.annotation.EMFResourceFactoryConfigurator;
-import org.gecko.emf.osgi.annotation.provide.ProvideEMFResourceConfigurator;
+import org.gecko.emf.osgi.annotation.ConfiguratorType;
+import org.gecko.emf.osgi.annotation.provide.EMFConfigurator;
+import org.gecko.emf.osgi.configurator.ResourceFactoryConfigurator;
 import org.osgi.service.component.annotations.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -45,26 +45,9 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
  * @since 27.06.2014
  */
 @Component(name="EMFJsonConfigurator", immediate=true, service=ResourceFactoryConfigurator.class)
-@ProvideEMFResourceConfigurator(
-	name= EMFJs.EMFSJON_CAPABILITY_NAME, 
-	contentType = {
-			"application/yml",
-			"application/yaml",
-			"application/json",
-			"application/x-json",
-			"application/emf-json",
-			"text/x-java-properties"
-	},
-	fileExtension = {
-			"json",
-			"yml",
-			"yaml",
-			"properties"
-	},
-	version = "1.0.1"
-)
-@EMFResourceFactoryConfigurator(
-		name =EMFJs. EMFSJON_CAPABILITY_NAME,
+@EMFConfigurator(
+		configuratorName  =EMFJs. EMFSJON_CAPABILITY_NAME,
+		configuratorType = ConfiguratorType.RESOURCE_FACTORY,
 		fileExtension = {
 				"json",
 				"yml",

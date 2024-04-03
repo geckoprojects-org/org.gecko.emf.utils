@@ -17,6 +17,8 @@ import java.util.Map;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emfcloud.jackson.annotations.EcoreTypeInfo.USE;
+import org.eclipse.emfcloud.jackson.databind.EMFContext;
 import org.gecko.emf.json.constants.EMFJs;
 import org.gecko.emf.rest.annotations.AnnotationConverter;
 import org.gecko.emf.rest.annotations.json.EMFJSONConfig;
@@ -24,8 +26,6 @@ import org.gecko.emf.rest.annotations.json.RootElement;
 import org.osgi.service.component.ComponentServiceObjects;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.eclipse.emfcloud.jackson.annotations.EcoreTypeInfo.USE;
-import org.eclipse.emfcloud.jackson.databind.EMFContext;
 
 /**
  * Converts the EMFJSON Annotations {@link RootElement} and {@link EMFJSONConfig} to EMF Load or Save Options

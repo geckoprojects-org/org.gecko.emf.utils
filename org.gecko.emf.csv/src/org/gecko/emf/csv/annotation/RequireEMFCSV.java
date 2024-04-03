@@ -20,21 +20,16 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 import org.gecko.emf.csv.constants.EMFCSVConstants;
-import org.gecko.emf.osgi.EMFNamespaces;
-import org.gecko.emf.osgi.ResourceSetConfigurator;
 import org.gecko.emf.osgi.annotation.require.RequireEMF;
+import org.gecko.emf.osgi.constants.EMFNamespaces;
 import org.osgi.annotation.bundle.Requirement;
 
 @Documented
 @Retention(CLASS)
 @Target({ TYPE, PACKAGE })
-@Requirement(
-		namespace = EMFNamespaces.EMF_CONFIGURATOR_NAMESPACE,
-		name = ResourceSetConfigurator.EMF_CONFIGURATOR_NAME,
-		filter = "(" + EMFNamespaces.EMF_CONFIGURATOR_NAME + "=" + EMFCSVConstants.EMFCSV_CAPABILITY_NAME + ")"
-		)
+@Requirement(namespace = EMFNamespaces.EMF_CONFIGURATOR_NAMESPACE, name = "RESOURCE_FACTORY", filter = "("
+		+ EMFNamespaces.EMF_CONFIGURATOR_NAME + "=" + EMFCSVConstants.EMFCSV_CAPABILITY_NAME + ")")
 @RequireEMF
-
 /**
  * Meta annotation to generate a Require Capability for EMF CSV
  * 
