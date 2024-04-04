@@ -5,3 +5,7 @@ Bundle-Version: 2.0.1.SNAPSHOT
 Provide-Capability: emf.m2m.companion;emf.m2m.companion=ocl.fragment
 
 -workingset: qvt
+-resourceonly: true
+
+javac.source: 1.8
+javac.target: 1.8
