@@ -1,5 +1,5 @@
--enable-junit5: true
--library: enable-emf
+-library: enable-emf,\
+	enableOSGi-Test
 
 javac.source: 11
 javac.target: 11

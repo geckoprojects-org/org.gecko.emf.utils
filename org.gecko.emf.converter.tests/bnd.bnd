@@ -1,0 +1,13 @@
+-library: enable-emf,\
+	enableOSGi-Test
+
+javac.source: 11
+javac.target: 11
+
+Bundle-Version: 1.0.0.SNAPSHOT
+
+-buildpath: \
+	org.gecko.emf.converter;version=snapshot,\
+	org.osgi.dto
+
+-dependson: org.gecko.emf.converter
