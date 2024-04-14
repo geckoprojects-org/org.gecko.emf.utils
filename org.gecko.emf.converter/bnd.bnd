@@ -1,0 +1,7 @@
+-library: enable-emf
+
+-buildpath: \
+	org.osgi.service.component,\
+	org.osgi.util.converter;version=latest,\
+	org.osgi.dto,\
+	slf4j.api
