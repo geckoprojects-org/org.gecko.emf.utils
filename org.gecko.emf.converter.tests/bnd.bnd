@@ -8,6 +8,8 @@ Bundle-Version: 1.0.0.SNAPSHOT
 
 -buildpath: \
 	org.gecko.emf.converter;version=snapshot,\
-	org.osgi.dto
+	org.osgi.dto,\
+	org.osgi.util.converter;version=latest,\
+	org.osgi.util.function;version=latest
 
 -dependson: org.gecko.emf.converter

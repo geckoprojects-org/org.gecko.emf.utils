@@ -11,27 +11,31 @@
  */
 package org.gecko.emf.converter;
 
-import org.osgi.util.converter.Converter;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EPackage;
+import org.osgi.dto.DTO;
+import org.osgi.util.converter.AbstractConverter;
 import org.osgi.util.converter.ConverterBuilder;
-import org.osgi.util.converter.Converting;
 import org.osgi.util.converter.Functioning;
+import org.osgi.util.converter.InternalConverter;
+import org.osgi.util.converter.InternalConverting;
+import org.osgi.util.converter.TypeRule;
+import org.osgi.util.function.Function;
 
 /**
- * Converter Impl for DTO to EObject
+ * DTO to EObject {@link org.osgi.util.converter.Converter} implementation
  * 
  * @author Michal H. Siemaszko
  */
-// TODO: add 'component' annotation..
-public class DTOToEObjectConverterImpl implements Converter {
+class DTOToEObjectConverterImpl extends AbstractConverter implements InternalConverter {
 
 	/* 
 	 * (non-Javadoc)
 	 * @see org.osgi.util.converter.Converter#convert(java.lang.Object)
 	 */
 	@Override
-	public Converting convert(Object obj) {
-		// TODO Auto-generated method stub
-		return null;
+	public InternalConverting convert(Object obj) {
+		return new DTOToEObjectConvertingImpl(this, obj);
 	}
 
 	/* 
@@ -40,8 +44,7 @@ public class DTOToEObjectConverterImpl implements Converter {
 	 */
 	@Override
 	public Functioning function() {
-		// TODO Auto-generated method stub
-		return null;
+		return new DTOToEObjectFunctioningImpl(this);
 	}
 
 	/* 
@@ -50,9 +53,25 @@ public class DTOToEObjectConverterImpl implements Converter {
 	 */
 	@Override
 	public ConverterBuilder newConverterBuilder() {
-		// TODO Auto-generated method stub
-		return null;
+		return new DTOToEObjectConverterBuilderImpl(this);
 	}
 
+	void addRules(ConverterBuilder cb, EPackage... dynamicEPackages) {
+		addStandardRules(cb);
+		addDTO2EObjectRule(cb, dynamicEPackages);
+	}
 
+	void addDTO2EObjectRule(ConverterBuilder cb, EPackage... dynamicEPackages) {
+		cb.rule(new TypeRule<DTO, EObject>(DTO.class, EObject.class, new Function<DTO, EObject>() {
+
+			@Override
+			public EObject apply(DTO t) throws Exception {
+				return DTOToEObjectConverterUtil.INSTANCE.convertDTO2EObject(t, dynamicEPackages);
+			}
+		}));
+	}
+
+	void addDTO2EObjectConverterFunction(ConverterBuilder cb, EPackage... dynamicEPackages) {
+		cb.rule(new DTOToEObjectConverterFunction(dynamicEPackages));
+	}
 }

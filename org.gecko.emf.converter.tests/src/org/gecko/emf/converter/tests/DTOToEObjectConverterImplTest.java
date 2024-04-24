@@ -11,33 +11,32 @@
  */
 package org.gecko.emf.converter.tests;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.List;
-
-import org.eclipse.emf.ecore.EAttribute;
-import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
-import org.eclipse.emf.ecore.EReference;
-import org.eclipse.emf.ecore.EStructuralFeature;
+import org.gecko.emf.converter.DTOToEObjectConverterFunction;
+import org.gecko.emf.converter.DTOToEObjectConverterUtil;
+import org.gecko.emf.converter.DTOToEObjectConverters;
 import org.gecko.emf.converter.DTOToEPackageConverter;
-import org.gecko.emf.converter.tests.helper.DTOToEObjectConverterImplTestHelper.ConverterTestAllSupportedTypesDTO;
-import org.gecko.emf.converter.tests.helper.DTOToEObjectConverterImplTestHelper.ConverterTestBasicDTO;
-import org.gecko.emf.converter.tests.helper.DTOToEObjectConverterImplTestHelper.ConverterTestInheritingDTO;
+import org.gecko.emf.converter.tests.helper.DTOToEMFConverterTestHelper.ConverterTestBasicDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.osgi.framework.dto.FrameworkDTO;
+import org.junit.platform.commons.annotation.Testable;
 import org.osgi.test.junit5.context.BundleContextExtension;
 import org.osgi.test.junit5.service.ServiceExtension;
+import org.osgi.util.converter.Converter;
+import org.osgi.util.converter.ConverterBuilder;
+import org.osgi.util.converter.TypeRule;
+import org.osgi.util.function.Function;
 
 /**
- * Integration test for {@link org.gecko.emf.converter.DTOToEPackageConverter}
+ * Integration test for
+ * {@link org.gecko.emf.converter.dto_to_eobject.DTOToEObjectConverters}
  * 
  * @author Michal H. Siemaszko
  */
+@Testable
 @ExtendWith(BundleContextExtension.class)
 @ExtendWith(ServiceExtension.class)
 public class DTOToEObjectConverterImplTest {
@@ -46,450 +45,95 @@ public class DTOToEObjectConverterImplTest {
 	private static final String NS_PREFIX = "tests";
 
 	@Test
-	public void testConvertBasicDTO() throws Exception {
-		Class<ConverterTestBasicDTO> dtoClass = ConverterTestBasicDTO.class;
+	public void testStandardConverterWithDTO2EObjectConverterFunction() throws Exception {
+
+		ConverterTestBasicDTO dto = new ConverterTestBasicDTO();
+		dto.longPrimitiveField = Long.MIN_VALUE;
+		dto.booleanPrimitiveField = true;
+		dto.stringField = "hello";
 
 		EPackage dynamicEPackageFromDTOs = DTOToEPackageConverter.INSTANCE.convert(PACKAGE_NAME, NS_URI, NS_PREFIX,
-				dtoClass);
+				dto.getClass());
 		assertNotNull(dynamicEPackageFromDTOs);
 
-		assertEquals(PACKAGE_NAME, dynamicEPackageFromDTOs.getName());
-		assertEquals(NS_URI, dynamicEPackageFromDTOs.getNsURI());
-		assertEquals(NS_PREFIX, dynamicEPackageFromDTOs.getNsPrefix());
+		Converter standardConverter = DTOToEObjectConverters.standardConverter();
 
-		assertThat(dynamicEPackageFromDTOs.getEClassifiers()).hasSize(1);
+		ConverterBuilder cb = standardConverter.newConverterBuilder();
+		cb.rule(new DTOToEObjectConverterFunction(dynamicEPackageFromDTOs));
+		Converter converter = cb.build();
 
-		assertNotNull(dynamicEPackageFromDTOs.getEClassifier(dtoClass.getSimpleName()));
-		assertTrue(dynamicEPackageFromDTOs.getEClassifier(dtoClass.getSimpleName()) instanceof EClass);
-		assertThat(
-				((EClass) dynamicEPackageFromDTOs.getEClassifier(dtoClass.getSimpleName())).getEAllStructuralFeatures())
-				.hasSize(3);
+		Function<Object, EObject> cf = converter.function().to(EObject.class);
 
-		List<EStructuralFeature> eAllStructuralFeatures = ((EClass) dynamicEPackageFromDTOs
-				.getEClassifier(dtoClass.getSimpleName())).getEAllStructuralFeatures();
-
-		boolean hasLongPrimitiveEAttribute = eAllStructuralFeatures.stream()
-				.anyMatch(f -> ((f instanceof EAttribute) && "longPrimitiveField".equals(((EAttribute) f).getName())
-						&& (long.class == ((EAttribute) f).getEType().getInstanceClass())));
-		assertTrue(hasLongPrimitiveEAttribute);
-
-		boolean hasBooleanPrimitiveEAttribute = eAllStructuralFeatures.stream()
-				.anyMatch(f -> ((f instanceof EAttribute) && "booleanPrimitiveField".equals(((EAttribute) f).getName())
-						&& (boolean.class == ((EAttribute) f).getEType().getInstanceClass())));
-		assertTrue(hasBooleanPrimitiveEAttribute);
-
-		boolean hasStringEAttribute = eAllStructuralFeatures.stream()
-				.anyMatch(f -> ((f instanceof EAttribute) && "stringField".equals(((EAttribute) f).getName())
-						&& (String.class == ((EAttribute) f).getEType().getInstanceClass())));
-		assertTrue(hasStringEAttribute);
+		EObject mySimpleEObject = cf.apply(dto);
+		assertNotNull(mySimpleEObject);
 	}
 
 	@Test
-	public void testConvertInheritingDTO() throws Exception {
-		Class<ConverterTestInheritingDTO> dtoClass = ConverterTestInheritingDTO.class;
+	public void testStandardConverterWithDTO2EObjectTypeRule() {
+
+		ConverterTestBasicDTO dto = new ConverterTestBasicDTO();
+		dto.longPrimitiveField = Long.MIN_VALUE;
+		dto.booleanPrimitiveField = true;
+		dto.stringField = "hello";
 
 		EPackage dynamicEPackageFromDTOs = DTOToEPackageConverter.INSTANCE.convert(PACKAGE_NAME, NS_URI, NS_PREFIX,
-				dtoClass);
+				dto.getClass());
 		assertNotNull(dynamicEPackageFromDTOs);
 
-		assertEquals(PACKAGE_NAME, dynamicEPackageFromDTOs.getName());
-		assertEquals(NS_URI, dynamicEPackageFromDTOs.getNsURI());
-		assertEquals(NS_PREFIX, dynamicEPackageFromDTOs.getNsPrefix());
+		Converter standardConverter = DTOToEObjectConverters.standardConverter();
 
-		assertThat(dynamicEPackageFromDTOs.getEClassifiers()).hasSize(1);
+		ConverterBuilder cb = standardConverter.newConverterBuilder();
 
-		assertNotNull(dynamicEPackageFromDTOs.getEClassifier(dtoClass.getSimpleName()));
-		assertTrue(dynamicEPackageFromDTOs.getEClassifier(dtoClass.getSimpleName()) instanceof EClass);
-		assertThat(
-				((EClass) dynamicEPackageFromDTOs.getEClassifier(dtoClass.getSimpleName())).getEAllStructuralFeatures())
-				.hasSize(9);
+		cb.rule(new TypeRule<ConverterTestBasicDTO, EObject>(ConverterTestBasicDTO.class, EObject.class,
+				new Function<ConverterTestBasicDTO, EObject>() {
 
-		List<EStructuralFeature> eAllStructuralFeatures = ((EClass) dynamicEPackageFromDTOs
-				.getEClassifier(dtoClass.getSimpleName())).getEAllStructuralFeatures();
+					@Override
+					public EObject apply(ConverterTestBasicDTO t) throws Exception {
+						return DTOToEObjectConverterUtil.INSTANCE.convertDTO2EObject(t, dynamicEPackageFromDTOs);
+					}
+				}));
 
-		boolean hasBytePrimitiveEAttribute = eAllStructuralFeatures.stream()
-				.anyMatch(f -> ((f instanceof EAttribute) && "bytePrimitiveField".equals(((EAttribute) f).getName())
-						&& (byte.class == ((EAttribute) f).getEType().getInstanceClass())));
-		assertTrue(hasBytePrimitiveEAttribute);
+		Converter converter = cb.build();
 
-		boolean hasShortPrimitiveEAttribute = eAllStructuralFeatures.stream()
-				.anyMatch(f -> ((f instanceof EAttribute) && "shortPrimitiveField".equals(((EAttribute) f).getName())
-						&& (short.class == ((EAttribute) f).getEType().getInstanceClass())));
-		assertTrue(hasShortPrimitiveEAttribute);
-
-		boolean hasIntPrimitiveEAttribute = eAllStructuralFeatures.stream()
-				.anyMatch(f -> ((f instanceof EAttribute) && "intPrimitiveField".equals(((EAttribute) f).getName())
-						&& (int.class == ((EAttribute) f).getEType().getInstanceClass())));
-		assertTrue(hasIntPrimitiveEAttribute);
-
-		boolean hasLongPrimitiveEAttribute = eAllStructuralFeatures.stream()
-				.anyMatch(f -> ((f instanceof EAttribute) && "longPrimitiveField".equals(((EAttribute) f).getName())
-						&& (long.class == ((EAttribute) f).getEType().getInstanceClass())));
-		assertTrue(hasLongPrimitiveEAttribute);
-
-		boolean hasFloatPrimitiveEAttribute = eAllStructuralFeatures.stream()
-				.anyMatch(f -> ((f instanceof EAttribute) && "floatPrimitiveField".equals(((EAttribute) f).getName())
-						&& (float.class == ((EAttribute) f).getEType().getInstanceClass())));
-		assertTrue(hasFloatPrimitiveEAttribute);
-
-		boolean hasDoublePrimitiveEAttribute = eAllStructuralFeatures.stream()
-				.anyMatch(f -> ((f instanceof EAttribute) && "doublePrimitiveField".equals(((EAttribute) f).getName())
-						&& (double.class == ((EAttribute) f).getEType().getInstanceClass())));
-		assertTrue(hasDoublePrimitiveEAttribute);
-
-		boolean hasBooleanPrimitiveEAttribute = eAllStructuralFeatures.stream()
-				.anyMatch(f -> ((f instanceof EAttribute) && "booleanPrimitiveField".equals(((EAttribute) f).getName())
-						&& (boolean.class == ((EAttribute) f).getEType().getInstanceClass())));
-		assertTrue(hasBooleanPrimitiveEAttribute);
-
-		boolean hasCharPrimitiveEAttribute = eAllStructuralFeatures.stream()
-				.anyMatch(f -> ((f instanceof EAttribute) && "charPrimitiveField".equals(((EAttribute) f).getName())
-						&& (char.class == ((EAttribute) f).getEType().getInstanceClass())));
-		assertTrue(hasCharPrimitiveEAttribute);
+		EObject mySimpleEObject = converter.convert(dto).to(EObject.class);
+		assertNotNull(mySimpleEObject);
 	}
 
 	@Test
-	public void testConvertAllSupportedTypesDTO() throws Exception {
-		Class<ConverterTestAllSupportedTypesDTO> dtoClass = ConverterTestAllSupportedTypesDTO.class;
+	public void testDTO2EObjectConverterWithBuiltInFunction() throws Exception {
+
+		ConverterTestBasicDTO dto = new ConverterTestBasicDTO();
+		dto.longPrimitiveField = Long.MIN_VALUE;
+		dto.booleanPrimitiveField = true;
+		dto.stringField = "hello";
 
 		EPackage dynamicEPackageFromDTOs = DTOToEPackageConverter.INSTANCE.convert(PACKAGE_NAME, NS_URI, NS_PREFIX,
-				dtoClass);
+				dto.getClass());
 		assertNotNull(dynamicEPackageFromDTOs);
 
-		assertEquals(PACKAGE_NAME, dynamicEPackageFromDTOs.getName());
-		assertEquals(NS_URI, dynamicEPackageFromDTOs.getNsURI());
-		assertEquals(NS_PREFIX, dynamicEPackageFromDTOs.getNsPrefix());
+		Converter dto2EObjectConverter = DTOToEObjectConverters.dto2EObjectConverter(dynamicEPackageFromDTOs);
 
-		assertThat(dynamicEPackageFromDTOs.getEClassifiers()).hasSize(8);
+		Function<Object, EObject> cf = dto2EObjectConverter.function().to(EObject.class);
 
-		assertNotNull(dynamicEPackageFromDTOs.getEClassifier(dtoClass.getSimpleName()));
-		assertTrue(dynamicEPackageFromDTOs.getEClassifier(dtoClass.getSimpleName()) instanceof EClass);
-
-		assertThat(
-				((EClass) dynamicEPackageFromDTOs.getEClassifier(dtoClass.getSimpleName())).getEAllStructuralFeatures())
-				.hasSize(44);
-
-		List<EStructuralFeature> eAllStructuralFeatures = ((EClass) dynamicEPackageFromDTOs
-				.getEClassifier(dtoClass.getSimpleName())).getEAllStructuralFeatures();
-
-		// Primitive types
-		boolean hasBytePrimitiveEAttribute = eAllStructuralFeatures.stream()
-				.anyMatch(f -> ((f instanceof EAttribute) && "bytePrimitiveField".equals(((EAttribute) f).getName())
-						&& (byte.class == ((EAttribute) f).getEType().getInstanceClass())));
-		assertTrue(hasBytePrimitiveEAttribute);
-
-		boolean hasShortPrimitiveEAttribute = eAllStructuralFeatures.stream()
-				.anyMatch(f -> ((f instanceof EAttribute) && "shortPrimitiveField".equals(((EAttribute) f).getName())
-						&& (short.class == ((EAttribute) f).getEType().getInstanceClass())));
-		assertTrue(hasShortPrimitiveEAttribute);
-
-		boolean hasIntPrimitiveEAttribute = eAllStructuralFeatures.stream()
-				.anyMatch(f -> ((f instanceof EAttribute) && "intPrimitiveField".equals(((EAttribute) f).getName())
-						&& (int.class == ((EAttribute) f).getEType().getInstanceClass())));
-		assertTrue(hasIntPrimitiveEAttribute);
-
-		boolean hasLongPrimitiveEAttribute = eAllStructuralFeatures.stream()
-				.anyMatch(f -> ((f instanceof EAttribute) && "longPrimitiveField".equals(((EAttribute) f).getName())
-						&& (long.class == ((EAttribute) f).getEType().getInstanceClass())));
-		assertTrue(hasLongPrimitiveEAttribute);
-
-		boolean hasFloatPrimitiveEAttribute = eAllStructuralFeatures.stream()
-				.anyMatch(f -> ((f instanceof EAttribute) && "floatPrimitiveField".equals(((EAttribute) f).getName())
-						&& (float.class == ((EAttribute) f).getEType().getInstanceClass())));
-		assertTrue(hasFloatPrimitiveEAttribute);
-
-		boolean hasDoublePrimitiveEAttribute = eAllStructuralFeatures.stream()
-				.anyMatch(f -> ((f instanceof EAttribute) && "doublePrimitiveField".equals(((EAttribute) f).getName())
-						&& (double.class == ((EAttribute) f).getEType().getInstanceClass())));
-		assertTrue(hasDoublePrimitiveEAttribute);
-
-		boolean hasBooleanPrimitiveEAttribute = eAllStructuralFeatures.stream()
-				.anyMatch(f -> ((f instanceof EAttribute) && "booleanPrimitiveField".equals(((EAttribute) f).getName())
-						&& (boolean.class == ((EAttribute) f).getEType().getInstanceClass())));
-		assertTrue(hasBooleanPrimitiveEAttribute);
-
-		boolean hasCharPrimitiveEAttribute = eAllStructuralFeatures.stream()
-				.anyMatch(f -> ((f instanceof EAttribute) && "charPrimitiveField".equals(((EAttribute) f).getName())
-						&& (char.class == ((EAttribute) f).getEType().getInstanceClass())));
-		assertTrue(hasCharPrimitiveEAttribute);
-
-		// Wrapper classes for the primitive types
-		boolean hasByteWrapperEAttribute = eAllStructuralFeatures.stream()
-				.anyMatch(f -> ((f instanceof EAttribute) && "byteWrapperField".equals(((EAttribute) f).getName())
-						&& (Byte.class == ((EAttribute) f).getEType().getInstanceClass())));
-		assertTrue(hasByteWrapperEAttribute);
-
-		boolean hasShortWrapperEAttribute = eAllStructuralFeatures.stream()
-				.anyMatch(f -> ((f instanceof EAttribute) && "shortWrapperField".equals(((EAttribute) f).getName())
-						&& (Short.class == ((EAttribute) f).getEType().getInstanceClass())));
-		assertTrue(hasShortWrapperEAttribute);
-
-		boolean hasIntWrapperEAttribute = eAllStructuralFeatures.stream()
-				.anyMatch(f -> ((f instanceof EAttribute) && "intWrapperField".equals(((EAttribute) f).getName())
-						&& (Integer.class == ((EAttribute) f).getEType().getInstanceClass())));
-		assertTrue(hasIntWrapperEAttribute);
-
-		boolean hasLongWrapperEAttribute = eAllStructuralFeatures.stream()
-				.anyMatch(f -> ((f instanceof EAttribute) && "longWrapperField".equals(((EAttribute) f).getName())
-						&& (Long.class == ((EAttribute) f).getEType().getInstanceClass())));
-		assertTrue(hasLongWrapperEAttribute);
-
-		boolean hasFloatWrapperEAttribute = eAllStructuralFeatures.stream()
-				.anyMatch(f -> ((f instanceof EAttribute) && "floatWrapperField".equals(((EAttribute) f).getName())
-						&& (Float.class == ((EAttribute) f).getEType().getInstanceClass())));
-		assertTrue(hasFloatWrapperEAttribute);
-
-		boolean hasDoubleWrapperEAttribute = eAllStructuralFeatures.stream()
-				.anyMatch(f -> ((f instanceof EAttribute) && "doubleWrapperField".equals(((EAttribute) f).getName())
-						&& (Double.class == ((EAttribute) f).getEType().getInstanceClass())));
-		assertTrue(hasDoubleWrapperEAttribute);
-
-		boolean hasBooleanWrapperEAttribute = eAllStructuralFeatures.stream()
-				.anyMatch(f -> ((f instanceof EAttribute) && "booleanWrapperField".equals(((EAttribute) f).getName())
-						&& (Boolean.class == ((EAttribute) f).getEType().getInstanceClass())));
-		assertTrue(hasBooleanWrapperEAttribute);
-
-		boolean hasCharWrapperEAttribute = eAllStructuralFeatures.stream()
-				.anyMatch(f -> ((f instanceof EAttribute) && "charWrapperField".equals(((EAttribute) f).getName())
-						&& (Character.class == ((EAttribute) f).getEType().getInstanceClass())));
-		assertTrue(hasCharWrapperEAttribute);
-
-		// String
-		boolean hasStringEAttribute = eAllStructuralFeatures.stream()
-				.anyMatch(f -> ((f instanceof EAttribute) && "stringField".equals(((EAttribute) f).getName())
-						&& (String.class == ((EAttribute) f).getEType().getInstanceClass())));
-		assertTrue(hasStringEAttribute);
-
-		// enum
-		boolean hasEnumEAttribute = eAllStructuralFeatures.stream()
-				.anyMatch(f -> ((f instanceof EAttribute) && "enumField".equals(((EAttribute) f).getName())
-						&& ("ConverterTestSampleEnum".equals(((EAttribute) f).getEType().getName()))));
-		assertTrue(hasEnumEAttribute);
-
-		// Version
-		boolean hasVersionFieldEAttribute = eAllStructuralFeatures.stream()
-				.anyMatch(f -> ((f instanceof EAttribute) && "versionField".equals(((EAttribute) f).getName())
-						&& (org.osgi.framework.Version.class == ((EAttribute) f).getEType().getInstanceClass())));
-		assertTrue(hasVersionFieldEAttribute);
-
-		// Reference to other Data Transfer Objects
-		boolean hasDtoEReference = eAllStructuralFeatures.stream()
-				.anyMatch(f -> ((f instanceof EReference) && "dtoField".equals(((EReference) f).getName())
-						&& ("ConverterTestBasicDTO".equals(((EReference) f).getEType().getName()))));
-		assertTrue(hasDtoEReference);
-
-		// List
-		boolean hasListEReference = eAllStructuralFeatures.stream()
-				.anyMatch(f -> ((f instanceof EReference) && "listField".equals(((EReference) f).getName())
-						&& ("ConverterTestBasicDTO".equals(((EReference) f).getEType().getName()))
-						&& (0 == ((EReference) f).getLowerBound()) && (-1 == ((EReference) f).getUpperBound())));
-		assertTrue(hasListEReference);
-
-		// Set
-		boolean hasSetEReference = eAllStructuralFeatures.stream()
-				.anyMatch(f -> ((f instanceof EReference) && "setField".equals(((EReference) f).getName())
-						&& ("ConverterTestBasicDTO".equals(((EReference) f).getEType().getName()))
-						&& (0 == ((EReference) f).getLowerBound()) && (-1 == ((EReference) f).getUpperBound())));
-		assertTrue(hasSetEReference);
-
-		// Map
-		boolean hasMapWithStringKeysEReference = eAllStructuralFeatures.stream()
-				.anyMatch(f -> ((f instanceof EReference) && "mapWithStringKeysField".equals(((EReference) f).getName())
-						&& ("StringToConverterTestBasicDTOMap".equals(((EReference) f).getEType().getName()))
-						&& (-1 == ((EReference) f).getUpperBound())
-						&& (2 == ((EClass) ((EReference) f).getEType()).getEAllStructuralFeatures().size())
-						&& ("key".equals(
-								((EClass) ((EReference) f).getEType()).getEAllStructuralFeatures().get(0).getName()))
-						&& ("EString".equals(((EClass) ((EReference) f).getEType()).getEAllStructuralFeatures().get(0)
-								.getEType().getName()))
-						&& ("value".equals(
-								((EClass) ((EReference) f).getEType()).getEAllStructuralFeatures().get(1).getName()))
-						&& ("ConverterTestBasicDTO".equals(((EClass) ((EReference) f).getEType())
-								.getEAllStructuralFeatures().get(1).getEType().getName()))));
-		assertTrue(hasMapWithStringKeysEReference);
-
-		boolean mapWithPrimitiveWrapperKeysEReference = eAllStructuralFeatures.stream()
-				.anyMatch(f -> ((f instanceof EReference)
-						&& "mapWithPrimitiveWrapperKeysField".equals(((EReference) f).getName())
-						&& ("IntegerToConverterTestBasicDTOMap".equals(((EReference) f).getEType().getName()))
-						&& (-1 == ((EReference) f).getUpperBound())
-						&& (2 == ((EClass) ((EReference) f).getEType()).getEAllStructuralFeatures().size())
-						&& ("key".equals(
-								((EClass) ((EReference) f).getEType()).getEAllStructuralFeatures().get(0).getName()))
-						&& ("EIntegerObject".equals(((EClass) ((EReference) f).getEType()).getEAllStructuralFeatures()
-								.get(0).getEType().getName()))
-						&& ("value".equals(
-								((EClass) ((EReference) f).getEType()).getEAllStructuralFeatures().get(1).getName()))
-						&& ("ConverterTestBasicDTO".equals(((EClass) ((EReference) f).getEType())
-								.getEAllStructuralFeatures().get(1).getEType().getName()))));
-		assertTrue(mapWithPrimitiveWrapperKeysEReference);
-
-		boolean mapWithEnumKeysEReference = eAllStructuralFeatures.stream().anyMatch(f -> ((f instanceof EReference)
-				&& "mapWithEnumKeysField".equals(((EReference) f).getName())
-				&& ("ConverterTestSampleEnumToConverterTestBasicDTOMap".equals(((EReference) f).getEType().getName()))
-				&& (-1 == ((EReference) f).getUpperBound())
-				&& (2 == ((EClass) ((EReference) f).getEType()).getEAllStructuralFeatures().size())
-				&& ("key".equals(((EClass) ((EReference) f).getEType()).getEAllStructuralFeatures().get(0).getName()))
-				&& ("ConverterTestSampleEnum".equals(
-						((EClass) ((EReference) f).getEType()).getEAllStructuralFeatures().get(0).getEType().getName()))
-				&& ("value".equals(((EClass) ((EReference) f).getEType()).getEAllStructuralFeatures().get(1).getName()))
-				&& ("ConverterTestBasicDTO".equals(((EClass) ((EReference) f).getEType()).getEAllStructuralFeatures()
-						.get(1).getEType().getName()))));
-		assertTrue(mapWithEnumKeysEReference);
-
-		boolean mapWithVersionKeysEReference = eAllStructuralFeatures.stream().anyMatch(f -> ((f instanceof EReference)
-				&& "mapWithVersionKeysField".equals(((EReference) f).getName())
-				&& ("VersionToConverterTestBasicDTOMap".equals(((EReference) f).getEType().getName()))
-				&& (-1 == ((EReference) f).getUpperBound())
-				&& (2 == ((EClass) ((EReference) f).getEType()).getEAllStructuralFeatures().size())
-				&& ("key".equals(((EClass) ((EReference) f).getEType()).getEAllStructuralFeatures().get(0).getName()))
-				&& ("Version".equals(
-						((EClass) ((EReference) f).getEType()).getEAllStructuralFeatures().get(0).getEType().getName()))
-				&& ("value".equals(((EClass) ((EReference) f).getEType()).getEAllStructuralFeatures().get(1).getName()))
-				&& ("ConverterTestBasicDTO".equals(((EClass) ((EReference) f).getEType()).getEAllStructuralFeatures()
-						.get(1).getEType().getName()))));
-		assertTrue(mapWithVersionKeysEReference);
-
-		// array
-		boolean hasBytePrimitiveArrayEAttribute = eAllStructuralFeatures.stream().anyMatch(
-				f -> ((f instanceof EAttribute) && "bytePrimitiveArrayField".equals(((EAttribute) f).getName())
-						&& (byte[].class == ((EAttribute) f).getEType().getInstanceClass())));
-		assertTrue(hasBytePrimitiveArrayEAttribute);
-
-		boolean hasShortPrimitiveArrayEAttribute = eAllStructuralFeatures.stream().anyMatch(
-				f -> ((f instanceof EAttribute) && "shortPrimitiveArrayField".equals(((EAttribute) f).getName())
-						&& (short[].class == ((EAttribute) f).getEType().getInstanceClass())));
-		assertTrue(hasShortPrimitiveArrayEAttribute);
-
-		boolean hasIntPrimitiveArrayEAttribute = eAllStructuralFeatures.stream()
-				.anyMatch(f -> ((f instanceof EAttribute) && "intPrimitiveArrayField".equals(((EAttribute) f).getName())
-						&& (int[].class == ((EAttribute) f).getEType().getInstanceClass())));
-		assertTrue(hasIntPrimitiveArrayEAttribute);
-
-		boolean hasLongPrimitiveArrayEAttribute = eAllStructuralFeatures.stream().anyMatch(
-				f -> ((f instanceof EAttribute) && "longPrimitiveArrayField".equals(((EAttribute) f).getName())
-						&& (long[].class == ((EAttribute) f).getEType().getInstanceClass())));
-		assertTrue(hasLongPrimitiveArrayEAttribute);
-
-		boolean hasFloatPrimitiveArrayEAttribute = eAllStructuralFeatures.stream().anyMatch(
-				f -> ((f instanceof EAttribute) && "floatPrimitiveArrayField".equals(((EAttribute) f).getName())
-						&& (float[].class == ((EAttribute) f).getEType().getInstanceClass())));
-		assertTrue(hasFloatPrimitiveArrayEAttribute);
-
-		boolean hasDoublePrimitiveArrayEAttribute = eAllStructuralFeatures.stream()
-				.anyMatch(f -> ((f instanceof EAttribute)
-						&& "doublePrimitiveArrayField".equals(((EAttribute) f).getName())
-						&& (double[].class == ((EAttribute) f).getEType().getInstanceClass())));
-		assertTrue(hasDoublePrimitiveArrayEAttribute);
-
-		boolean hasBooleanPrimitiveArrayEAttribute = eAllStructuralFeatures.stream()
-				.anyMatch(f -> ((f instanceof EAttribute)
-						&& "booleanPrimitiveArrayField".equals(((EAttribute) f).getName())
-						&& (boolean[].class == ((EAttribute) f).getEType().getInstanceClass())));
-		assertTrue(hasBooleanPrimitiveArrayEAttribute);
-
-		boolean hasCharPrimitiveArrayEAttribute = eAllStructuralFeatures.stream().anyMatch(
-				f -> ((f instanceof EAttribute) && "charPrimitiveArrayField".equals(((EAttribute) f).getName())
-						&& (char[].class == ((EAttribute) f).getEType().getInstanceClass())));
-		assertTrue(hasCharPrimitiveArrayEAttribute);
-
-		boolean hasByteWrapperArrayEAttribute = eAllStructuralFeatures.stream()
-				.anyMatch(f -> ((f instanceof EAttribute) && "byteWrapperArrayField".equals(((EAttribute) f).getName())
-						&& (Byte[].class == ((EAttribute) f).getEType().getInstanceClass())));
-		assertTrue(hasByteWrapperArrayEAttribute);
-
-		boolean hasShortWrapperArrayEAttribute = eAllStructuralFeatures.stream()
-				.anyMatch(f -> ((f instanceof EAttribute) && "shortWrapperArrayField".equals(((EAttribute) f).getName())
-						&& (Short[].class == ((EAttribute) f).getEType().getInstanceClass())));
-		assertTrue(hasShortWrapperArrayEAttribute);
-
-		boolean hasIntWrapperArrayEAttribute = eAllStructuralFeatures.stream()
-				.anyMatch(f -> ((f instanceof EAttribute) && "intWrapperArrayField".equals(((EAttribute) f).getName())
-						&& (Integer[].class == ((EAttribute) f).getEType().getInstanceClass())));
-		assertTrue(hasIntWrapperArrayEAttribute);
-
-		boolean hasLongWrapperArrayEAttribute = eAllStructuralFeatures.stream()
-				.anyMatch(f -> ((f instanceof EAttribute) && "longWrapperArrayField".equals(((EAttribute) f).getName())
-						&& (Long[].class == ((EAttribute) f).getEType().getInstanceClass())));
-		assertTrue(hasLongWrapperArrayEAttribute);
-
-		boolean hasFloatWrapperArrayEAttribute = eAllStructuralFeatures.stream()
-				.anyMatch(f -> ((f instanceof EAttribute) && "floatWrapperArrayField".equals(((EAttribute) f).getName())
-						&& (Float[].class == ((EAttribute) f).getEType().getInstanceClass())));
-		assertTrue(hasFloatWrapperArrayEAttribute);
-
-		boolean hasDoubleWrapperArrayEAttribute = eAllStructuralFeatures.stream().anyMatch(
-				f -> ((f instanceof EAttribute) && "doubleWrapperArrayField".equals(((EAttribute) f).getName())
-						&& (Double[].class == ((EAttribute) f).getEType().getInstanceClass())));
-		assertTrue(hasDoubleWrapperArrayEAttribute);
-
-		boolean hasBooleanWrapperArrayEAttribute = eAllStructuralFeatures.stream().anyMatch(
-				f -> ((f instanceof EAttribute) && "booleanWrapperArrayField".equals(((EAttribute) f).getName())
-						&& (Boolean[].class == ((EAttribute) f).getEType().getInstanceClass())));
-		assertTrue(hasBooleanWrapperArrayEAttribute);
-
-		boolean hasCharWrapperArrayEAttribute = eAllStructuralFeatures.stream()
-				.anyMatch(f -> ((f instanceof EAttribute) && "charWrapperArrayField".equals(((EAttribute) f).getName())
-						&& (Character[].class == ((EAttribute) f).getEType().getInstanceClass())));
-		assertTrue(hasCharWrapperArrayEAttribute);
-
-		boolean hasStringArrayEAttribute = eAllStructuralFeatures.stream()
-				.anyMatch(f -> ((f instanceof EAttribute) && "stringArrayField".equals(((EAttribute) f).getName())
-						&& (String[].class == ((EAttribute) f).getEType().getInstanceClass())));
-		assertTrue(hasStringArrayEAttribute);
-
-		boolean hasDtoArrayEAttribute = eAllStructuralFeatures.stream()
-				.anyMatch(f -> ((f instanceof EAttribute) && "dtoArrayField".equals(((EAttribute) f).getName())
-						&& ("ConverterTestBasicDTOArray".equals(((EAttribute) f).getEType().getName()))));
-		assertTrue(hasDtoArrayEAttribute);
+		EObject mySimpleEObject = cf.apply(dto);
+		assertNotNull(mySimpleEObject);
 	}
 
 	@Test
-	public void testConvertOSGiFrameworkDTO() throws Exception {
-		Class<FrameworkDTO> dtoClass = FrameworkDTO.class;
+	public void testDTO2EObjectConverterWithBuiltInTypeRule() {
+
+		ConverterTestBasicDTO dto = new ConverterTestBasicDTO();
+		dto.longPrimitiveField = Long.MIN_VALUE;
+		dto.booleanPrimitiveField = true;
+		dto.stringField = "hello";
 
 		EPackage dynamicEPackageFromDTOs = DTOToEPackageConverter.INSTANCE.convert(PACKAGE_NAME, NS_URI, NS_PREFIX,
-				dtoClass);
+				dto.getClass());
 		assertNotNull(dynamicEPackageFromDTOs);
 
-		assertEquals(PACKAGE_NAME, dynamicEPackageFromDTOs.getName());
-		assertEquals(NS_URI, dynamicEPackageFromDTOs.getNsURI());
-		assertEquals(NS_PREFIX, dynamicEPackageFromDTOs.getNsPrefix());
+		Converter dto2EObjectConverter = DTOToEObjectConverters.dto2EObjectConverter(dynamicEPackageFromDTOs);
 
-		assertThat(dynamicEPackageFromDTOs.getEClassifiers()).hasSize(4);
-
-		assertNotNull(dynamicEPackageFromDTOs.getEClassifier(dtoClass.getSimpleName()));
-		assertTrue(dynamicEPackageFromDTOs.getEClassifier(dtoClass.getSimpleName()) instanceof EClass);
-		assertThat(
-				((EClass) dynamicEPackageFromDTOs.getEClassifier(dtoClass.getSimpleName())).getEAllStructuralFeatures())
-				.hasSize(3);
-
-		List<EStructuralFeature> eAllStructuralFeatures = ((EClass) dynamicEPackageFromDTOs
-				.getEClassifier(dtoClass.getSimpleName())).getEAllStructuralFeatures();
-
-		boolean hasBundlesEReference = eAllStructuralFeatures.stream()
-				.anyMatch(f -> ((f instanceof EReference) && "bundles".equals(((EReference) f).getName())
-						&& ("BundleDTO".equals(((EReference) f).getEType().getName()))
-						&& (0 == ((EReference) f).getLowerBound()) && (-1 == ((EReference) f).getUpperBound())));
-		assertTrue(hasBundlesEReference);
-
-		boolean hasPropertiesEReference = eAllStructuralFeatures.stream().anyMatch(f -> ((f instanceof EReference)
-				&& "properties".equals(((EReference) f).getName())
-				&& ("StringToObjectMap".equals(((EReference) f).getEType().getName()))
-				&& (-1 == ((EReference) f).getUpperBound())
-				&& (2 == ((EClass) ((EReference) f).getEType()).getEAllStructuralFeatures().size())
-				&& ("key".equals(((EClass) ((EReference) f).getEType()).getEAllStructuralFeatures().get(0).getName()))
-				&& ("EString".equals(
-						((EClass) ((EReference) f).getEType()).getEAllStructuralFeatures().get(0).getEType().getName()))
-				&& ("value".equals(((EClass) ((EReference) f).getEType()).getEAllStructuralFeatures().get(1).getName()))
-				&& ("EJavaObject".equals(((EClass) ((EReference) f).getEType()).getEAllStructuralFeatures().get(1)
-						.getEType().getName()))));
-		assertTrue(hasPropertiesEReference);
-
-		boolean hasServicesEReference = eAllStructuralFeatures.stream()
-				.anyMatch(f -> ((f instanceof EReference) && "services".equals(((EReference) f).getName())
-						&& ("ServiceReferenceDTO".equals(((EReference) f).getEType().getName()))
-						&& (0 == ((EReference) f).getLowerBound()) && (-1 == ((EReference) f).getUpperBound())));
-		assertTrue(hasServicesEReference);
+		EObject mySimpleEObject = dto2EObjectConverter.convert(dto).to(EObject.class);
+		assertNotNull(mySimpleEObject);
 	}
 }
