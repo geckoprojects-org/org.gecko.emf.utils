@@ -24,7 +24,7 @@ import org.osgi.framework.Version;
  * 
  * @author Michal H. Siemaszko
  */
-public class DTOToEObjectConverterImplTestHelper {
+public class DTOToEMFConverterTestHelper {
 
 	public static class ConverterTestBasicDTO extends DTO {
 		public long longPrimitiveField;
