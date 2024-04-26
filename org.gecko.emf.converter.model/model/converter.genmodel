@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel"
+    modelDirectory="/org.gecko.emf.converter.model/src" modelPluginID="org.gecko.emf.converter.model"
+    modelName="converter.ecore" rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container"
+    importerID="org.eclipse.emf.importer.ecore" complianceLevel="11.0" suppressGenModelAnnotations="false"
+    copyrightFields="false" operationReflection="true" importOrganizing="true" oSGiCompatible="true">
+  <foreignModel>converter.ecore</foreignModel>
+  <genPackages prefix="Converter" basePackage="org.gecko.emf.converter" disposableProviderFactory="true"
+      ecorePackage="converter.ecore#/">
+    <genDataTypes ecoreDataType="converter.ecore#//EShortArray"/>
+    <genDataTypes ecoreDataType="converter.ecore#//EIntArray"/>
+    <genDataTypes ecoreDataType="converter.ecore#//ELongArray"/>
+    <genDataTypes ecoreDataType="converter.ecore#//EFloatArray"/>
+    <genDataTypes ecoreDataType="converter.ecore#//EDoubleArray"/>
+    <genDataTypes ecoreDataType="converter.ecore#//EBooleanArray"/>
+    <genDataTypes ecoreDataType="converter.ecore#//ECharArray"/>
+    <genDataTypes ecoreDataType="converter.ecore#//EByteObjectArray"/>
+    <genDataTypes ecoreDataType="converter.ecore#//EShortObjectArray"/>
+    <genDataTypes ecoreDataType="converter.ecore#//EIntegerObjectArray"/>
+    <genDataTypes ecoreDataType="converter.ecore#//ELongObjectArray"/>
+    <genDataTypes ecoreDataType="converter.ecore#//EFloatObjectArray"/>
+    <genDataTypes ecoreDataType="converter.ecore#//EDoubleObjectArray"/>
+    <genDataTypes ecoreDataType="converter.ecore#//EBooleanObjectArray"/>
+    <genDataTypes ecoreDataType="converter.ecore#//ECharacterObjectArray"/>
+    <genDataTypes ecoreDataType="converter.ecore#//EStringArray"/>
+    <genDataTypes ecoreDataType="converter.ecore#//EOSGiFrameworkVersion"/>
+  </genPackages>
+</genmodel:GenModel>

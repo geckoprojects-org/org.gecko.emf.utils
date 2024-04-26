@@ -23,7 +23,9 @@
 	felix.log.level=4,\
 	org.osgi.service.log.admin.loglevel=DEBUG
 
--runrequires: bnd.identity;id='org.gecko.emf.converter.tests'
+-runrequires: \
+	bnd.identity;id='org.gecko.emf.converter.tests',\
+	bnd.identity;id='org.gecko.emf.converter.model'
 
 -runbundles: \
 	junit-jupiter-api;version='[5.10.1,5.10.2)',\
@@ -44,4 +46,11 @@
 	net.bytebuddy.byte-buddy;version='[1.14.9,1.14.10)',\
 	slf4j.api;version='[1.7.36,1.7.37)',\
 	slf4j.simple;version='[1.7.36,1.7.37)',\
-	org.osgi.util.converter;version='[1.1.0,1.1.1)'
+	org.osgi.util.converter;version='[1.1.0,1.1.1)',\
+	org.apache.felix.scr;version='[2.2.6,2.2.7)',\
+	org.eclipse.emf.ecore.xmi;version='[2.36.0,2.36.1)',\
+	org.gecko.emf.converter.model;version=snapshot,\
+	org.gecko.emf.osgi.component.minimal;version='[6.1.1,6.1.2)',\
+	org.osgi.service.cm;version='[1.6.1,1.6.2)',\
+	org.osgi.service.component;version='[1.5.1,1.5.2)',\
+	org.osgi.util.promise;version='[1.3.0,1.3.1)'

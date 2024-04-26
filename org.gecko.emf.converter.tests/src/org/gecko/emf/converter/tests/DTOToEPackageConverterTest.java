@@ -51,13 +51,14 @@ public class DTOToEPackageConverterTest {
 	public void testConvertBasicDTO() throws Exception {
 		Class<ConverterTestBasicDTO> dtoClass = ConverterTestBasicDTO.class;
 
-		EPackage dynamicEPackageFromDTOs = DTOToEPackageConverter.INSTANCE.convert(PACKAGE_NAME, NS_URI, NS_PREFIX,
-				dtoClass);
+		EPackage dynamicEPackageFromDTOs = DTOToEPackageConverter.convert(PACKAGE_NAME, NS_URI, NS_PREFIX, dtoClass);
 		assertNotNull(dynamicEPackageFromDTOs);
 
 		assertEquals(PACKAGE_NAME, dynamicEPackageFromDTOs.getName());
 		assertEquals(NS_URI, dynamicEPackageFromDTOs.getNsURI());
 		assertEquals(NS_PREFIX, dynamicEPackageFromDTOs.getNsPrefix());
+
+		EPackage.Registry.INSTANCE.put(dynamicEPackageFromDTOs.getNsURI(), dynamicEPackageFromDTOs);
 
 		assertThat(dynamicEPackageFromDTOs.getEClassifiers()).hasSize(1);
 
@@ -90,13 +91,14 @@ public class DTOToEPackageConverterTest {
 	public void testConvertInheritingDTO() throws Exception {
 		Class<ConverterTestInheritingDTO> dtoClass = ConverterTestInheritingDTO.class;
 
-		EPackage dynamicEPackageFromDTOs = DTOToEPackageConverter.INSTANCE.convert(PACKAGE_NAME, NS_URI, NS_PREFIX,
-				dtoClass);
+		EPackage dynamicEPackageFromDTOs = DTOToEPackageConverter.convert(PACKAGE_NAME, NS_URI, NS_PREFIX, dtoClass);
 		assertNotNull(dynamicEPackageFromDTOs);
 
 		assertEquals(PACKAGE_NAME, dynamicEPackageFromDTOs.getName());
 		assertEquals(NS_URI, dynamicEPackageFromDTOs.getNsURI());
 		assertEquals(NS_PREFIX, dynamicEPackageFromDTOs.getNsPrefix());
+
+		EPackage.Registry.INSTANCE.put(dynamicEPackageFromDTOs.getNsURI(), dynamicEPackageFromDTOs);
 
 		assertThat(dynamicEPackageFromDTOs.getEClassifiers()).hasSize(1);
 
@@ -154,13 +156,14 @@ public class DTOToEPackageConverterTest {
 	public void testConvertAllSupportedTypesDTO() throws Exception {
 		Class<ConverterTestAllSupportedTypesDTO> dtoClass = ConverterTestAllSupportedTypesDTO.class;
 
-		EPackage dynamicEPackageFromDTOs = DTOToEPackageConverter.INSTANCE.convert(PACKAGE_NAME, NS_URI, NS_PREFIX,
-				dtoClass);
+		EPackage dynamicEPackageFromDTOs = DTOToEPackageConverter.convert(PACKAGE_NAME, NS_URI, NS_PREFIX, dtoClass);
 		assertNotNull(dynamicEPackageFromDTOs);
 
 		assertEquals(PACKAGE_NAME, dynamicEPackageFromDTOs.getName());
 		assertEquals(NS_URI, dynamicEPackageFromDTOs.getNsURI());
 		assertEquals(NS_PREFIX, dynamicEPackageFromDTOs.getNsPrefix());
+
+		EPackage.Registry.INSTANCE.put(dynamicEPackageFromDTOs.getNsURI(), dynamicEPackageFromDTOs);
 
 		assertThat(dynamicEPackageFromDTOs.getEClassifiers()).hasSize(8);
 
@@ -345,7 +348,7 @@ public class DTOToEPackageConverterTest {
 				&& (-1 == ((EReference) f).getUpperBound())
 				&& (2 == ((EClass) ((EReference) f).getEType()).getEAllStructuralFeatures().size())
 				&& ("key".equals(((EClass) ((EReference) f).getEType()).getEAllStructuralFeatures().get(0).getName()))
-				&& ("Version".equals(
+				&& ("EOSGiFrameworkVersion".equals(
 						((EClass) ((EReference) f).getEType()).getEAllStructuralFeatures().get(0).getEType().getName()))
 				&& ("value".equals(((EClass) ((EReference) f).getEType()).getEAllStructuralFeatures().get(1).getName()))
 				&& ("ConverterTestBasicDTO".equals(((EClass) ((EReference) f).getEType()).getEAllStructuralFeatures()
@@ -450,13 +453,14 @@ public class DTOToEPackageConverterTest {
 	public void testConvertOSGiFrameworkDTO() throws Exception {
 		Class<FrameworkDTO> dtoClass = FrameworkDTO.class;
 
-		EPackage dynamicEPackageFromDTOs = DTOToEPackageConverter.INSTANCE.convert(PACKAGE_NAME, NS_URI, NS_PREFIX,
-				dtoClass);
+		EPackage dynamicEPackageFromDTOs = DTOToEPackageConverter.convert(PACKAGE_NAME, NS_URI, NS_PREFIX, dtoClass);
 		assertNotNull(dynamicEPackageFromDTOs);
 
 		assertEquals(PACKAGE_NAME, dynamicEPackageFromDTOs.getName());
 		assertEquals(NS_URI, dynamicEPackageFromDTOs.getNsURI());
 		assertEquals(NS_PREFIX, dynamicEPackageFromDTOs.getNsPrefix());
+
+		EPackage.Registry.INSTANCE.put(dynamicEPackageFromDTOs.getNsURI(), dynamicEPackageFromDTOs);
 
 		assertThat(dynamicEPackageFromDTOs.getEClassifiers()).hasSize(4);
 

@@ -39,7 +39,7 @@ import org.osgi.util.function.Function;
 @Testable
 @ExtendWith(BundleContextExtension.class)
 @ExtendWith(ServiceExtension.class)
-public class DTOToEObjectConverterImplTest {
+public class DTOToEObjectConverterTest {
 	private static final String PACKAGE_NAME = "org.gecko.emf.converter";
 	private static final String NS_URI = "http://gecko.org/test/model/converter/1.0";
 	private static final String NS_PREFIX = "tests";
@@ -52,9 +52,11 @@ public class DTOToEObjectConverterImplTest {
 		dto.booleanPrimitiveField = true;
 		dto.stringField = "hello";
 
-		EPackage dynamicEPackageFromDTOs = DTOToEPackageConverter.INSTANCE.convert(PACKAGE_NAME, NS_URI, NS_PREFIX,
+		EPackage dynamicEPackageFromDTOs = DTOToEPackageConverter.convert(PACKAGE_NAME, NS_URI, NS_PREFIX,
 				dto.getClass());
 		assertNotNull(dynamicEPackageFromDTOs);
+
+		EPackage.Registry.INSTANCE.put(dynamicEPackageFromDTOs.getNsURI(), dynamicEPackageFromDTOs);
 
 		Converter standardConverter = DTOToEObjectConverters.standardConverter();
 
@@ -76,9 +78,11 @@ public class DTOToEObjectConverterImplTest {
 		dto.booleanPrimitiveField = true;
 		dto.stringField = "hello";
 
-		EPackage dynamicEPackageFromDTOs = DTOToEPackageConverter.INSTANCE.convert(PACKAGE_NAME, NS_URI, NS_PREFIX,
+		EPackage dynamicEPackageFromDTOs = DTOToEPackageConverter.convert(PACKAGE_NAME, NS_URI, NS_PREFIX,
 				dto.getClass());
 		assertNotNull(dynamicEPackageFromDTOs);
+
+		EPackage.Registry.INSTANCE.put(dynamicEPackageFromDTOs.getNsURI(), dynamicEPackageFromDTOs);
 
 		Converter standardConverter = DTOToEObjectConverters.standardConverter();
 
@@ -89,7 +93,7 @@ public class DTOToEObjectConverterImplTest {
 
 					@Override
 					public EObject apply(ConverterTestBasicDTO t) throws Exception {
-						return DTOToEObjectConverterUtil.INSTANCE.convertDTO2EObject(t, dynamicEPackageFromDTOs);
+						return DTOToEObjectConverterUtil.convertDTO2EObject(t, dynamicEPackageFromDTOs);
 					}
 				}));
 
@@ -107,9 +111,11 @@ public class DTOToEObjectConverterImplTest {
 		dto.booleanPrimitiveField = true;
 		dto.stringField = "hello";
 
-		EPackage dynamicEPackageFromDTOs = DTOToEPackageConverter.INSTANCE.convert(PACKAGE_NAME, NS_URI, NS_PREFIX,
+		EPackage dynamicEPackageFromDTOs = DTOToEPackageConverter.convert(PACKAGE_NAME, NS_URI, NS_PREFIX,
 				dto.getClass());
 		assertNotNull(dynamicEPackageFromDTOs);
+
+		EPackage.Registry.INSTANCE.put(dynamicEPackageFromDTOs.getNsURI(), dynamicEPackageFromDTOs);
 
 		Converter dto2EObjectConverter = DTOToEObjectConverters.dto2EObjectConverter(dynamicEPackageFromDTOs);
 
@@ -127,9 +133,11 @@ public class DTOToEObjectConverterImplTest {
 		dto.booleanPrimitiveField = true;
 		dto.stringField = "hello";
 
-		EPackage dynamicEPackageFromDTOs = DTOToEPackageConverter.INSTANCE.convert(PACKAGE_NAME, NS_URI, NS_PREFIX,
+		EPackage dynamicEPackageFromDTOs = DTOToEPackageConverter.convert(PACKAGE_NAME, NS_URI, NS_PREFIX,
 				dto.getClass());
 		assertNotNull(dynamicEPackageFromDTOs);
+
+		EPackage.Registry.INSTANCE.put(dynamicEPackageFromDTOs.getNsURI(), dynamicEPackageFromDTOs);
 
 		Converter dto2EObjectConverter = DTOToEObjectConverters.dto2EObjectConverter(dynamicEPackageFromDTOs);
 

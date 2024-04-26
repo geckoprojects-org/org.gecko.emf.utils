@@ -20,7 +20,7 @@ import org.osgi.framework.Version;
 
 /**
  * Helper for
- * {@link org.gecko.emf.converter.tests.DTOToEObjectConverterImplTest}
+ * {@link org.gecko.emf.converter.tests.DTOToEObjectConverterTest}
  * 
  * @author Michal H. Siemaszko
  */
