@@ -66,7 +66,7 @@ class DTOToEObjectConverterImpl extends AbstractConverter implements InternalCon
 
 			@Override
 			public EObject apply(DTO t) throws Exception {
-				return DTOToEObjectConverterUtil.INSTANCE.convertDTO2EObject(t, dynamicEPackages);
+				return DTOToEObjectConverterUtil.convertDTO2EObject(t, dynamicEPackages);
 			}
 		}));
 	}

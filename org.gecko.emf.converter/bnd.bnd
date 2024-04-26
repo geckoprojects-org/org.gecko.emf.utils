@@ -1,8 +1,11 @@
 -library: enable-emf
 
 -buildpath: \
+	org.gecko.emf.converter.model;version=project,\
 	org.osgi.service.component,\
 	org.osgi.util.converter;version=latest,\
 	org.osgi.dto,\
 	org.osgi.util.function;version=latest,\
 	slf4j.api
+
+-dependson: org.gecko.emf.converter.model

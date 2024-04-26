@@ -32,6 +32,7 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.ETypedElement;
 import org.eclipse.emf.ecore.EcoreFactory;
 import org.eclipse.emf.ecore.EcorePackage;
+import org.gecko.emf.converter.model.ConverterPackage;
 import org.osgi.dto.DTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,69 +42,83 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Michal H. Siemaszko
  */
-public enum DTOToEPackageConverter {
-	INSTANCE;
-
-	private static final Logger LOG = LoggerFactory.getLogger(DTOToEPackageConverter.class);
+public class DTOToEPackageConverter {
+	private final static Logger LOG = LoggerFactory.getLogger(DTOToEPackageConverter.class);
 
 	private final static Map<Class<?>, Field[]> CACHED_FIELDS = Collections
 			.synchronizedMap(new WeakHashMap<Class<?>, Field[]>());
 
 	private final static Map<Class<?>, EDataType> JAVATYPE_TO_EDATATYPE = new HashMap<>();
 	static {
-		JAVATYPE_TO_EDATATYPE.put(byte.class, EcorePackage.eINSTANCE.getEByte());
-		JAVATYPE_TO_EDATATYPE.put(Byte.class, EcorePackage.eINSTANCE.getEByteObject());
+		// @formatter:off
+		EcorePackage.eINSTANCE.getEClassifiers().stream()
+			.filter(EDataType.class::isInstance)
+			.map(EDataType.class::cast)
+			.forEach(dt -> JAVATYPE_TO_EDATATYPE.put(dt.getInstanceClass(), dt));
+		// @formatter:on
 
-		JAVATYPE_TO_EDATATYPE.put(short.class, EcorePackage.eINSTANCE.getEShort());
-		JAVATYPE_TO_EDATATYPE.put(Short.class, EcorePackage.eINSTANCE.getEShortObject());
+		// @formatter:off
+		ConverterPackage.eINSTANCE.getEClassifiers().stream()
+			.filter(EDataType.class::isInstance)
+			.map(EDataType.class::cast)
+			.forEach(dt -> JAVATYPE_TO_EDATATYPE.put(dt.getInstanceClass(), dt));
+		// @formatter:on
+	}
 
-		JAVATYPE_TO_EDATATYPE.put(int.class, EcorePackage.eINSTANCE.getEInt());
-		JAVATYPE_TO_EDATATYPE.put(Integer.class, EcorePackage.eINSTANCE.getEIntegerObject());
+	// @formatter:off
+	private final static List<Class<?>> ATTRIBUTE_TYPES = List.of(
+			byte.class,
+			byte[].class,
+			java.lang.Byte.class,
+			java.lang.Byte[].class,
 
-		JAVATYPE_TO_EDATATYPE.put(long.class, EcorePackage.eINSTANCE.getELong());
-		JAVATYPE_TO_EDATATYPE.put(Long.class, EcorePackage.eINSTANCE.getELongObject());
+			short.class,
+			short[].class,
+			java.lang.Short.class,
+			java.lang.Short[].class,
 
-		JAVATYPE_TO_EDATATYPE.put(float.class, EcorePackage.eINSTANCE.getEFloat());
-		JAVATYPE_TO_EDATATYPE.put(Float.class, EcorePackage.eINSTANCE.getEFloatObject());
+			int.class,
+			int[].class,
+			java.lang.Integer.class,
+			java.lang.Integer[].class,
 
-		JAVATYPE_TO_EDATATYPE.put(double.class, EcorePackage.eINSTANCE.getEDouble());
-		JAVATYPE_TO_EDATATYPE.put(Double.class, EcorePackage.eINSTANCE.getEDoubleObject());
+			long.class,
+			long[].class,
+			java.lang.Long.class,
+			java.lang.Long[].class,
 
-		JAVATYPE_TO_EDATATYPE.put(boolean.class, EcorePackage.eINSTANCE.getEBoolean());
-		JAVATYPE_TO_EDATATYPE.put(Boolean.class, EcorePackage.eINSTANCE.getEBooleanObject());
+			float.class,
+			float[].class,
+			java.lang.Float.class,
+			java.lang.Float[].class,
 
-		JAVATYPE_TO_EDATATYPE.put(char.class, EcorePackage.eINSTANCE.getEChar());
-		JAVATYPE_TO_EDATATYPE.put(Character.class, EcorePackage.eINSTANCE.getECharacterObject());
+			double.class,
+			double[].class,
+			java.lang.Double.class,
+			java.lang.Double[].class,
 
-		JAVATYPE_TO_EDATATYPE.put(String.class, EcorePackage.eINSTANCE.getEString());
+			boolean.class,
+			boolean[].class,
+			java.lang.Boolean.class,
+			java.lang.Boolean[].class,
 
-		JAVATYPE_TO_EDATATYPE.put(Object.class, EcorePackage.eINSTANCE.getEJavaObject());
+			char.class,
+			char[].class,
+			java.lang.Character.class,
+			java.lang.Character[].class,
 
-		JAVATYPE_TO_EDATATYPE.put(byte[].class, EcorePackage.eINSTANCE.getEByteArray());
-		JAVATYPE_TO_EDATATYPE.put(short[].class, createShortPrimitiveArrayEDataType());
-		JAVATYPE_TO_EDATATYPE.put(int[].class, createIntPrimitiveArrayEDataType());
-		JAVATYPE_TO_EDATATYPE.put(long[].class, createLongPrimitiveArrayEDataType());
-		JAVATYPE_TO_EDATATYPE.put(float[].class, createFloatPrimitiveArrayEDataType());
-		JAVATYPE_TO_EDATATYPE.put(double[].class, createDoublePrimitiveArrayEDataType());
-		JAVATYPE_TO_EDATATYPE.put(boolean[].class, createBooleanPrimitiveArrayEDataType());
-		JAVATYPE_TO_EDATATYPE.put(char[].class, createCharPrimitiveArrayEDataType());
+			java.lang.String.class,
+			java.lang.String[].class,
 
-		JAVATYPE_TO_EDATATYPE.put(Byte[].class, createByteWrapperArrayEDataType());
-		JAVATYPE_TO_EDATATYPE.put(Short[].class, createShortWrapperArrayEDataType());
-		JAVATYPE_TO_EDATATYPE.put(Integer[].class, createIntWrapperArrayEDataType());
-		JAVATYPE_TO_EDATATYPE.put(Long[].class, createLongWrapperArrayEDataType());
-		JAVATYPE_TO_EDATATYPE.put(Float[].class, createFloatWrapperArrayEDataType());
-		JAVATYPE_TO_EDATATYPE.put(Double[].class, createDoubleWrapperArrayEDataType());
-		JAVATYPE_TO_EDATATYPE.put(Boolean[].class, createBooleanWrapperArrayEDataType());
-		JAVATYPE_TO_EDATATYPE.put(Character[].class, createCharWrapperArrayEDataType());
+			org.osgi.framework.Version.class);
+	// @formatter:on
 
-		JAVATYPE_TO_EDATATYPE.put(String[].class, createStringArrayEDataType());
-
-		JAVATYPE_TO_EDATATYPE.put(org.osgi.framework.Version.class, createVersionEDataType());
+	private DTOToEPackageConverter() {
+		// Do not instantiate. This is a utility class.
 	}
 
 	@SafeVarargs
-	public final EPackage convert(String packageName, String nsURI, String nsPrefix,
+	public final static EPackage convert(String packageName, String nsURI, String nsPrefix,
 			Class<? extends DTO>... dtoClasses) {
 
 		final EcoreFactory eFactory = EcoreFactory.eINSTANCE;
@@ -117,12 +132,10 @@ public enum DTOToEPackageConverter {
 			createEClass(eFactory, dynamicEPackage, dtoClass);
 		}
 
-		EPackage.Registry.INSTANCE.put(dynamicEPackage.getNsURI(), dynamicEPackage);
-
 		return dynamicEPackage;
 	}
 
-	private EClass createEClass(EcoreFactory eFactory, EPackage ePackage, Class<?> javaType) {
+	private static EClass createEClass(EcoreFactory eFactory, EPackage ePackage, Class<?> javaType) {
 		if (dynamicEClassifierExists(ePackage, javaType.getSimpleName())) {
 			LOG.debug(" EClassifier {} already exists!", javaType.getSimpleName());
 			return (EClass) ePackage.getEClassifier(javaType.getSimpleName());
@@ -142,7 +155,7 @@ public enum DTOToEPackageConverter {
 		return eClass;
 	}
 
-	private void createEStructuralFeature(EcoreFactory eFactory, EPackage ePackage, EClass eClass, Field field) {
+	private static void createEStructuralFeature(EcoreFactory eFactory, EPackage ePackage, EClass eClass, Field field) {
 		if (isAttributeType(field.getType())) {
 
 			createEAttribute(eFactory, eClass, field);
@@ -185,11 +198,11 @@ public enum DTOToEPackageConverter {
 		}
 	}
 
-	private void createEAttribute(EcoreFactory eFactory, EClass eClass, Field field) {
+	private static void createEAttribute(EcoreFactory eFactory, EClass eClass, Field field) {
 		createEAttribute(eFactory, eClass, getEDataTypeForJavaType(field.getType()), field);
 	}
 
-	private void createEAttribute(EcoreFactory eFactory, EClass eClass, EDataType eType, Field field) {
+	private static void createEAttribute(EcoreFactory eFactory, EClass eClass, EDataType eType, Field field) {
 		EAttribute eAttribute = eFactory.createEAttribute();
 		eAttribute.setName(field.getName());
 		eAttribute.setEType(eType);
@@ -197,18 +210,18 @@ public enum DTOToEPackageConverter {
 		eClass.getEStructuralFeatures().add(eAttribute);
 	}
 
-	private void createEReference(EcoreFactory eFactory, EPackage ePackage, EClass eClass, Field field,
+	private static void createEReference(EcoreFactory eFactory, EPackage ePackage, EClass eClass, Field field,
 			int upperBound) {
 		createEReference(eFactory, ePackage, eClass, field.getType(), field.getName(), upperBound);
 	}
 
-	private void createEReference(EcoreFactory eFactory, EPackage ePackage, EClass eClass, Class<?> javaType,
+	private static void createEReference(EcoreFactory eFactory, EPackage ePackage, EClass eClass, Class<?> javaType,
 			String fieldName, int upperBound) {
 		createEReference(eFactory, ePackage, eClass, getEClassifierForJavaType(eFactory, ePackage, javaType), fieldName,
 				upperBound);
 	}
 
-	private void createEReference(EcoreFactory eFactory, EPackage ePackage, EClass eClass, EClassifier eType,
+	private static void createEReference(EcoreFactory eFactory, EPackage ePackage, EClass eClass, EClassifier eType,
 			String fieldName, int upperBound) {
 		EReference eReference = eFactory.createEReference();
 		eReference.setName(fieldName);
@@ -219,7 +232,7 @@ public enum DTOToEPackageConverter {
 		eClass.getEStructuralFeatures().add(eReference);
 	}
 
-	private void createEEnum(EcoreFactory eFactory, EPackage ePackage, EClass eClass, Field field) {
+	private static void createEEnum(EcoreFactory eFactory, EPackage ePackage, EClass eClass, Field field) {
 		EEnum eEnum = null;
 
 		if (!dynamicEClassifierExists(ePackage, field.getType().getSimpleName())) {
@@ -231,7 +244,7 @@ public enum DTOToEPackageConverter {
 		createEAttribute(eFactory, eClass, eEnum, field);
 	}
 
-	private EEnum createEEnum(EcoreFactory eFactory, EPackage ePackage, Class<?> javaType) {
+	private static EEnum createEEnum(EcoreFactory eFactory, EPackage ePackage, Class<?> javaType) {
 		Field[] enumTypeFields = getFields(javaType);
 
 		EEnum eEnum = eFactory.createEEnum();
@@ -249,10 +262,7 @@ public enum DTOToEPackageConverter {
 		return eEnum;
 	}
 
-	private void createArray(EcoreFactory eFactory, EPackage ePackage, EClass eClass, Field field) {
-		EClassifier dynamicCustomTypeArrayComponentTypeClass = getEClassifierForJavaType(eFactory, ePackage,
-				field.getType().getComponentType());
-
+	private static void createArray(EcoreFactory eFactory, EPackage ePackage, EClass eClass, Field field) {
 		String arrayTypeName = constructArrayTypeName(field);
 
 		EDataType arrayType = null;
@@ -269,14 +279,14 @@ public enum DTOToEPackageConverter {
 		createEAttribute(eFactory, eClass, arrayType, field);
 	}
 
-	private String constructArrayTypeName(Field field) {
+	private static String constructArrayTypeName(Field field) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(field.getType().getComponentType().getSimpleName());
 		sb.append("Array");
 		return sb.toString();
 	}
 
-	private void createEMap(EcoreFactory eFactory, EPackage ePackage, EClass eClass, Field field,
+	private static void createEMap(EcoreFactory eFactory, EPackage ePackage, EClass eClass, Field field,
 			Class<?> mapKeyActualType, Class<?> mapValueActualType) {
 		String mapEntryEClassName = constructMapEntryEClassName(mapKeyActualType, mapValueActualType);
 
@@ -310,7 +320,7 @@ public enum DTOToEPackageConverter {
 				ETypedElement.UNBOUNDED_MULTIPLICITY);
 	}
 
-	private String constructMapEntryEClassName(Class<?> mapKeyActualType, Class<?> mapValueActualType) {
+	private static String constructMapEntryEClassName(Class<?> mapKeyActualType, Class<?> mapValueActualType) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(mapKeyActualType.getSimpleName());
 		sb.append("To");
@@ -319,15 +329,15 @@ public enum DTOToEPackageConverter {
 		return sb.toString();
 	}
 
-	private boolean dynamicEClassifierExists(EPackage ePackage, String eClassName) {
+	private static boolean dynamicEClassifierExists(EPackage ePackage, String eClassName) {
 		return ePackage.getEClassifiers().stream().anyMatch(e -> eClassName.equals(e.getName()));
 	}
 
-	private boolean dynamicEClassifierExists(EPackage ePackage, Class<?> eClass) {
+	private static boolean dynamicEClassifierExists(EPackage ePackage, Class<?> eClass) {
 		return dynamicEClassifierExists(ePackage, eClass.getSimpleName());
 	}
 
-	private EClassifier getEClassifierForJavaType(EcoreFactory eFactory, EPackage ePackage, Class<?> javaType) {
+	private static EClassifier getEClassifierForJavaType(EcoreFactory eFactory, EPackage ePackage, Class<?> javaType) {
 		if (JAVATYPE_TO_EDATATYPE.containsKey(javaType)) {
 			return JAVATYPE_TO_EDATATYPE.get(javaType);
 		} else if (dynamicEClassifierExists(ePackage, javaType)) {
@@ -345,7 +355,7 @@ public enum DTOToEPackageConverter {
 		}
 	}
 
-	private EDataType getEDataTypeForJavaType(Class<?> javaType) {
+	private static EDataType getEDataTypeForJavaType(Class<?> javaType) {
 		if (JAVATYPE_TO_EDATATYPE.containsKey(javaType)) {
 			return JAVATYPE_TO_EDATATYPE.get(javaType);
 		} else {
@@ -353,28 +363,28 @@ public enum DTOToEPackageConverter {
 		}
 	}
 
-	private boolean isAttributeType(Class<?> javaType) {
-		return (JAVATYPE_TO_EDATATYPE.containsKey(javaType));
+	private static boolean isAttributeType(Class<?> javaType) {
+		return ATTRIBUTE_TYPES.contains(javaType);
 	}
 
-	private boolean isArrayType(Class<?> javaType) {
+	private static boolean isArrayType(Class<?> javaType) {
 		return javaType.isArray();
 	}
 
-	private boolean isEnumType(Class<?> javaType) {
+	private static boolean isEnumType(Class<?> javaType) {
 		return javaType.isEnum();
 	}
 
-	private boolean isCollectionType(Class<?> javaType) {
+	private static boolean isCollectionType(Class<?> javaType) {
 		return (javaType.isAssignableFrom(java.util.List.class) || javaType.isAssignableFrom(java.util.Set.class));
 	}
 
-	private boolean isMapType(Class<?> javaType) {
+	private static boolean isMapType(Class<?> javaType) {
 		return (javaType.isAssignableFrom(java.util.Map.class));
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T> Class<T> getCollectionActualType(Type genericType) {
+	private static <T> Class<T> getCollectionActualType(Type genericType) {
 		Type[] typeArguments = getActualTypes(genericType);
 		if (typeArguments.length > 0) {
 			return ((Class<T>) typeArguments[0]);
@@ -384,7 +394,7 @@ public enum DTOToEPackageConverter {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T> Class<T> getMapKeyActualType(Type genericType) {
+	private static <T> Class<T> getMapKeyActualType(Type genericType) {
 		Type[] typeArguments = getActualTypes(genericType);
 		if (typeArguments.length > 1) {
 			return ((Class<T>) typeArguments[0]);
@@ -394,7 +404,7 @@ public enum DTOToEPackageConverter {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T> Class<T> getMapValueActualType(Type genericType) {
+	private static <T> Class<T> getMapValueActualType(Type genericType) {
 		Type[] typeArguments = getActualTypes(genericType);
 		if (typeArguments.length > 1) {
 			return ((Class<T>) typeArguments[1]);
@@ -403,134 +413,15 @@ public enum DTOToEPackageConverter {
 		}
 	}
 
-	private Type[] getActualTypes(Type genericType) {
+	private static Type[] getActualTypes(Type genericType) {
 		return ((java.lang.reflect.ParameterizedType) genericType).getActualTypeArguments();
-	}
-
-	private static EDataType createShortPrimitiveArrayEDataType() {
-		EDataType type = EcoreFactory.eINSTANCE.createEDataType();
-		type.setName("ShortPrimitiveArray");
-		type.setInstanceClass(short[].class);
-		return type;
-	}
-
-	private static EDataType createIntPrimitiveArrayEDataType() {
-		EDataType type = EcoreFactory.eINSTANCE.createEDataType();
-		type.setName("IntPrimitiveArray");
-		type.setInstanceClass(int[].class);
-		return type;
-	}
-
-	private static EDataType createLongPrimitiveArrayEDataType() {
-		EDataType type = EcoreFactory.eINSTANCE.createEDataType();
-		type.setName("LongPrimitiveArray");
-		type.setInstanceClass(long[].class);
-		return type;
-	}
-
-	private static EDataType createFloatPrimitiveArrayEDataType() {
-		EDataType type = EcoreFactory.eINSTANCE.createEDataType();
-		type.setName("FloatPrimitiveArray");
-		type.setInstanceClass(float[].class);
-		return type;
-	}
-
-	private static EDataType createDoublePrimitiveArrayEDataType() {
-		EDataType type = EcoreFactory.eINSTANCE.createEDataType();
-		type.setName("DoublePrimitiveArray");
-		type.setInstanceClass(double[].class);
-		return type;
-	}
-
-	private static EDataType createBooleanPrimitiveArrayEDataType() {
-		EDataType type = EcoreFactory.eINSTANCE.createEDataType();
-		type.setName("BooleanPrimitiveArray");
-		type.setInstanceClass(boolean[].class);
-		return type;
-	}
-
-	private static EDataType createCharPrimitiveArrayEDataType() {
-		EDataType type = EcoreFactory.eINSTANCE.createEDataType();
-		type.setName("CharPrimitiveArray");
-		type.setInstanceClass(char[].class);
-		return type;
-	}
-
-	private static EDataType createByteWrapperArrayEDataType() {
-		EDataType type = EcoreFactory.eINSTANCE.createEDataType();
-		type.setName("ByteWrapperArray");
-		type.setInstanceClass(Byte[].class);
-		return type;
-	}
-
-	private static EDataType createShortWrapperArrayEDataType() {
-		EDataType type = EcoreFactory.eINSTANCE.createEDataType();
-		type.setName("ShortWrapperArray");
-		type.setInstanceClass(Short[].class);
-		return type;
-	}
-
-	private static EDataType createIntWrapperArrayEDataType() {
-		EDataType type = EcoreFactory.eINSTANCE.createEDataType();
-		type.setName("IntWrapperArray");
-		type.setInstanceClass(Integer[].class);
-		return type;
-	}
-
-	private static EDataType createLongWrapperArrayEDataType() {
-		EDataType type = EcoreFactory.eINSTANCE.createEDataType();
-		type.setName("LongWrapperArray");
-		type.setInstanceClass(Long[].class);
-		return type;
-	}
-
-	private static EDataType createFloatWrapperArrayEDataType() {
-		EDataType type = EcoreFactory.eINSTANCE.createEDataType();
-		type.setName("FloatWrapperArray");
-		type.setInstanceClass(Float[].class);
-		return type;
-	}
-
-	private static EDataType createDoubleWrapperArrayEDataType() {
-		EDataType type = EcoreFactory.eINSTANCE.createEDataType();
-		type.setName("DoubleWrapperArray");
-		type.setInstanceClass(Double[].class);
-		return type;
-	}
-
-	private static EDataType createBooleanWrapperArrayEDataType() {
-		EDataType type = EcoreFactory.eINSTANCE.createEDataType();
-		type.setName("BooleanWrapperArray");
-		type.setInstanceClass(Boolean[].class);
-		return type;
-	}
-
-	private static EDataType createCharWrapperArrayEDataType() {
-		EDataType type = EcoreFactory.eINSTANCE.createEDataType();
-		type.setName("CharWrapperArray");
-		type.setInstanceClass(Character[].class);
-		return type;
-	}
-
-	private static EDataType createStringArrayEDataType() {
-		EDataType type = EcoreFactory.eINSTANCE.createEDataType();
-		type.setName("StringArray");
-		type.setInstanceClass(String[].class);
-		return type;
-	}
-
-	private static EDataType createVersionEDataType() {
-		EDataType type = EcoreFactory.eINSTANCE.createEDataType();
-		type.setName("Version");
-		type.setInstanceClass(org.osgi.framework.Version.class);
-		return type;
 	}
 
 	/**
 	 * based on
 	 * {@link osgi.enroute.dtos.bndlib.provider.DTOsProvider.getFields(Class<?>)}
 	 **/
-	private Field[] getFields(Class<?> c) {
+	private static Field[] getFields(Class<?> c) {
 		Field fields[] = CACHED_FIELDS.get(c);
 		if (fields == null) {
 			List<Field> publicFields = new ArrayList<>();

@@ -34,8 +34,7 @@ public class DTOToEObjectConverterFunction implements ConverterFunction {
 	public Object apply(Object obj, Type targetType) throws Exception {
 		if ((DTOUtil.isDTOType(obj.getClass(), false))
 				&& ((targetType instanceof Class) && EObject.class.isAssignableFrom((Class<?>) targetType))) {
-			return DTOToEObjectConverterUtil.INSTANCE.convertDTO2EObject(obj,
-					dynamicEPackages.toArray(new EPackage[0]));
+			return DTOToEObjectConverterUtil.convertDTO2EObject(obj, dynamicEPackages.toArray(new EPackage[0]));
 		}
 
 		return ConverterFunction.CANNOT_HANDLE;

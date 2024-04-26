@@ -29,12 +29,10 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Michal H. Siemaszko
  */
-public enum DTOToEObjectConverterUtil {
-	INSTANCE;
+public class DTOToEObjectConverterUtil {
+	private final static Logger LOG = LoggerFactory.getLogger(DTOToEObjectConverterUtil.class);
 
-	private static final Logger LOG = LoggerFactory.getLogger(DTOToEObjectConverterUtil.class);
-
-	public final EObject convertDTO2EObject(Object dto, EPackage... dynamicEPackages) {
+	public final static EObject convertDTO2EObject(Object dto, EPackage... dynamicEPackages) {
 		String eClassifierName = dto.getClass().getSimpleName();
 
 		EPackage containingEPackage = findContainingEPackage(eClassifierName, dynamicEPackages);
@@ -70,7 +68,7 @@ public enum DTOToEObjectConverterUtil {
 		return eObject;
 	}
 
-	private EPackage findContainingEPackage(String eClassifierName, EPackage... dynamicEPackages) {
+	private static EPackage findContainingEPackage(String eClassifierName, EPackage... dynamicEPackages) {
 		// @formatter:off
 		return Arrays.asList(dynamicEPackages).stream()
 				.filter(p -> ( p.getEClassifier(eClassifierName) != null ) )
@@ -79,7 +77,7 @@ public enum DTOToEObjectConverterUtil {
 		// @formatter:on
 	}
 
-	private EClassifier findEClassifier(String name, EPackage dynamicEPackage) {
+	private static EClassifier findEClassifier(String name, EPackage dynamicEPackage) {
 		// @formatter:off
 		return dynamicEPackage.getEClassifiers().stream()
 				.filter(c -> name.equalsIgnoreCase(c.getName()))
@@ -89,7 +87,7 @@ public enum DTOToEObjectConverterUtil {
 	}
 
 	@SuppressWarnings("unused")
-	private EClassifier findEClassifier(String name, EPackage... dynamicEPackages) {
+	private static EClassifier findEClassifier(String name, EPackage... dynamicEPackages) {
 		// @formatter:off
 		return Arrays.asList(dynamicEPackages).stream()
 				.flatMap(p -> p.getEClassifiers().stream())
