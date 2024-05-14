@@ -6,6 +6,7 @@
 	org.osgi.util.converter;version=latest,\
 	org.osgi.dto,\
 	org.osgi.util.function;version=latest,\
-	slf4j.api
+	slf4j.api,\
+	org.apache.felix.converter
 
 -dependson: org.gecko.emf.converter.model

@@ -1,45 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<repository xmlns="http://www.osgi.org/xmlns/repository/v1.0.0" name="Local" increment="1713661751173">
-  <resource>
-    <capability namespace="osgi.identity">
-      <attribute name="license" value="Apache-2.0;description=&quot;This program and the accompanying materials are made available under the terms of the Apache License, Version 2.0.&quot;;link=&quot;https://opensource.org/licenses/Apache-2.0&quot;"/>
-      <attribute name="copyright" value="Copyright (c) Contributors to the Eclipse Foundation"/>
-      <attribute name="osgi.identity" value="org.osgi.util.converter"/>
-      <attribute name="documentation" value="https://docs.osgi.org/"/>
-      <attribute name="description" value="OSGi Companion Code for org.osgi.util.converter Version 1.1.0"/>
-      <attribute name="type" value="osgi.bundle"/>
-      <attribute name="version" value="1.1.0.202404210103-SNAPSHOT" type="Version"/>
-    </capability>
-    <capability namespace="osgi.wiring.package">
-      <directive name="uses" value="org.osgi.util.function"/>
-      <attribute name="bundle-symbolic-name" value="org.osgi.util.converter"/>
-      <attribute name="bundle-version" value="1.1.0.202404210103-SNAPSHOT" type="Version"/>
-      <attribute name="osgi.wiring.package" value="org.osgi.util.converter"/>
-      <attribute name="version" value="1.1.0" type="Version"/>
-      <attribute name="bnd.hashes" value="-1820543451,1409482622,1665187389,744292145,387406884,-1041136499,735112040,2003047619,588544734,995634787,-1704389015,1553583033,1654237568,930688507,1527680699,1598161272,-1026834496,-258242829,-258239121,1695030319,17357775,-1593805215,-1801411095,-380447238,-1443568881,1247484180,936880055,-352182354,-278586134,1283157546,569730883,481792012,2067449955,219533462,1799254753,2558748,-2011842187,181543911,1000516353,-1814943667,-1421180655,-611724938,2647074,-1923478059" type="List&lt;Long&gt;"/>
-    </capability>
-    <capability namespace="osgi.wiring.bundle">
-      <attribute name="bundle-version" value="1.1.0.202404210103-SNAPSHOT" type="Version"/>
-      <attribute name="osgi.wiring.bundle" value="org.osgi.util.converter"/>
-    </capability>
-    <capability namespace="osgi.wiring.host">
-      <attribute name="bundle-version" value="1.1.0.202404210103-SNAPSHOT" type="Version"/>
-      <attribute name="osgi.wiring.host" value="org.osgi.util.converter"/>
-    </capability>
-    <capability namespace="osgi.content">
-      <attribute name="size" value="177039" type="Long"/>
-      <attribute name="mime" value="application/vnd.osgi.bundle"/>
-      <attribute name="url" value="org.osgi.util.converter/org.osgi.util.converter-1.1.0.jar"/>
-      <attribute name="osgi.content" value="D3FC3BBC2FB903D867402569629F5FDF07D5332637DE8D5E78E69EA5F574DDAC"/>
-    </capability>
-    <requirement namespace="osgi.wiring.package">
-      <directive name="filter" value="(&amp;(osgi.wiring.package=org.osgi.util.function)(version&gt;=1.0.0)(!(version&gt;=2.0.0)))"/>
-      <attribute name="osgi.wiring.package" value="org.osgi.util.function"/>
-    </requirement>
-    <requirement namespace="osgi.ee">
-      <directive name="filter" value="(&amp;(osgi.ee=JavaSE/compact1)(version=1.8))"/>
-    </requirement>
-  </resource>
+<repository xmlns="http://www.osgi.org/xmlns/repository/v1.0.0" name="Local" increment="1699736382673">
   <resource>
     <capability namespace="osgi.identity">
       <attribute name="license" value="&quot;The Unlicense&quot;;link=&quot;https://github.com/miachm/SODS/blob/master/LICENSE&quot;"/>

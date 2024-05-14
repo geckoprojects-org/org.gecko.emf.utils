@@ -11,10 +11,12 @@
  */
 package org.gecko.emf.converter;
 
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.osgi.util.converter.Converter;
 import org.osgi.util.converter.ConverterBuilder;
 import org.osgi.util.converter.Converters;
+import org.osgi.util.converter.TypeRule;
 
 /**
  * Factory class to obtain a preconfigured DTO to EObject Converter as well as
@@ -28,19 +30,18 @@ public class DTOToEObjectConverters {
 	private DTOToEObjectConverters() {
 	}
 
-	public static Converter dto2EObjectConverter(EPackage... dynamicEPackages) {
-		DTOToEObjectConverterImpl impl = new DTOToEObjectConverterImpl();
-		ConverterBuilder cb = impl.newConverterBuilder();
-		impl.addRules(cb, dynamicEPackages);
-		impl.addDTO2EObjectConverterFunction(cb, dynamicEPackages);
-		return cb.build();
+	public static Converter customConverter(EPackage... dynamicEPackages) {
+		return newCustomConverterBuilder(dynamicEPackages).build();
 	}
 
-	public static Converter standardConverter() {
-		return Converters.standardConverter();
-	}
+	public static ConverterBuilder newCustomConverterBuilder(EPackage... dynamicEPackages) {
+		ConverterBuilder cb = Converters.newConverterBuilder();
 
-	public static ConverterBuilder newStandardConverterBuilder() {
-		return Converters.newConverterBuilder();
+		cb.rule(new DTOToEObjectConverterFunction(dynamicEPackages));
+
+		cb.rule(new TypeRule<Object, EObject>(Object.class, EObject.class,
+				new DTOToEObjectConverterTypeRuleFunction(dynamicEPackages)));
+
+		return cb;
 	}
 }
