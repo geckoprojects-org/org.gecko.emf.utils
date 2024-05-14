@@ -17,7 +17,7 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 
 /**
- * Copy of {@link org.osgi.util.converter.DTOUtil}, as currently it is
+ * Based on {@link org.osgi.util.converter.DTOUtil}, as currently it is
  * package-private.
  * 
  * @author Michal H. Siemaszko
@@ -29,7 +29,7 @@ class DTOUtil {
 		// Do not instantiate. This is a utility class.
 	}
 
-	static boolean isDTOType(Class<?> cls, boolean ignorePublicNoArgsCtor) {
+	static boolean isDTOType(Class<?> cls, boolean ignorePublicNoArgsCtor, boolean allowStaticMethods) {
 		if (!ignorePublicNoArgsCtor) {
 			if (Arrays.stream(cls.getConstructors()).noneMatch(ctor -> ctor.getParameterCount() == 0)) {
 				// No public zero-arg constructor, not a DTO
@@ -38,10 +38,8 @@ class DTOUtil {
 		}
 
 		for (Method m : cls.getMethods()) {
-			if (Arrays.stream(OBJECT_CLASS_METHODS).noneMatch(om -> om.getName().equals(m.getName())
-					&& Arrays.equals(om.getParameterTypes(), m.getParameterTypes()))) {
-				// Not a method defined by Object.class (or override of such
-				// method)
+			if ((!allowStaticMethods && isNotObjectClassMethod(m))
+					|| (allowStaticMethods && isNotObjectClassMethod(m) && !Modifier.isStatic(m.getModifiers()))) {
 				return false;
 			}
 		}
@@ -60,5 +58,10 @@ class DTOUtil {
 			foundField = true;
 		}
 		return foundField;
+	}
+
+	private static boolean isNotObjectClassMethod(Method m) {
+		return (Arrays.stream(OBJECT_CLASS_METHODS).noneMatch(om -> om.getName().equals(m.getName())
+				&& Arrays.equals(om.getParameterTypes(), m.getParameterTypes())));
 	}
 }

@@ -11,30 +11,25 @@
  */
 package org.gecko.emf.converter;
 
-import java.lang.reflect.Type;
-
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
-import org.osgi.util.converter.ConverterFunction;
+import org.osgi.util.function.Function;
 
 /**
- * DTO to EObject {@link org.osgi.util.converter.ConverterFunction}
+ * DTO to EObject {@link org.osgi.util.function.Function} used with
+ * {@link org.osgi.util.converter.TypeRule}
  * 
  * @author Michal H. Siemaszko
  */
-class DTOToEObjectConverterFunction implements ConverterFunction {
+class DTOToEObjectConverterTypeRuleFunction implements Function<Object, EObject> {
 	private EPackage[] dynamicEPackages;
 
-	public DTOToEObjectConverterFunction(EPackage... dynamicEPackages) {
+	public DTOToEObjectConverterTypeRuleFunction(EPackage... dynamicEPackages) {
 		this.dynamicEPackages = dynamicEPackages;
 	}
 
 	@Override
-	public Object apply(Object obj, Type targetType) throws Exception {
-		if ((targetType instanceof Class) && EObject.class.isAssignableFrom((Class<?>) targetType)) {
-			return DTOToEObjectConverterUtil.convertDTO2EObject(obj, dynamicEPackages);
-		}
-
-		return ConverterFunction.CANNOT_HANDLE;
+	public EObject apply(Object dtoObject) throws Exception {
+		return DTOToEObjectConverterUtil.convertDTO2EObject(dtoObject, dynamicEPackages);
 	}
 }

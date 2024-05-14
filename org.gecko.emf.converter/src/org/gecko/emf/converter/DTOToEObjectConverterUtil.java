@@ -29,11 +29,16 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Michal H. Siemaszko
  */
-public class DTOToEObjectConverterUtil {
+class DTOToEObjectConverterUtil {
 	private final static Logger LOG = LoggerFactory.getLogger(DTOToEObjectConverterUtil.class);
 
-	public final static EObject convertDTO2EObject(Object dto, EPackage... dynamicEPackages) {
-		String eClassifierName = dto.getClass().getSimpleName();
+	public final static EObject convertDTO2EObject(Object dtoObject, EPackage... dynamicEPackages) {
+		String eClassifierName = dtoObject.getClass().getSimpleName();
+
+		if (!DTOUtil.isDTOType(dtoObject.getClass(), true, true)) {
+			LOG.warn(" {} is not DTO-like !", eClassifierName);
+			return null;
+		}
 
 		EPackage containingEPackage = findContainingEPackage(eClassifierName, dynamicEPackages);
 		if (containingEPackage == null) {
@@ -47,7 +52,7 @@ public class DTOToEObjectConverterUtil {
 			return null;
 		}
 
-		Map<?, ?> dtoAsMap = Converters.standardConverter().convert(dto).sourceAsDTO().to(Map.class);
+		Map<?, ?> dtoAsMap = Converters.standardConverter().convert(dtoObject).sourceAsDTO().to(Map.class);
 
 		EClass eClass = (EClass) eClassifier;
 
