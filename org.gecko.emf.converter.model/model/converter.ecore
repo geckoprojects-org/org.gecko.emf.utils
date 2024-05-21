@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="model" nsURI="http://gecko.io/converter/1.0" nsPrefix="converter">
+  <eAnnotations source="Version">
+    <details key="value" value="1.0.0"/>
+  </eAnnotations>
+  <eClassifiers xsi:type="ecore:EDataType" name="EShortArray" instanceClassName="short[]"/>
+  <eClassifiers xsi:type="ecore:EDataType" name="EIntArray" instanceClassName="int[]"/>
+  <eClassifiers xsi:type="ecore:EDataType" name="ELongArray" instanceClassName="long[]"/>
+  <eClassifiers xsi:type="ecore:EDataType" name="EFloatArray" instanceClassName="float[]"/>
+  <eClassifiers xsi:type="ecore:EDataType" name="EDoubleArray" instanceClassName="double[]"/>
+  <eClassifiers xsi:type="ecore:EDataType" name="EBooleanArray" instanceClassName="boolean[]"/>
+  <eClassifiers xsi:type="ecore:EDataType" name="ECharArray" instanceClassName="char[]"/>
+  <eClassifiers xsi:type="ecore:EDataType" name="EByteObjectArray" instanceClassName="java.lang.Byte[]"/>
+  <eClassifiers xsi:type="ecore:EDataType" name="EShortObjectArray" instanceClassName="java.lang.Short[]"/>
+  <eClassifiers xsi:type="ecore:EDataType" name="EIntegerObjectArray" instanceClassName="java.lang.Integer[]"/>
+  <eClassifiers xsi:type="ecore:EDataType" name="ELongObjectArray" instanceClassName="java.lang.Long[]"/>
+  <eClassifiers xsi:type="ecore:EDataType" name="EFloatObjectArray" instanceClassName="java.lang.Float[]"/>
+  <eClassifiers xsi:type="ecore:EDataType" name="EDoubleObjectArray" instanceClassName="java.lang.Double[]"/>
+  <eClassifiers xsi:type="ecore:EDataType" name="EBooleanObjectArray" instanceClassName="java.lang.Boolean[]"/>
+  <eClassifiers xsi:type="ecore:EDataType" name="ECharacterObjectArray" instanceClassName="java.lang.Character[]"/>
+  <eClassifiers xsi:type="ecore:EDataType" name="EStringArray" instanceClassName="java.lang.String[]"/>
+  <eClassifiers xsi:type="ecore:EDataType" name="EOSGiFrameworkVersion" instanceClassName="org.osgi.framework.Version"/>
+</ecore:EPackage>

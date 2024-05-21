@@ -23,42 +23,34 @@
 	felix.log.level=4,\
 	org.osgi.service.log.admin.loglevel=DEBUG
 
-# FIXME: problem with pulling in unexpected bundles (not related to this specific format, i.e. R Language - e.g. XLSX exporter - still exists here; 
-# 	in all other test run descriptors (bndrun) resolve works properly / does cause such issues; so this is a temporary workaround - not needed anywhere else;
 -runrequires: \
-	bnd.identity;id='org.gecko.emf.r_lang.tests',\
-	bnd.identity;id='org.gecko.emf.exporter.r_lang'
+	bnd.identity;id='org.gecko.emf.converter.tests',\
+	bnd.identity;id='org.gecko.emf.converter.model'
 
 -runbundles: \
-	org.apache.commons.commons-text;version='[1.10.0,1.10.1)',\
-	org.apache.commons.lang3;version='[3.12.0,3.12.1)',\
-	slf4j.api;version='[1.7.36,1.7.37)',\
-	com.google.guava;version='[32.1.2,32.1.3)',\
-	com.google.guava.failureaccess;version='[1.0.1,1.0.2)',\
-	org.gecko.emf.exporter.r_lang;version=snapshot,\
-	org.gecko.emf.r_lang;version=snapshot,\
-	org.gecko.emf.r_lang.tests;version=snapshot,\
-	org.apache.felix.scr;version='[2.2.6,2.2.7)',\
-	org.gecko.emf.exporter;version=snapshot,\
-	assertj-core;version='[3.24.2,3.24.3)',\
 	junit-jupiter-api;version='[5.10.1,5.10.2)',\
 	junit-jupiter-engine;version='[5.10.1,5.10.2)',\
 	junit-jupiter-params;version='[5.10.1,5.10.2)',\
 	junit-platform-commons;version='[1.10.1,1.10.2)',\
 	junit-platform-engine;version='[1.10.1,1.10.2)',\
 	junit-platform-launcher;version='[1.10.1,1.10.2)',\
-	net.bytebuddy.byte-buddy;version='[1.14.9,1.14.10)',\
 	org.opentest4j;version='[1.3.0,1.3.1)',\
 	org.osgi.test.common;version='[1.2.1,1.2.2)',\
 	org.osgi.test.junit5;version='[1.2.1,1.2.2)',\
-	org.osgi.service.component;version='[1.5.1,1.5.2)',\
 	org.osgi.util.function;version='[1.2.0,1.2.1)',\
-	org.osgi.util.promise;version='[1.3.0,1.3.1)',\
 	org.eclipse.emf.common;version='[2.29.0,2.29.1)',\
 	org.eclipse.emf.ecore;version='[2.35.0,2.35.1)',\
-	org.eclipse.emf.ecore.xmi;version='[2.36.0,2.36.1)',\
-	org.gecko.emf.osgi.component.minimal;version='[6.1.1,6.1.2)',\
-	org.gecko.emf.osgi.example.model.basic;version='[6.1.0,6.1.1)',\
-	org.osgi.service.cm;version='[1.6.1,1.6.2)',\
+	org.gecko.emf.converter;version=snapshot,\
+	org.gecko.emf.converter.tests;version=snapshot,\
+	assertj-core;version='[3.24.2,3.24.3)',\
+	net.bytebuddy.byte-buddy;version='[1.14.9,1.14.10)',\
+	slf4j.api;version='[1.7.36,1.7.37)',\
 	slf4j.simple;version='[1.7.36,1.7.37)',\
+	org.apache.felix.scr;version='[2.2.6,2.2.7)',\
+	org.eclipse.emf.ecore.xmi;version='[2.36.0,2.36.1)',\
+	org.gecko.emf.converter.model;version=snapshot,\
+	org.gecko.emf.osgi.component.minimal;version='[6.1.1,6.1.2)',\
+	org.osgi.service.cm;version='[1.6.1,1.6.2)',\
+	org.osgi.service.component;version='[1.5.1,1.5.2)',\
+	org.osgi.util.promise;version='[1.3.0,1.3.1)',\
 	org.osgi.util.converter;version='[1.0.9,1.0.10)'
