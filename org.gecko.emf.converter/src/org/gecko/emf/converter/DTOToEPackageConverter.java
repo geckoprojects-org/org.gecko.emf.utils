@@ -298,16 +298,16 @@ public class DTOToEPackageConverter {
 			mapEntryEClass.setInstanceClassName("java.util.Map$Entry");
 
 			// key
-			EReference dynamicMapEntryKeyEReference = eFactory.createEReference();
-			dynamicMapEntryKeyEReference.setName("key");
-			dynamicMapEntryKeyEReference.setEType(getEClassifierForJavaType(eFactory, ePackage, mapKeyActualType));
-			mapEntryEClass.getEStructuralFeatures().add(dynamicMapEntryKeyEReference);
+			EAttribute dynamicMapEntryKeyEAttribute = eFactory.createEAttribute();
+			dynamicMapEntryKeyEAttribute.setName("key");
+			dynamicMapEntryKeyEAttribute.setEType(getEClassifierForJavaType(eFactory, ePackage, mapKeyActualType));
+			mapEntryEClass.getEStructuralFeatures().add(dynamicMapEntryKeyEAttribute);
 
 			// value
-			EReference dynamicMapEntryValueEReference = eFactory.createEReference();
-			dynamicMapEntryValueEReference.setName("value");
-			dynamicMapEntryValueEReference.setEType(getEClassifierForJavaType(eFactory, ePackage, mapValueActualType));
-			mapEntryEClass.getEStructuralFeatures().add(dynamicMapEntryValueEReference);
+			EAttribute dynamicMapEntryValueEAttribute = eFactory.createEAttribute();
+			dynamicMapEntryValueEAttribute.setName("value");
+			dynamicMapEntryValueEAttribute.setEType(getEClassifierForJavaType(eFactory, ePackage, mapValueActualType));
+			mapEntryEClass.getEStructuralFeatures().add(dynamicMapEntryValueEAttribute);
 
 			ePackage.getEClassifiers().add(mapEntryEClass);
 
