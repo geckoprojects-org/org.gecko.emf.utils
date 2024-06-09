@@ -17,7 +17,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.gecko.emf.converter.DTOToEObjectConverters;
 import org.gecko.emf.converter.DTOToEPackageConverter;
-import org.gecko.emf.converter.tests.helper.DTOToEMFConverterTestHelper.ConverterTestBasicDTO;
+import org.gecko.emf.converter.tests.helper.ConverterTestBasicDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.platform.commons.annotation.Testable;
