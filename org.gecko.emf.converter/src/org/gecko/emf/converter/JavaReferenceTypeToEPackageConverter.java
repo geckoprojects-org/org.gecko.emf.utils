@@ -1,11 +1,11 @@
 /**
  * Copyright (c) 2012 - 2024 Data In Motion and others.
- * All rights reserved. 
- * 
- * This program and the accompanying materials are made available under the terms of the 
+ * All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the terms of the
  * Eclipse Public License v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
- * 
+ *
  * Contributors:
  *     Data In Motion - initial API and implementation
  */
@@ -36,8 +36,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Java Reference Type to EPackage converter.
- * 
+ * Java Reference Type to EPackage converter - converts Java reference types ( classes, interfaces, enums, collections ) to dynamic EMF model.
+ *
  * @author Michal H. Siemaszko
  */
 @Component(name = "JavaReferenceTypeToEPackageConverter", scope = ServiceScope.SINGLETON)
@@ -47,13 +47,13 @@ public class JavaReferenceTypeToEPackageConverter extends AbstractJavaToEPackage
 
 	// @formatter:off
 	private static final List<Class<?>> BUILTIN_METHOD_TYPES = List.of(
-			Object.class, 
-			Enum.class, 
+			Object.class,
+			Enum.class,
 			Annotation.class,
-			Exception.class, 
-			Map.class, 
-			List.class, 
-			Array.class, 
+			Exception.class,
+			Map.class,
+			List.class,
+			Array.class,
 			Comparable.class);
 	// @formatter:on
 

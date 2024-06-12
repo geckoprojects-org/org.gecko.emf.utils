@@ -1,11 +1,11 @@
 /**
  * Copyright (c) 2012 - 2022 Data In Motion and others.
- * All rights reserved. 
- * 
- * This program and the accompanying materials are made available under the terms of the 
+ * All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the terms of the
  * Eclipse Public License v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
- * 
+ *
  * Contributors:
  *     Data In Motion - initial API and implementation
  */
@@ -41,8 +41,8 @@ import org.osgi.test.junit5.service.ServiceExtension;
 
 /**
  * Integration test for
- * {@link org.gecko.emf.converter.StaticJavaReferenceTypeToEPackageConverter}
- * 
+ * {@link org.gecko.emf.converter.JavaReferenceTypeToEPackageConverter}
+ *
  * @author Michal H. Siemaszko
  */
 @Testable
@@ -74,11 +74,11 @@ public class JavaReferenceTypeToEPackageConverterTest {
 	 * When run via Jenkins build ( see this project's `Jenkinsfile`), Maven
 	 * repository location is per workspace, set via `maven.repo.local` system
 	 * property passed to Gradle via command line.
-	 * 
+	 *
 	 * Unfortunately, due to nature of how integration tests are run, Gradle command
 	 * line system properties are not propagated, hence these these two test cases
 	 * are disabled.
-	 * 
+	 *
 	 * If run in your local development environment, without overriding Maven
 	 * repository location, you can safely enable them.
 	 */
