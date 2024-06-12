@@ -23,35 +23,62 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.gecko.emf.converter.DTOToEPackageConverter;
+import org.gecko.emf.converter.JavaToEPackageConverter;
 import org.gecko.emf.converter.tests.helper.ConverterTestAllSupportedTypesDTO;
 import org.gecko.emf.converter.tests.helper.ConverterTestBasicDTO;
 import org.gecko.emf.converter.tests.helper.ConverterTestInheritingDTO;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.platform.commons.annotation.Testable;
+import org.osgi.framework.ServiceReference;
 import org.osgi.framework.dto.FrameworkDTO;
+import org.osgi.test.common.annotation.InjectService;
+import org.osgi.test.common.service.ServiceAware;
 import org.osgi.test.junit5.context.BundleContextExtension;
 import org.osgi.test.junit5.service.ServiceExtension;
 
 /**
- * Integration test for {@link org.gecko.emf.converter.DTOToEPackageConverter}
+ * Integration test for
+ * {@link org.gecko.emf.converter.StaticDTOToEPackageConverter}
  * 
  * @author Michal H. Siemaszko
  */
 @Testable
 @ExtendWith(BundleContextExtension.class)
 @ExtendWith(ServiceExtension.class)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class DTOToEPackageConverterTest {
 	private static final String PACKAGE_NAME = "dto_to_epackage_converter_test";
 	private static final String NS_URI = "http://gecko.org/test/model/converter/1.0";
 	private static final String NS_PREFIX = "tests";
 
+	@Order(value = -1)
 	@Test
-	public void testConvertBasicDTO() throws Exception {
+	public void testServices(
+			@InjectService(cardinality = 1, timeout = 4000, filter = "(component.name=DTOToEPackageConverter)") ServiceAware<JavaToEPackageConverter> dtoToEPackageConverterAware) {
+
+		assertThat(dtoToEPackageConverterAware.getServices()).hasSize(1);
+		ServiceReference<JavaToEPackageConverter> dtoToEPackageConverterReference = dtoToEPackageConverterAware
+				.getServiceReference();
+		assertThat(dtoToEPackageConverterReference).isNotNull();
+	}
+
+	@Test
+	public void testConvertBasicDTO(
+			@InjectService(cardinality = 1, timeout = 4000, filter = "(component.name=DTOToEPackageConverter)") ServiceAware<JavaToEPackageConverter> dtoToEPackageConverterAware)
+			throws Exception {
+
+		assertThat(dtoToEPackageConverterAware.getServices()).hasSize(1);
+		JavaToEPackageConverter dtoToEPackageConverterService = dtoToEPackageConverterAware.getService();
+		assertThat(dtoToEPackageConverterService).isNotNull();
+
 		Class<ConverterTestBasicDTO> dtoClass = ConverterTestBasicDTO.class;
 
-		EPackage dynamicEPackageFromDTOs = DTOToEPackageConverter.convert(PACKAGE_NAME, NS_URI, NS_PREFIX, dtoClass);
+		EPackage dynamicEPackageFromDTOs = dtoToEPackageConverterService.convert(PACKAGE_NAME, NS_URI, NS_PREFIX,
+				dtoClass);
 		assertNotNull(dynamicEPackageFromDTOs);
 
 		assertEquals(PACKAGE_NAME, dynamicEPackageFromDTOs.getName());
@@ -88,10 +115,18 @@ public class DTOToEPackageConverterTest {
 	}
 
 	@Test
-	public void testConvertInheritingDTO() throws Exception {
+	public void testConvertInheritingDTO(
+			@InjectService(cardinality = 1, timeout = 4000, filter = "(component.name=DTOToEPackageConverter)") ServiceAware<JavaToEPackageConverter> dtoToEPackageConverterAware)
+			throws Exception {
+
+		assertThat(dtoToEPackageConverterAware.getServices()).hasSize(1);
+		JavaToEPackageConverter dtoToEPackageConverterService = dtoToEPackageConverterAware.getService();
+		assertThat(dtoToEPackageConverterService).isNotNull();
+
 		Class<ConverterTestInheritingDTO> dtoClass = ConverterTestInheritingDTO.class;
 
-		EPackage dynamicEPackageFromDTOs = DTOToEPackageConverter.convert(PACKAGE_NAME, NS_URI, NS_PREFIX, dtoClass);
+		EPackage dynamicEPackageFromDTOs = dtoToEPackageConverterService.convert(PACKAGE_NAME, NS_URI, NS_PREFIX,
+				dtoClass);
 		assertNotNull(dynamicEPackageFromDTOs);
 
 		assertEquals(PACKAGE_NAME, dynamicEPackageFromDTOs.getName());
@@ -153,10 +188,18 @@ public class DTOToEPackageConverterTest {
 	}
 
 	@Test
-	public void testConvertAllSupportedTypesDTO() throws Exception {
+	public void testConvertAllSupportedTypesDTO(
+			@InjectService(cardinality = 1, timeout = 4000, filter = "(component.name=DTOToEPackageConverter)") ServiceAware<JavaToEPackageConverter> dtoToEPackageConverterAware)
+			throws Exception {
+
+		assertThat(dtoToEPackageConverterAware.getServices()).hasSize(1);
+		JavaToEPackageConverter dtoToEPackageConverterService = dtoToEPackageConverterAware.getService();
+		assertThat(dtoToEPackageConverterService).isNotNull();
+
 		Class<ConverterTestAllSupportedTypesDTO> dtoClass = ConverterTestAllSupportedTypesDTO.class;
 
-		EPackage dynamicEPackageFromDTOs = DTOToEPackageConverter.convert(PACKAGE_NAME, NS_URI, NS_PREFIX, dtoClass);
+		EPackage dynamicEPackageFromDTOs = dtoToEPackageConverterService.convert(PACKAGE_NAME, NS_URI, NS_PREFIX,
+				dtoClass);
 		assertNotNull(dynamicEPackageFromDTOs);
 
 		assertEquals(PACKAGE_NAME, dynamicEPackageFromDTOs.getName());
@@ -450,10 +493,18 @@ public class DTOToEPackageConverterTest {
 	}
 
 	@Test
-	public void testConvertOSGiFrameworkDTO() throws Exception {
+	public void testConvertOSGiFrameworkDTO(
+			@InjectService(cardinality = 1, timeout = 4000, filter = "(component.name=DTOToEPackageConverter)") ServiceAware<JavaToEPackageConverter> dtoToEPackageConverterAware)
+			throws Exception {
+
+		assertThat(dtoToEPackageConverterAware.getServices()).hasSize(1);
+		JavaToEPackageConverter dtoToEPackageConverterService = dtoToEPackageConverterAware.getService();
+		assertThat(dtoToEPackageConverterService).isNotNull();
+
 		Class<FrameworkDTO> dtoClass = FrameworkDTO.class;
 
-		EPackage dynamicEPackageFromDTOs = DTOToEPackageConverter.convert(PACKAGE_NAME, NS_URI, NS_PREFIX, dtoClass);
+		EPackage dynamicEPackageFromDTOs = dtoToEPackageConverterService.convert(PACKAGE_NAME, NS_URI, NS_PREFIX,
+				dtoClass);
 		assertNotNull(dynamicEPackageFromDTOs);
 
 		assertEquals(PACKAGE_NAME, dynamicEPackageFromDTOs.getName());

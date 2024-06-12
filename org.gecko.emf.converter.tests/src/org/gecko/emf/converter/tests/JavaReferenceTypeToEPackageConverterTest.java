@@ -15,6 +15,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.io.File;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.eclipse.emf.common.util.URI;
@@ -23,36 +25,75 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EcoreFactory;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.gecko.emf.converter.JavaReferenceTypeToEPackageConverter;
+import org.gecko.emf.converter.JavaToEPackageConverter;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.platform.commons.annotation.Testable;
+import org.osgi.framework.ServiceReference;
 import org.osgi.test.common.annotation.InjectService;
 import org.osgi.test.common.service.ServiceAware;
 import org.osgi.test.junit5.context.BundleContextExtension;
 import org.osgi.test.junit5.service.ServiceExtension;
 
 /**
- * Integration test for {@link org.gecko.emf.converter.JavaReferenceTypeToEPackageConverter}
+ * Integration test for
+ * {@link org.gecko.emf.converter.StaticJavaReferenceTypeToEPackageConverter}
  * 
  * @author Michal H. Siemaszko
  */
 @Testable
 @ExtendWith(BundleContextExtension.class)
 @ExtendWith(ServiceExtension.class)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class JavaReferenceTypeToEPackageConverterTest {
-	private static final String JAKARTA_WS_RS_API_JAR_PATH = "/home/michal/.m2/repository/jakarta/ws/rs/jakarta.ws.rs-api/3.1.0/jakarta.ws.rs-api-3.1.0.jar";
-	private static final String JAKARTA_XML_BIND_API_JAR_PATH = "/home/michal/.m2/repository/jakarta/xml/bind/jakarta.xml.bind-api/3.0.1/jakarta.xml.bind-api-3.0.1.jar";
+	private static final String JAKARTA_WS_RS_API_JAR_PATH = getArtifactM2RepoPath("jakarta.ws.rs", "jakarta.ws.rs-api",
+			"3.1.0");
+	private static final String JAKARTA_XML_BIND_API_JAR_PATH = getArtifactM2RepoPath("jakarta.xml.bind",
+			"jakarta.xml.bind-api", "3.0.1");
 
 	private static final String PACKAGE_NAME = "dto_to_epackage_converter_test";
 	private static final String NS_URI = "http://gecko.org/test/model/converter/1.0";
 	private static final String NS_PREFIX = "tests";
 
+	@Order(value = -1)
 	@Test
-	public void testConvertJakartaRESTfulWSAPI() throws Exception {
-		EPackage dynamicEPackageFromDTOs = JavaReferenceTypeToEPackageConverter.convert(PACKAGE_NAME, NS_URI, NS_PREFIX,
-				Paths.get(JAKARTA_WS_RS_API_JAR_PATH), Paths.get(JAKARTA_XML_BIND_API_JAR_PATH));
+	public void testServices(
+			@InjectService(cardinality = 1, timeout = 4000, filter = "(component.name=JavaReferenceTypeToEPackageConverter)") ServiceAware<JavaToEPackageConverter> javaReferenceTypeToEPackageConverterAware) {
+
+		assertThat(javaReferenceTypeToEPackageConverterAware.getServices()).hasSize(1);
+		ServiceReference<JavaToEPackageConverter> javaReferenceTypeToEPackageConverterReference = javaReferenceTypeToEPackageConverterAware
+				.getServiceReference();
+		assertThat(javaReferenceTypeToEPackageConverterReference).isNotNull();
+	}
+
+	/**
+	 * When run via Jenkins build ( see this project's `Jenkinsfile`), Maven
+	 * repository location is per workspace, set via `maven.repo.local` system
+	 * property passed to Gradle via command line.
+	 * 
+	 * Unfortunately, due to nature of how integration tests are run, Gradle command
+	 * line system properties are not propagated, hence these these two test cases
+	 * are disabled.
+	 * 
+	 * If run in your local development environment, without overriding Maven
+	 * repository location, you can safely enable them.
+	 */
+	@Disabled
+	@Test
+	public void testConvertJakartaRESTfulWSAPI(
+			@InjectService(cardinality = 1, timeout = 4000, filter = "(component.name=JavaReferenceTypeToEPackageConverter)") ServiceAware<JavaToEPackageConverter> javaReferenceTypeToEPackageConverterAware)
+			throws Exception {
+		assertThat(javaReferenceTypeToEPackageConverterAware.getServices()).hasSize(1);
+		JavaToEPackageConverter javaReferenceTypeToEPackageConverterService = javaReferenceTypeToEPackageConverterAware
+				.getService();
+		assertThat(javaReferenceTypeToEPackageConverterService).isNotNull();
+
+		EPackage dynamicEPackageFromDTOs = javaReferenceTypeToEPackageConverterService.convert(PACKAGE_NAME, NS_URI,
+				NS_PREFIX, Paths.get(JAKARTA_WS_RS_API_JAR_PATH), Paths.get(JAKARTA_XML_BIND_API_JAR_PATH));
 		assertNotNull(dynamicEPackageFromDTOs);
 
 		assertEquals(PACKAGE_NAME, dynamicEPackageFromDTOs.getName());
@@ -61,19 +102,26 @@ public class JavaReferenceTypeToEPackageConverterTest {
 
 		EPackage.Registry.INSTANCE.put(dynamicEPackageFromDTOs.getNsURI(), dynamicEPackageFromDTOs);
 
-		assertThat(dynamicEPackageFromDTOs.getEClassifiers()).hasSize(146);
+		assertThat(dynamicEPackageFromDTOs.getEClassifiers()).hasSize(182);
 	}
 
+	@Disabled
 	@Test
 	public void testConvertJakartaRESTfulWSAPIAndSerializeToStaticEMF(
+			@InjectService(cardinality = 1, timeout = 4000, filter = "(component.name=JavaReferenceTypeToEPackageConverter)") ServiceAware<JavaToEPackageConverter> javaReferenceTypeToEPackageConverterAware,
 			@InjectService(timeout = 2000) ServiceAware<ResourceSet> rsAware) throws Exception {
+		assertThat(javaReferenceTypeToEPackageConverterAware.getServices()).hasSize(1);
+		JavaToEPackageConverter javaReferenceTypeToEPackageConverterService = javaReferenceTypeToEPackageConverterAware
+				.getService();
+		assertThat(javaReferenceTypeToEPackageConverterService).isNotNull();
+
 		assertNotNull(rsAware);
 		assertThat(rsAware.getServices()).hasSize(1);
 		ResourceSet resourceSet = rsAware.getService();
 		assertNotNull(resourceSet);
 
-		EPackage dynamicEPackageFromDTOs = JavaReferenceTypeToEPackageConverter.convert(PACKAGE_NAME, NS_URI, NS_PREFIX,
-				Paths.get(JAKARTA_WS_RS_API_JAR_PATH), Paths.get(JAKARTA_XML_BIND_API_JAR_PATH));
+		EPackage dynamicEPackageFromDTOs = javaReferenceTypeToEPackageConverterService.convert(PACKAGE_NAME, NS_URI,
+				NS_PREFIX, Paths.get(JAKARTA_WS_RS_API_JAR_PATH), Paths.get(JAKARTA_XML_BIND_API_JAR_PATH));
 		assertNotNull(dynamicEPackageFromDTOs);
 
 		EAnnotation versionEAnnotation = EcoreFactory.eINSTANCE.createEAnnotation();
@@ -87,11 +135,32 @@ public class JavaReferenceTypeToEPackageConverterTest {
 
 		EPackage.Registry.INSTANCE.put(dynamicEPackageFromDTOs.getNsURI(), dynamicEPackageFromDTOs);
 
-		assertThat(dynamicEPackageFromDTOs.getEClassifiers()).hasSize(146);
+		assertThat(dynamicEPackageFromDTOs.getEClassifiers()).hasSize(182);
 
 		Resource resource = resourceSet.createResource(URI.createFileURI("jakarta.ws.rs-api-3.1.0.ecore"));
 
 		resource.getContents().add(dynamicEPackageFromDTOs);
 		resource.save(null);
+	}
+
+	public static String getArtifactM2RepoPath(String groupId, String artifactId, String version) {
+		try {
+			File userHome = new File(System.getProperty("user.home"));
+
+			Path m2Repository = Paths.get(userHome.getCanonicalPath(), ".m2/repository");
+
+			Path projectHome = Paths.get(m2Repository.toAbsolutePath().toString(), groupId.replace('.', '/'));
+
+			StringBuilder artifactName = new StringBuilder();
+			artifactName.append(artifactId);
+			artifactName.append("-");
+			artifactName.append(version);
+			artifactName.append(".jar");
+
+			return Paths.get(projectHome.toAbsolutePath().toString(), artifactId, version, artifactName.toString())
+					.toString();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 }

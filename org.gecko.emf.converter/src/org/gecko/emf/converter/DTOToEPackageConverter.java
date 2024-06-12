@@ -11,21 +11,21 @@
  */
 package org.gecko.emf.converter;
 
-import org.eclipse.emf.ecore.EPackage;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * DTO to EPackage converter
+ * DTO to EPackage converter.
  * 
  * @author Michal H. Siemaszko
  */
-public class DTOToEPackageConverter {
+@Component(name = "DTOToEPackageConverter", scope = ServiceScope.SINGLETON)
+public class DTOToEPackageConverter extends AbstractJavaToEPackageConverter implements JavaToEPackageConverter {
+	private static final Logger LOG = LoggerFactory.getLogger(DTOToEPackageConverter.class);
 
-	private DTOToEPackageConverter() {
-		// Do not instantiate. This is a utility class.
-	}
-
-	@SafeVarargs
-	public static EPackage convert(String packageName, String nsURI, String nsPrefix, Class<?>... classes) {
-		return JavaToEPackageConverter.convert(packageName, nsURI, nsPrefix, classes);
+	public DTOToEPackageConverter() {
+		super(LOG);
 	}
 }

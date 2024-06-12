@@ -11,123 +11,225 @@
  */
 package org.gecko.emf.converter;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.nio.file.Path;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Array;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
+import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.jar.JarEntry;
-import java.util.jar.JarInputStream;
-import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.WeakHashMap;
 
+import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EClassifier;
+import org.eclipse.emf.ecore.EDataType;
+import org.eclipse.emf.ecore.EEnum;
+import org.eclipse.emf.ecore.EOperation;
 import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.EParameter;
+import org.eclipse.emf.ecore.EcoreFactory;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Java Reference Type to EPackage converter
+ * Java Reference Type to EPackage converter.
  * 
  * @author Michal H. Siemaszko
  */
-public class JavaReferenceTypeToEPackageConverter extends JavaToEPackageConverter {
+@Component(name = "JavaReferenceTypeToEPackageConverter", scope = ServiceScope.SINGLETON)
+public class JavaReferenceTypeToEPackageConverter extends AbstractJavaToEPackageConverter
+		implements JavaToEPackageConverter {
+	private static final Logger LOG = LoggerFactory.getLogger(JavaReferenceTypeToEPackageConverter.class);
 
-	private JavaReferenceTypeToEPackageConverter() {
-		// Do not instantiate. This is a utility class.
+	// @formatter:off
+	private static final List<Class<?>> BUILTIN_METHOD_TYPES = List.of(
+			Object.class, 
+			Enum.class, 
+			Annotation.class,
+			Exception.class, 
+			Map.class, 
+			List.class, 
+			Array.class, 
+			Comparable.class);
+	// @formatter:on
+
+	private static final Method[] BUILTIN_METHODS = getBuiltInMethods();
+
+	private static final Map<Class<?>, Method[]> CACHED_METHODS = Collections
+			.synchronizedMap(new WeakHashMap<Class<?>, Method[]>());
+
+	public JavaReferenceTypeToEPackageConverter() {
+		super(LOG);
 	}
 
-	@SafeVarargs
-	public static EPackage convert(String packageName, String nsURI, String nsPrefix, Class<?>... classes) {
-		return JavaToEPackageConverter.convert(packageName, nsURI, nsPrefix, classes);
+	@Override
+	protected EClassifier createEClassifier(EcoreFactory eFactory, EPackage ePackage, Class<?> javaType) {
+		String eClassifierName = constructEClassifierName(javaType);
+
+		if (dynamicEClassifierExists(ePackage, eClassifierName)) {
+			LOG.debug("EClassifier {} already exists!", eClassifierName);
+
+			if (isCustomEDataType(ePackage, eClassifierName)) {
+				return (EDataType) ePackage.getEClassifier(eClassifierName);
+			} else if (isEnumType(javaType)) {
+				return (EEnum) ePackage.getEClassifier(eClassifierName);
+			} else {
+				return (EClass) ePackage.getEClassifier(eClassifierName);
+			}
+		}
+
+		if (maybeCustomEDataType(javaType)) {
+			return createCustomEDataType(eFactory, ePackage, javaType);
+		} else if (isEnumType(javaType)) {
+			return createEEnum(eFactory, ePackage, javaType, eClassifierName);
+		} else {
+			return createEClass(eFactory, ePackage, javaType, eClassifierName);
+		}
 	}
 
-	public static EPackage convert(String packageName, String nsURI, String nsPrefix, Path mainJarFilePath,
-			Path... dependenciesJarFilePaths) throws ClassNotFoundException, IOException {
-		Set<Class<?>> classes = getClassesFromJarFile(mainJarFilePath, dependenciesJarFilePaths);
+	@Override
+	protected EClass createEClass(EcoreFactory eFactory, EPackage ePackage, Class<?> javaType, String eClassifierName) {
+		EClass eClass = super.createEClass(eFactory, ePackage, javaType, eClassifierName);
 
-		return convert(packageName, nsURI, nsPrefix, classes.toArray(Class[]::new));
+		Method[] methods = getMethods(javaType);
+
+		for (Method method : methods) {
+			createEOperation(eFactory, ePackage, eClass, method);
+		}
+
+		return eClass;
 	}
 
-	private static Set<String> getClassNamesFromJarFile(Path jarFilePath) throws IOException {
-		Set<String> classNames = new TreeSet<>();
+	private void createEOperation(EcoreFactory eFactory, EPackage ePackage, EClass eClass, Method method) {
+		LOG.debug("Creating EOperation {} in EClass {}!", method.getName(), eClass.getName());
 
-		try (JarInputStream jarStream = new JarInputStream(new FileInputStream(jarFilePath.toFile()))) {
-			JarEntry jarEntry;
+		EOperation eOperation = eFactory.createEOperation();
+		eOperation.setName(method.getName());
 
-			while ((jarEntry = jarStream.getNextJarEntry()) != null) {
-				String jarEntryName = jarEntry.getName();
-				if (isJarEntryNameValid(jarEntryName)) {
-					// @formatter:off
-					String className = jarEntryName
-							.replace("/", ".")
-							.replace(".class", "");
-					// @formatter:on
-					classNames.add(className);
+		if ((method.getReturnType() != null) && !void.class.isAssignableFrom(method.getReturnType())) {
+			eOperation.setEType(getEClassifierForJavaType(eFactory, ePackage, method.getReturnType()));
+		}
+
+		if (method.getParameterCount() > 0) {
+			Parameter[] parameters = method.getParameters();
+
+			for (int i = 0; i < method.getParameterCount(); i++) {
+
+				Parameter parameter = parameters[i];
+
+				EParameter eParameter = eFactory.createEParameter();
+				eParameter.setName(parameter.getName());
+				eParameter.setEType(getEClassifierForJavaType(eFactory, ePackage, parameter.getType()));
+
+				eOperation.getEParameters().add(eParameter);
+			}
+		}
+
+		Class<?>[] exceptionTypes = method.getExceptionTypes();
+		if (exceptionTypes.length > 0) {
+			for (int i = 0; i < exceptionTypes.length; i++) {
+				eOperation.getEExceptions().add(getEDataTypeForJavaType(eFactory, ePackage, exceptionTypes[i]));
+			}
+		}
+
+		eClass.getEOperations().add(eOperation);
+	}
+
+	@Override
+	protected EClassifier getEClassifierForJavaType(EcoreFactory eFactory, EPackage ePackage, Class<?> javaType) {
+		String eClassifierName = constructEClassifierName(javaType);
+
+		if (JAVATYPE_TO_EDATATYPE.containsKey(javaType)) {
+			return JAVATYPE_TO_EDATATYPE.get(javaType);
+		} else if (dynamicEClassifierExists(ePackage, eClassifierName)) {
+			if (isCustomEDataType(ePackage, eClassifierName)) {
+				return (EDataType) ePackage.getEClassifier(eClassifierName);
+			} else if (isEnumType(javaType)) {
+				return (EEnum) ePackage.getEClassifier(eClassifierName);
+			} else {
+				return (EClass) ePackage.getEClassifier(eClassifierName);
+			}
+		} else {
+			if (maybeCustomEDataType(javaType)) {
+				return createCustomEDataType(eFactory, ePackage, javaType);
+			} else if (isEnumType(javaType)) {
+				return createEEnum(eFactory, ePackage, javaType, eClassifierName);
+			} else {
+				return createEClass(eFactory, ePackage, javaType, eClassifierName);
+			}
+		}
+	}
+
+	private boolean isCustomEDataType(EPackage ePackage, String eClassName) {
+		return ePackage.getEClassifiers().stream()
+				.anyMatch(e -> eClassName.equals(e.getName()) && EDataType.class.isAssignableFrom(e.getClass()));
+	}
+
+	private boolean maybeCustomEDataType(Class<?> javaType) {
+		return (javaType.getPackageName().startsWith("java") || java.lang.Throwable.class.isAssignableFrom(javaType));
+	}
+
+	private EDataType createCustomEDataType(EcoreFactory eFactory, EPackage ePackage, Class<?> javaType) {
+		EDataType eDataType = eFactory.createEDataType();
+		eDataType.setName(javaType.getSimpleName());
+		eDataType.setInstanceClass(javaType);
+
+		ePackage.getEClassifiers().add(eDataType);
+
+		return eDataType;
+	}
+
+	private EDataType getEDataTypeForJavaType(EcoreFactory eFactory, EPackage ePackage, Class<?> javaType) {
+		String eClassifierName = constructEClassifierName(javaType);
+
+		if (JAVATYPE_TO_EDATATYPE.containsKey(javaType)) {
+			return JAVATYPE_TO_EDATATYPE.get(javaType);
+		} else if (dynamicEClassifierExists(ePackage, eClassifierName)) {
+			try {
+				return (EDataType) ePackage.getEClassifier(eClassifierName);
+			} catch (Throwable t) {
+				return null;
+			}
+
+		} else {
+			return createCustomEDataType(eFactory, ePackage, javaType);
+		}
+	}
+
+	private Method[] getMethods(Class<?> c) {
+		Method[] methods = CACHED_METHODS.get(c);
+		if (methods == null) {
+			List<Method> publicMethods = new ArrayList<>();
+
+			for (Method method : c.getMethods()) {
+				if (method.isSynthetic() || isBuiltInMethod(method)) {
+					continue;
 				}
+
+				publicMethods.add(method);
 			}
+
+			CACHED_METHODS.put(c.getClass(), methods = publicMethods.toArray(Method[]::new));
+		}
+		return methods;
+	}
+
+	private boolean isBuiltInMethod(Method m) {
+		return (Arrays.stream(BUILTIN_METHODS).anyMatch(om -> om.getName().equals(m.getName())
+				&& Arrays.equals(om.getParameterTypes(), m.getParameterTypes())));
+	}
+
+	private static Method[] getBuiltInMethods() {
+		List<Method> builtInMethods = new ArrayList<>();
+
+		for (Class<?> builtInMethodType : BUILTIN_METHOD_TYPES) {
+			builtInMethods.addAll(Arrays.asList(builtInMethodType.getMethods()));
 		}
 
-		return classNames;
-	}
-
-	private static boolean isJarEntryNameValid(String jarEntryName) {
-		return (jarEntryName.endsWith(".class")
-				&& (!("module-info.class").equals(jarEntryName) && !jarEntryName.endsWith("$1.class")));
-	}
-
-	private static Set<Class<?>> getClassesFromJarFile(Path mainJarFilePath, Path... dependenciesJarFilePaths)
-			throws IOException, ClassNotFoundException {
-		Set<String> classNames = getClassNamesFromJarFile(mainJarFilePath);
-
-		List<URL> jarFilesURLs = constructJarFilesURLs(mainJarFilePath, dependenciesJarFilePaths);
-
-		return loadClassesFromJarFiles(jarFilesURLs, classNames);
-	}
-
-	private static Set<Class<?>> loadClassesFromJarFiles(List<URL> jarFilesURLs, Set<String> classNames)
-			throws ClassNotFoundException, IOException {
-		Set<Class<?>> classes = new TreeSet<Class<?>>(new Comparator<Class<?>>() {
-			@Override
-			public int compare(Class<?> c1, Class<?> c2) {
-				return c1.getName().compareTo(c2.getName());
-			}
-		});
-
-		try (URLClassLoader cl = URLClassLoader.newInstance(jarFilesURLs.toArray(URL[]::new))) {
-			for (String name : classNames) {
-				Class<?> clazz = cl.loadClass(name);
-				classes.add(clazz);
-			}
-		}
-
-		return classes;
-	}
-
-	private static List<URL> constructJarFilesURLs(Path mainJarFilePath, Path... dependenciesJarFilePaths)
-			throws MalformedURLException {
-		// @formatter:off
-		return mergeJarFilePaths(mainJarFilePath, dependenciesJarFilePaths).stream()
-				.map(jfp -> constructJarFileURL(jfp))
-				.collect(Collectors.toList());
-		// @formatter:on
-	}
-
-	private static URL constructJarFileURL(Path jarFilePath) {
-		try {
-			return new URL("jar:file:" + jarFilePath.toFile() + "!/");
-		} catch (MalformedURLException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	private static List<Path> mergeJarFilePaths(Path mainJarFilePath, Path... dependenciesJarFilePaths) {
-		List<Path> jarFilePaths = new ArrayList<Path>();
-		jarFilePaths.add(mainJarFilePath);
-		jarFilePaths.addAll(Arrays.asList(dependenciesJarFilePaths));
-		return jarFilePaths;
+		return builtInMethods.toArray(Method[]::new);
 	}
 }
