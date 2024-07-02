@@ -12,6 +12,8 @@
 package org.gecko.emf.converter.tests;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.gecko.emf.converter.tests.helper.DTOToEObjectConverterImplTestHelper.eClassifiersTotalCount;
+import static org.gecko.emf.converter.tests.helper.DTOToEObjectConverterImplTestHelper.findEClassifierByName;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -20,6 +22,7 @@ import java.util.List;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -87,16 +90,16 @@ public class DTOToEPackageConverterTest {
 
 		EPackage.Registry.INSTANCE.put(dynamicEPackageFromDTOs.getNsURI(), dynamicEPackageFromDTOs);
 
-		assertThat(dynamicEPackageFromDTOs.getEClassifiers()).hasSize(1);
+		assertThat(eClassifiersTotalCount(dynamicEPackageFromDTOs)).isEqualTo(1);
 
-		assertNotNull(dynamicEPackageFromDTOs.getEClassifier(dtoClass.getSimpleName()));
-		assertTrue(dynamicEPackageFromDTOs.getEClassifier(dtoClass.getSimpleName()) instanceof EClass);
-		assertThat(
-				((EClass) dynamicEPackageFromDTOs.getEClassifier(dtoClass.getSimpleName())).getEAllStructuralFeatures())
-				.hasSize(3);
+		EClassifier dynamicEClassifierFromDTO = findEClassifierByName(dynamicEPackageFromDTOs,
+				dtoClass.getSimpleName());
+		assertNotNull(dynamicEClassifierFromDTO);
+		assertTrue(dynamicEClassifierFromDTO instanceof EClass);
+		assertThat(((EClass) dynamicEClassifierFromDTO).getEAllStructuralFeatures()).hasSize(3);
 
-		List<EStructuralFeature> eAllStructuralFeatures = ((EClass) dynamicEPackageFromDTOs
-				.getEClassifier(dtoClass.getSimpleName())).getEAllStructuralFeatures();
+		List<EStructuralFeature> eAllStructuralFeatures = ((EClass) dynamicEClassifierFromDTO)
+				.getEAllStructuralFeatures();
 
 		boolean hasLongPrimitiveEAttribute = eAllStructuralFeatures.stream()
 				.anyMatch(f -> ((f instanceof EAttribute) && "longPrimitiveField".equals(((EAttribute) f).getName())
@@ -135,16 +138,16 @@ public class DTOToEPackageConverterTest {
 
 		EPackage.Registry.INSTANCE.put(dynamicEPackageFromDTOs.getNsURI(), dynamicEPackageFromDTOs);
 
-		assertThat(dynamicEPackageFromDTOs.getEClassifiers()).hasSize(1);
+		assertThat(eClassifiersTotalCount(dynamicEPackageFromDTOs)).isEqualTo(1);
 
-		assertNotNull(dynamicEPackageFromDTOs.getEClassifier(dtoClass.getSimpleName()));
-		assertTrue(dynamicEPackageFromDTOs.getEClassifier(dtoClass.getSimpleName()) instanceof EClass);
-		assertThat(
-				((EClass) dynamicEPackageFromDTOs.getEClassifier(dtoClass.getSimpleName())).getEAllStructuralFeatures())
-				.hasSize(9);
+		EClassifier dynamicEClassifierFromDTO = findEClassifierByName(dynamicEPackageFromDTOs,
+				dtoClass.getSimpleName());
+		assertNotNull(dynamicEClassifierFromDTO);
+		assertTrue(dynamicEClassifierFromDTO instanceof EClass);
+		assertThat(((EClass) dynamicEClassifierFromDTO).getEAllStructuralFeatures()).hasSize(9);
 
-		List<EStructuralFeature> eAllStructuralFeatures = ((EClass) dynamicEPackageFromDTOs
-				.getEClassifier(dtoClass.getSimpleName())).getEAllStructuralFeatures();
+		List<EStructuralFeature> eAllStructuralFeatures = ((EClass) dynamicEClassifierFromDTO)
+				.getEAllStructuralFeatures();
 
 		boolean hasBytePrimitiveEAttribute = eAllStructuralFeatures.stream()
 				.anyMatch(f -> ((f instanceof EAttribute) && "bytePrimitiveField".equals(((EAttribute) f).getName())
@@ -208,17 +211,16 @@ public class DTOToEPackageConverterTest {
 
 		EPackage.Registry.INSTANCE.put(dynamicEPackageFromDTOs.getNsURI(), dynamicEPackageFromDTOs);
 
-		assertThat(dynamicEPackageFromDTOs.getEClassifiers()).hasSize(8);
+		assertThat(eClassifiersTotalCount(dynamicEPackageFromDTOs)).isEqualTo(8);
 
-		assertNotNull(dynamicEPackageFromDTOs.getEClassifier(dtoClass.getSimpleName()));
-		assertTrue(dynamicEPackageFromDTOs.getEClassifier(dtoClass.getSimpleName()) instanceof EClass);
+		EClassifier dynamicEClassifierFromDTO = findEClassifierByName(dynamicEPackageFromDTOs,
+				dtoClass.getSimpleName());
+		assertNotNull(dynamicEClassifierFromDTO);
+		assertTrue(dynamicEClassifierFromDTO instanceof EClass);
+		assertThat(((EClass) dynamicEClassifierFromDTO).getEAllStructuralFeatures()).hasSize(44);
 
-		assertThat(
-				((EClass) dynamicEPackageFromDTOs.getEClassifier(dtoClass.getSimpleName())).getEAllStructuralFeatures())
-				.hasSize(44);
-
-		List<EStructuralFeature> eAllStructuralFeatures = ((EClass) dynamicEPackageFromDTOs
-				.getEClassifier(dtoClass.getSimpleName())).getEAllStructuralFeatures();
+		List<EStructuralFeature> eAllStructuralFeatures = ((EClass) dynamicEClassifierFromDTO)
+				.getEAllStructuralFeatures();
 
 		// Primitive types
 		boolean hasBytePrimitiveEAttribute = eAllStructuralFeatures.stream()
@@ -513,16 +515,16 @@ public class DTOToEPackageConverterTest {
 
 		EPackage.Registry.INSTANCE.put(dynamicEPackageFromDTOs.getNsURI(), dynamicEPackageFromDTOs);
 
-		assertThat(dynamicEPackageFromDTOs.getEClassifiers()).hasSize(4);
+		assertThat(eClassifiersTotalCount(dynamicEPackageFromDTOs)).isEqualTo(4);
 
-		assertNotNull(dynamicEPackageFromDTOs.getEClassifier(dtoClass.getSimpleName()));
-		assertTrue(dynamicEPackageFromDTOs.getEClassifier(dtoClass.getSimpleName()) instanceof EClass);
-		assertThat(
-				((EClass) dynamicEPackageFromDTOs.getEClassifier(dtoClass.getSimpleName())).getEAllStructuralFeatures())
-				.hasSize(3);
+		EClassifier dynamicEClassifierFromDTO = findEClassifierByName(dynamicEPackageFromDTOs,
+				dtoClass.getSimpleName());
+		assertNotNull(dynamicEClassifierFromDTO);
+		assertTrue(dynamicEClassifierFromDTO instanceof EClass);
+		assertThat(((EClass) dynamicEClassifierFromDTO).getEAllStructuralFeatures()).hasSize(3);
 
-		List<EStructuralFeature> eAllStructuralFeatures = ((EClass) dynamicEPackageFromDTOs
-				.getEClassifier(dtoClass.getSimpleName())).getEAllStructuralFeatures();
+		List<EStructuralFeature> eAllStructuralFeatures = ((EClass) dynamicEClassifierFromDTO)
+				.getEAllStructuralFeatures();
 
 		boolean hasBundlesEReference = eAllStructuralFeatures.stream()
 				.anyMatch(f -> ((f instanceof EReference) && "bundles".equals(((EReference) f).getName())

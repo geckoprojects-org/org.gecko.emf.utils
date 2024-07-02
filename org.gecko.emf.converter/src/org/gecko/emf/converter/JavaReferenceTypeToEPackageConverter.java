@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
+import java.util.stream.Stream;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
@@ -36,8 +37,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Java Reference Type to EPackage converter - converts Java reference types ( classes, interfaces, enums, collections ) to dynamic EMF model.
- *
+ * Java Reference Type to EPackage converter - converts Java reference types (
+ * classes, interfaces, enums, collections ) to dynamic EMF model.
+ * 
  * @author Michal H. Siemaszko
  */
 @Component(name = "JavaReferenceTypeToEPackageConverter", scope = ServiceScope.SINGLETON)
@@ -74,11 +76,11 @@ public class JavaReferenceTypeToEPackageConverter extends AbstractJavaToEPackage
 			LOG.debug("EClassifier {} already exists!", eClassifierName);
 
 			if (isCustomEDataType(ePackage, eClassifierName)) {
-				return (EDataType) ePackage.getEClassifier(eClassifierName);
+				return (EDataType) findEClassifierByName(ePackage, eClassifierName);
 			} else if (isEnumType(javaType)) {
-				return (EEnum) ePackage.getEClassifier(eClassifierName);
+				return (EEnum) findEClassifierByName(ePackage, eClassifierName);
 			} else {
-				return (EClass) ePackage.getEClassifier(eClassifierName);
+				return (EClass) findEClassifierByName(ePackage, eClassifierName);
 			}
 		}
 
@@ -147,11 +149,11 @@ public class JavaReferenceTypeToEPackageConverter extends AbstractJavaToEPackage
 			return JAVATYPE_TO_EDATATYPE.get(javaType);
 		} else if (dynamicEClassifierExists(ePackage, eClassifierName)) {
 			if (isCustomEDataType(ePackage, eClassifierName)) {
-				return (EDataType) ePackage.getEClassifier(eClassifierName);
+				return (EDataType) findEClassifierByName(ePackage, eClassifierName);
 			} else if (isEnumType(javaType)) {
-				return (EEnum) ePackage.getEClassifier(eClassifierName);
+				return (EEnum) findEClassifierByName(ePackage, eClassifierName);
 			} else {
-				return (EClass) ePackage.getEClassifier(eClassifierName);
+				return (EClass) findEClassifierByName(ePackage, eClassifierName);
 			}
 		} else {
 			if (maybeCustomEDataType(javaType)) {
@@ -164,9 +166,13 @@ public class JavaReferenceTypeToEPackageConverter extends AbstractJavaToEPackage
 		}
 	}
 
-	private boolean isCustomEDataType(EPackage ePackage, String eClassName) {
-		return ePackage.getEClassifiers().stream()
-				.anyMatch(e -> eClassName.equals(e.getName()) && EDataType.class.isAssignableFrom(e.getClass()));
+	private boolean isCustomEDataType(EPackage ePackage, String eClassifierName) {
+		// @formatter:off
+		return Stream
+				.concat(ePackage.getEClassifiers().stream(),
+						ePackage.getESubpackages().stream().flatMap(p -> p.getEClassifiers().stream()))
+				.anyMatch(e -> eClassifierName.equals(e.getName()) && EDataType.class.isAssignableFrom(e.getClass()));
+		// @formatter:on
 	}
 
 	private boolean maybeCustomEDataType(Class<?> javaType) {
@@ -178,7 +184,8 @@ public class JavaReferenceTypeToEPackageConverter extends AbstractJavaToEPackage
 		eDataType.setName(javaType.getSimpleName());
 		eDataType.setInstanceClass(javaType);
 
-		ePackage.getEClassifiers().add(eDataType);
+		EPackage eSubPackage = getOrCreateESubPackage(eFactory, ePackage, javaType.getPackageName());
+		eSubPackage.getEClassifiers().add(eDataType);
 
 		return eDataType;
 	}
@@ -190,7 +197,7 @@ public class JavaReferenceTypeToEPackageConverter extends AbstractJavaToEPackage
 			return JAVATYPE_TO_EDATATYPE.get(javaType);
 		} else if (dynamicEClassifierExists(ePackage, eClassifierName)) {
 			try {
-				return (EDataType) ePackage.getEClassifier(eClassifierName);
+				return (EDataType) findEClassifierByName(ePackage, eClassifierName);
 			} catch (Throwable t) {
 				return null;
 			}

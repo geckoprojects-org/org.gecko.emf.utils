@@ -13,6 +13,7 @@ package org.gecko.emf.converter;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
@@ -74,11 +75,31 @@ class DTOToEObjectConverterUtil {
 	}
 
 	private static EPackage findContainingEPackage(String eClassifierName, EPackage... dynamicEPackages) {
+		Optional<EPackage> ePackageInRootEPackages = findContainingEPackageInRootEPackages(eClassifierName,
+				dynamicEPackages);
+		if (ePackageInRootEPackages.isPresent()) {
+			return ePackageInRootEPackages.get();
+		} else {
+			return findContainingEPackageInESubpackages(eClassifierName, dynamicEPackages).orElseThrow();
+		}
+	}
+
+	private static Optional<EPackage> findContainingEPackageInRootEPackages(String eClassifierName,
+			EPackage... dynamicEPackages) {
 		// @formatter:off
 		return Arrays.asList(dynamicEPackages).stream()
 				.filter(p -> ( p.getEClassifier(eClassifierName) != null ) )
-				.findFirst()
-				.orElse(null);
+				.findFirst();
+		// @formatter:on
+	}
+
+	private static Optional<EPackage> findContainingEPackageInESubpackages(String eClassifierName,
+			EPackage... dynamicEPackages) {
+		// @formatter:off
+		return Arrays.asList(dynamicEPackages).stream()
+				.flatMap(p -> p.getESubpackages().stream())
+				.filter(p -> ( p.getEClassifier(eClassifierName) != null ) )
+				.findFirst();
 		// @formatter:on
 	}
 

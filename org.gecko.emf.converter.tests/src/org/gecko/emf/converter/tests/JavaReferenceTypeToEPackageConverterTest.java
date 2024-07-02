@@ -12,6 +12,7 @@
 package org.gecko.emf.converter.tests;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.gecko.emf.converter.tests.helper.DTOToEObjectConverterImplTestHelper.eClassifiersTotalCount;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -55,7 +56,10 @@ public class JavaReferenceTypeToEPackageConverterTest {
 	private static final String JAKARTA_XML_BIND_API_JAR_PATH = getArtifactM2RepoPath("jakarta.xml.bind",
 			"jakarta.xml.bind-api", "3.0.1");
 
-	private static final String PACKAGE_NAME = "dto_to_epackage_converter_test";
+	private static final String ORG_APACHE_FELIX_HTTP_SERVLET_API = getArtifactM2RepoPath("org.apache.felix",
+			"org.apache.felix.http.servlet-api", "2.1.0");
+
+	private static final String PACKAGE_NAME = "javareferencetype_to_epackage_converter_test";
 	private static final String NS_URI = "http://gecko.org/test/model/converter/1.0";
 	private static final String NS_PREFIX = "tests";
 
@@ -92,17 +96,19 @@ public class JavaReferenceTypeToEPackageConverterTest {
 				.getService();
 		assertThat(javaReferenceTypeToEPackageConverterService).isNotNull();
 
-		EPackage dynamicEPackageFromDTOs = javaReferenceTypeToEPackageConverterService.convert(PACKAGE_NAME, NS_URI,
-				NS_PREFIX, Paths.get(JAKARTA_WS_RS_API_JAR_PATH), Paths.get(JAKARTA_XML_BIND_API_JAR_PATH));
-		assertNotNull(dynamicEPackageFromDTOs);
+		EPackage dynamicEPackageFromJavaReferenceTypes = javaReferenceTypeToEPackageConverterService.convert(
+				PACKAGE_NAME, NS_URI, NS_PREFIX, Paths.get(JAKARTA_WS_RS_API_JAR_PATH),
+				Paths.get(JAKARTA_XML_BIND_API_JAR_PATH));
+		assertNotNull(dynamicEPackageFromJavaReferenceTypes);
 
-		assertEquals(PACKAGE_NAME, dynamicEPackageFromDTOs.getName());
-		assertEquals(NS_URI, dynamicEPackageFromDTOs.getNsURI());
-		assertEquals(NS_PREFIX, dynamicEPackageFromDTOs.getNsPrefix());
+		assertEquals(PACKAGE_NAME, dynamicEPackageFromJavaReferenceTypes.getName());
+		assertEquals(NS_URI, dynamicEPackageFromJavaReferenceTypes.getNsURI());
+		assertEquals(NS_PREFIX, dynamicEPackageFromJavaReferenceTypes.getNsPrefix());
 
-		EPackage.Registry.INSTANCE.put(dynamicEPackageFromDTOs.getNsURI(), dynamicEPackageFromDTOs);
+		EPackage.Registry.INSTANCE.put(dynamicEPackageFromJavaReferenceTypes.getNsURI(),
+				dynamicEPackageFromJavaReferenceTypes);
 
-		assertThat(dynamicEPackageFromDTOs.getEClassifiers()).hasSize(182);
+		assertThat(eClassifiersTotalCount(dynamicEPackageFromJavaReferenceTypes)).isEqualTo(182);
 	}
 
 	@Disabled
@@ -120,26 +126,74 @@ public class JavaReferenceTypeToEPackageConverterTest {
 		ResourceSet resourceSet = rsAware.getService();
 		assertNotNull(resourceSet);
 
-		EPackage dynamicEPackageFromDTOs = javaReferenceTypeToEPackageConverterService.convert(PACKAGE_NAME, NS_URI,
-				NS_PREFIX, Paths.get(JAKARTA_WS_RS_API_JAR_PATH), Paths.get(JAKARTA_XML_BIND_API_JAR_PATH));
-		assertNotNull(dynamicEPackageFromDTOs);
+		EPackage dynamicEPackageFromJavaReferenceTypes = javaReferenceTypeToEPackageConverterService.convert(
+				PACKAGE_NAME, NS_URI, NS_PREFIX, Paths.get(JAKARTA_WS_RS_API_JAR_PATH),
+				Paths.get(JAKARTA_XML_BIND_API_JAR_PATH));
+		assertNotNull(dynamicEPackageFromJavaReferenceTypes);
 
 		EAnnotation versionEAnnotation = EcoreFactory.eINSTANCE.createEAnnotation();
 		versionEAnnotation.setSource("Version");
 		versionEAnnotation.getDetails().put("value", "3.1.0");
-		dynamicEPackageFromDTOs.getEAnnotations().add(versionEAnnotation);
+		dynamicEPackageFromJavaReferenceTypes.getEAnnotations().add(versionEAnnotation);
 
-		assertEquals(PACKAGE_NAME, dynamicEPackageFromDTOs.getName());
-		assertEquals(NS_URI, dynamicEPackageFromDTOs.getNsURI());
-		assertEquals(NS_PREFIX, dynamicEPackageFromDTOs.getNsPrefix());
+		assertEquals(PACKAGE_NAME, dynamicEPackageFromJavaReferenceTypes.getName());
+		assertEquals(NS_URI, dynamicEPackageFromJavaReferenceTypes.getNsURI());
+		assertEquals(NS_PREFIX, dynamicEPackageFromJavaReferenceTypes.getNsPrefix());
 
-		EPackage.Registry.INSTANCE.put(dynamicEPackageFromDTOs.getNsURI(), dynamicEPackageFromDTOs);
+		EPackage.Registry.INSTANCE.put(dynamicEPackageFromJavaReferenceTypes.getNsURI(),
+				dynamicEPackageFromJavaReferenceTypes);
 
-		assertThat(dynamicEPackageFromDTOs.getEClassifiers()).hasSize(182);
+		assertThat(eClassifiersTotalCount(dynamicEPackageFromJavaReferenceTypes)).isEqualTo(182);
 
 		Resource resource = resourceSet.createResource(URI.createFileURI("jakarta.ws.rs-api-3.1.0.ecore"));
 
-		resource.getContents().add(dynamicEPackageFromDTOs);
+		resource.getContents().add(dynamicEPackageFromJavaReferenceTypes);
+		resource.save(null);
+	}
+
+	// Example of JAR which contains packages from different namespaces -
+	// `org.apache.felix:org.apache.felix.http.servlet-api:2.1.0` contains packages
+	// from both `jakarta.servlet` and `javax.servlet` namespaces; there there are
+	// many JARs like such!
+	@Disabled
+	@Test
+	public void testConvertOrgApacheFelixHttpServletApiAndSerializeToStaticEMF(
+			@InjectService(cardinality = 1, timeout = 4000, filter = "(component.name=JavaReferenceTypeToEPackageConverter)") ServiceAware<JavaToEPackageConverter> javaReferenceTypeToEPackageConverterAware,
+			@InjectService(timeout = 2000) ServiceAware<ResourceSet> rsAware) throws Exception {
+		assertThat(javaReferenceTypeToEPackageConverterAware.getServices()).hasSize(1);
+		JavaToEPackageConverter javaReferenceTypeToEPackageConverterService = javaReferenceTypeToEPackageConverterAware
+				.getService();
+		assertThat(javaReferenceTypeToEPackageConverterService).isNotNull();
+
+		assertNotNull(rsAware);
+		assertThat(rsAware.getServices()).hasSize(1);
+		ResourceSet resourceSet = rsAware.getService();
+		assertNotNull(resourceSet);
+
+		String nsURI = "https://geckoprojects.org/jakarta/servlet/2.1.0/";
+
+		EPackage dynamicEPackageFromJavaReferenceTypes = javaReferenceTypeToEPackageConverterService
+				.convert(PACKAGE_NAME, nsURI, NS_PREFIX, Paths.get(ORG_APACHE_FELIX_HTTP_SERVLET_API));
+		assertNotNull(dynamicEPackageFromJavaReferenceTypes);
+
+		EAnnotation versionEAnnotation = EcoreFactory.eINSTANCE.createEAnnotation();
+		versionEAnnotation.setSource("Version");
+		versionEAnnotation.getDetails().put("value", "2.1.0");
+		dynamicEPackageFromJavaReferenceTypes.getEAnnotations().add(versionEAnnotation);
+
+		assertEquals(PACKAGE_NAME, dynamicEPackageFromJavaReferenceTypes.getName());
+		assertEquals(nsURI, dynamicEPackageFromJavaReferenceTypes.getNsURI());
+		assertEquals(NS_PREFIX, dynamicEPackageFromJavaReferenceTypes.getNsPrefix());
+
+		EPackage.Registry.INSTANCE.put(dynamicEPackageFromJavaReferenceTypes.getNsURI(),
+				dynamicEPackageFromJavaReferenceTypes);
+
+		assertThat(eClassifiersTotalCount(dynamicEPackageFromJavaReferenceTypes)).isEqualTo(119);
+
+		Resource resource = resourceSet
+				.createResource(URI.createFileURI("org.apache.felix.http.servlet-api-2.1.0.ecore"));
+
+		resource.getContents().add(dynamicEPackageFromJavaReferenceTypes);
 		resource.save(null);
 	}
 
