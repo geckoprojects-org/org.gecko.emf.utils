@@ -17,7 +17,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.gecko.emf.converter.DTOToEObjectConverters;
 import org.gecko.emf.converter.DTOToEPackageConverter;
-import org.gecko.emf.converter.tests.helper.DTOToEMFConverterTestHelper.ConverterTestBasicDTO;
+import org.gecko.emf.converter.tests.helper.ConverterTestBasicDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.platform.commons.annotation.Testable;
@@ -36,7 +36,7 @@ import org.osgi.util.function.Function;
 @ExtendWith(BundleContextExtension.class)
 @ExtendWith(ServiceExtension.class)
 public class DTOToEObjectConverterTest {
-	private static final String PACKAGE_NAME = "org.gecko.emf.converter";
+	private static final String PACKAGE_NAME = "dto_to_eobject_converter_test";
 	private static final String NS_URI = "http://gecko.org/test/model/converter/1.0";
 	private static final String NS_PREFIX = "tests";
 

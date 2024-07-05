@@ -9,23 +9,17 @@
  * Contributors:
  *     Data In Motion - initial API and implementation
  */
-package org.gecko.emf.converter;
+package org.gecko.emf.converter.tests.helper;
 
-import org.eclipse.emf.ecore.EPackage;
+import org.osgi.dto.DTO;
 
 /**
- * DTO to EPackage converter
+ * Sample DTO for {@link org.gecko.emf.converter.tests.DTOToEObjectConverterTest}
  * 
  * @author Michal H. Siemaszko
  */
-public class DTOToEPackageConverter {
-
-	private DTOToEPackageConverter() {
-		// Do not instantiate. This is a utility class.
-	}
-
-	@SafeVarargs
-	public static EPackage convert(String packageName, String nsURI, String nsPrefix, Class<?>... classes) {
-		return JavaToEPackageConverter.convert(packageName, nsURI, nsPrefix, classes);
-	}
+public class ConverterTestBasicDTO extends DTO {
+	public long longPrimitiveField;
+	public boolean booleanPrimitiveField;
+	public String stringField;
 }
