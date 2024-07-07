@@ -30,6 +30,7 @@ import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EOperation;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EParameter;
+import org.eclipse.emf.ecore.ETypedElement;
 import org.eclipse.emf.ecore.EcoreFactory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ServiceScope;
@@ -71,16 +72,17 @@ public class JavaReferenceTypeToEPackageConverter extends AbstractJavaToEPackage
 	@Override
 	protected EClassifier createEClassifier(EcoreFactory eFactory, EPackage ePackage, Class<?> javaType) {
 		String eClassifierName = constructEClassifierName(javaType);
+		String eClassifierPackageName = javaType.getPackageName();
 
-		if (dynamicEClassifierExists(ePackage, eClassifierName)) {
-			LOG.debug("EClassifier {} already exists!", eClassifierName);
+		if (dynamicEClassifierExists(ePackage, eClassifierName, eClassifierPackageName)) {
+			LOG.debug("EClassifier {} already exists in package {}!", eClassifierName, eClassifierPackageName);
 
-			if (isCustomEDataType(ePackage, eClassifierName)) {
-				return (EDataType) findEClassifierByName(ePackage, eClassifierName);
+			if (isCustomEDataType(ePackage, eClassifierName, eClassifierPackageName)) {
+				return (EDataType) findEClassifierByName(ePackage, eClassifierName, eClassifierPackageName);
 			} else if (isEnumType(javaType)) {
-				return (EEnum) findEClassifierByName(ePackage, eClassifierName);
+				return (EEnum) findEClassifierByName(ePackage, eClassifierName, eClassifierPackageName);
 			} else {
-				return (EClass) findEClassifierByName(ePackage, eClassifierName);
+				return (EClass) findEClassifierByName(ePackage, eClassifierName, eClassifierPackageName);
 			}
 		}
 
@@ -112,20 +114,35 @@ public class JavaReferenceTypeToEPackageConverter extends AbstractJavaToEPackage
 		EOperation eOperation = eFactory.createEOperation();
 		eOperation.setName(method.getName());
 
-		if ((method.getReturnType() != null) && !void.class.isAssignableFrom(method.getReturnType())) {
-			eOperation.setEType(getEClassifierForJavaType(eFactory, ePackage, method.getReturnType()));
+		Class<?> methodReturnType = method.getReturnType();
+
+		if ((methodReturnType != null) && !void.class.isAssignableFrom(methodReturnType)) {
+			if (isArrayType(methodReturnType) && !isPredefinedEDataType(methodReturnType)) {
+				eOperation.setEType(getEClassifierForJavaType(eFactory, ePackage, methodReturnType.getComponentType()));
+				eOperation.setUpperBound(ETypedElement.UNBOUNDED_MULTIPLICITY);
+			} else {
+				eOperation.setEType(getEClassifierForJavaType(eFactory, ePackage, method.getReturnType()));
+			}
 		}
 
 		if (method.getParameterCount() > 0) {
 			Parameter[] parameters = method.getParameters();
 
 			for (int i = 0; i < method.getParameterCount(); i++) {
-
 				Parameter parameter = parameters[i];
 
 				EParameter eParameter = eFactory.createEParameter();
 				eParameter.setName(parameter.getName());
-				eParameter.setEType(getEClassifierForJavaType(eFactory, ePackage, parameter.getType()));
+
+				Class<?> parameterType = parameter.getType();
+
+				if (isArrayType(parameterType) && !isPredefinedEDataType(parameterType)) {
+					eParameter
+							.setEType(getEClassifierForJavaType(eFactory, ePackage, parameterType.getComponentType()));
+					eParameter.setUpperBound(ETypedElement.UNBOUNDED_MULTIPLICITY);
+				} else {
+					eParameter.setEType(getEClassifierForJavaType(eFactory, ePackage, parameterType));
+				}
 
 				eOperation.getEParameters().add(eParameter);
 			}
@@ -138,22 +155,53 @@ public class JavaReferenceTypeToEPackageConverter extends AbstractJavaToEPackage
 			}
 		}
 
-		eClass.getEOperations().add(eOperation);
+		if (!eOperationExists(eClass, eOperation)) {
+			eClass.getEOperations().add(eOperation);
+		}
+	}
+
+	protected boolean eOperationExists(EClass eClass, EOperation eOperation1) {
+		return eClass.getEOperations().stream().anyMatch(eOperation2 -> eOperationMatches(eOperation1, eOperation2));
+	}
+
+	protected boolean eOperationMatches(EOperation eOperation1, EOperation eOperation2) {
+		return (eOperation1.getName()).equals(eOperation2.getName())
+				&& eOperationParametersMatch(eOperation1, eOperation2);
+	}
+
+	protected boolean eOperationParametersMatch(EOperation eOperation1, EOperation eOperation2) {
+		boolean parametersMatch = eOperation1.getEParameters().size() == eOperation2.getEParameters().size();
+
+		if (parametersMatch && (!eOperation1.getEParameters().isEmpty() && !eOperation2.getEParameters().isEmpty())) {
+			List<EParameter> eOperation1EParameters = eOperation1.getEParameters();
+			List<EParameter> eOperation2EParameters = eOperation2.getEParameters();
+
+			for (int i = 0; i < eOperation1EParameters.size(); i++) {
+				parametersMatch = (eOperation1EParameters.get(i).getEType() == eOperation2EParameters.get(i)
+						.getEType());
+				if (!parametersMatch) {
+					break;
+				}
+			}
+		}
+
+		return parametersMatch;
 	}
 
 	@Override
 	protected EClassifier getEClassifierForJavaType(EcoreFactory eFactory, EPackage ePackage, Class<?> javaType) {
 		String eClassifierName = constructEClassifierName(javaType);
+		String eClassifierPackageName = javaType.getPackageName();
 
-		if (JAVATYPE_TO_EDATATYPE.containsKey(javaType)) {
+		if (isPredefinedEDataType(javaType)) {
 			return JAVATYPE_TO_EDATATYPE.get(javaType);
-		} else if (dynamicEClassifierExists(ePackage, eClassifierName)) {
-			if (isCustomEDataType(ePackage, eClassifierName)) {
-				return (EDataType) findEClassifierByName(ePackage, eClassifierName);
+		} else if (dynamicEClassifierExists(ePackage, eClassifierName, eClassifierPackageName)) {
+			if (isCustomEDataType(ePackage, eClassifierName, eClassifierPackageName)) {
+				return (EDataType) findEClassifierByName(ePackage, eClassifierName, eClassifierPackageName);
 			} else if (isEnumType(javaType)) {
-				return (EEnum) findEClassifierByName(ePackage, eClassifierName);
+				return (EEnum) findEClassifierByName(ePackage, eClassifierName, eClassifierPackageName);
 			} else {
-				return (EClass) findEClassifierByName(ePackage, eClassifierName);
+				return (EClass) findEClassifierByName(ePackage, eClassifierName, eClassifierPackageName);
 			}
 		} else {
 			if (maybeCustomEDataType(javaType)) {
@@ -166,17 +214,19 @@ public class JavaReferenceTypeToEPackageConverter extends AbstractJavaToEPackage
 		}
 	}
 
-	private boolean isCustomEDataType(EPackage ePackage, String eClassifierName) {
+	private boolean isCustomEDataType(EPackage ePackage, String eClassifierName, String eClassifierPackageName) {
+		String eClassifierPackageSanitizedName = sanitizePackageName(eClassifierPackageName);
+
 		// @formatter:off
 		return Stream
 				.concat(ePackage.getEClassifiers().stream(),
 						ePackage.getESubpackages().stream().flatMap(p -> p.getEClassifiers().stream()))
-				.anyMatch(e -> eClassifierName.equals(e.getName()) && EDataType.class.isAssignableFrom(e.getClass()));
+				.anyMatch(eClassifier -> eClassifierMatches(eClassifier, eClassifierName, eClassifierPackageSanitizedName) && EDataType.class.isAssignableFrom(eClassifier.getClass()));
 		// @formatter:on
 	}
 
 	private boolean maybeCustomEDataType(Class<?> javaType) {
-		return (javaType.getPackageName().startsWith("java") || java.lang.Throwable.class.isAssignableFrom(javaType));
+		return (javaType.getPackageName().startsWith("java.") || java.lang.Throwable.class.isAssignableFrom(javaType));
 	}
 
 	private EDataType createCustomEDataType(EcoreFactory eFactory, EPackage ePackage, Class<?> javaType) {
@@ -192,12 +242,13 @@ public class JavaReferenceTypeToEPackageConverter extends AbstractJavaToEPackage
 
 	private EDataType getEDataTypeForJavaType(EcoreFactory eFactory, EPackage ePackage, Class<?> javaType) {
 		String eClassifierName = constructEClassifierName(javaType);
+		String eClassifierPackageName = javaType.getPackageName();
 
-		if (JAVATYPE_TO_EDATATYPE.containsKey(javaType)) {
+		if (isPredefinedEDataType(javaType)) {
 			return JAVATYPE_TO_EDATATYPE.get(javaType);
-		} else if (dynamicEClassifierExists(ePackage, eClassifierName)) {
+		} else if (dynamicEClassifierExists(ePackage, eClassifierName, eClassifierPackageName)) {
 			try {
-				return (EDataType) findEClassifierByName(ePackage, eClassifierName);
+				return (EDataType) findEClassifierByName(ePackage, eClassifierName, eClassifierPackageName);
 			} catch (Throwable t) {
 				return null;
 			}

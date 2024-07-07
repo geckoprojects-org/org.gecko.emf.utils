@@ -108,7 +108,7 @@ public class JavaReferenceTypeToEPackageConverterTest {
 		EPackage.Registry.INSTANCE.put(dynamicEPackageFromJavaReferenceTypes.getNsURI(),
 				dynamicEPackageFromJavaReferenceTypes);
 
-		assertThat(eClassifiersTotalCount(dynamicEPackageFromJavaReferenceTypes)).isEqualTo(182);
+		assertThat(eClassifiersTotalCount(dynamicEPackageFromJavaReferenceTypes)).isEqualTo(213);
 	}
 
 	@Disabled
@@ -143,7 +143,7 @@ public class JavaReferenceTypeToEPackageConverterTest {
 		EPackage.Registry.INSTANCE.put(dynamicEPackageFromJavaReferenceTypes.getNsURI(),
 				dynamicEPackageFromJavaReferenceTypes);
 
-		assertThat(eClassifiersTotalCount(dynamicEPackageFromJavaReferenceTypes)).isEqualTo(182);
+		assertThat(eClassifiersTotalCount(dynamicEPackageFromJavaReferenceTypes)).isEqualTo(213);
 
 		Resource resource = resourceSet.createResource(URI.createFileURI("jakarta.ws.rs-api-3.1.0.ecore"));
 
@@ -188,7 +188,50 @@ public class JavaReferenceTypeToEPackageConverterTest {
 		EPackage.Registry.INSTANCE.put(dynamicEPackageFromJavaReferenceTypes.getNsURI(),
 				dynamicEPackageFromJavaReferenceTypes);
 
-		assertThat(eClassifiersTotalCount(dynamicEPackageFromJavaReferenceTypes)).isEqualTo(119);
+		assertThat(eClassifiersTotalCount(dynamicEPackageFromJavaReferenceTypes)).isEqualTo(198);
+
+		Resource resource = resourceSet
+				.createResource(URI.createFileURI("org.apache.felix.http.servlet-api-2.1.0.ecore"));
+
+		resource.getContents().add(dynamicEPackageFromJavaReferenceTypes);
+		resource.save(null);
+	}
+	
+	@Disabled
+	@Test
+	public void testConvertOrgApacheFelixHttpServletApiAndSerializeToStaticEMFReusingEDataTypes(
+			@InjectService(cardinality = 1, timeout = 4000, filter = "(component.name=JavaReferenceTypeToEPackageConverter)") ServiceAware<JavaToEPackageConverter> javaReferenceTypeToEPackageConverterAware,
+			@InjectService(timeout = 2000) ServiceAware<ResourceSet> rsAware) throws Exception {
+		assertThat(javaReferenceTypeToEPackageConverterAware.getServices()).hasSize(1);
+		JavaToEPackageConverter javaReferenceTypeToEPackageConverterService = javaReferenceTypeToEPackageConverterAware
+				.getService();
+		assertThat(javaReferenceTypeToEPackageConverterService).isNotNull();
+
+		assertNotNull(rsAware);
+		assertThat(rsAware.getServices()).hasSize(1);
+		ResourceSet resourceSet = rsAware.getService();
+		assertNotNull(resourceSet);
+
+		String nsURI = "https://geckoprojects.org/jakarta/servlet/2.1.0/";
+
+		EPackage dynamicEPackageFromJavaReferenceTypes = javaReferenceTypeToEPackageConverterService.convert(
+				resourceSet.getPackageRegistry(), PACKAGE_NAME, nsURI, NS_PREFIX,
+				Paths.get(ORG_APACHE_FELIX_HTTP_SERVLET_API));
+		assertNotNull(dynamicEPackageFromJavaReferenceTypes);
+
+		EAnnotation versionEAnnotation = EcoreFactory.eINSTANCE.createEAnnotation();
+		versionEAnnotation.setSource("Version");
+		versionEAnnotation.getDetails().put("value", "2.1.0");
+		dynamicEPackageFromJavaReferenceTypes.getEAnnotations().add(versionEAnnotation);
+
+		assertEquals(PACKAGE_NAME, dynamicEPackageFromJavaReferenceTypes.getName());
+		assertEquals(nsURI, dynamicEPackageFromJavaReferenceTypes.getNsURI());
+		assertEquals(NS_PREFIX, dynamicEPackageFromJavaReferenceTypes.getNsPrefix());
+
+		EPackage.Registry.INSTANCE.put(dynamicEPackageFromJavaReferenceTypes.getNsURI(),
+				dynamicEPackageFromJavaReferenceTypes);
+
+		assertThat(eClassifiersTotalCount(dynamicEPackageFromJavaReferenceTypes)).isEqualTo(198);
 
 		Resource resource = resourceSet
 				.createResource(URI.createFileURI("org.apache.felix.http.servlet-api-2.1.0.ecore"));

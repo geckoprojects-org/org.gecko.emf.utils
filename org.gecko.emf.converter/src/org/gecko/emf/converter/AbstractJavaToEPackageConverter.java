@@ -157,18 +157,9 @@ abstract class AbstractJavaToEPackageConverter implements JavaToEPackageConverte
 
 		final EcoreFactory eFactory = EcoreFactory.eINSTANCE;
 
-		EPackage dynamicEPackage = eFactory.createEPackage();
-		dynamicEPackage.setName(packageName);
-		dynamicEPackage.setNsURI(nsURI);
-		dynamicEPackage.setNsPrefix(nsPrefix);
+		EPackage dynamicEPackage = createEPackage(packageName, nsURI, nsPrefix, eFactory);
 
-		addBasePackageEAnnotation(dynamicEPackage, javaTypes);
-
-		for (Class<?> javaType : javaTypes) {
-			createEClassifier(eFactory, dynamicEPackage, javaType);
-		}
-
-		return dynamicEPackage;
+		return convert(eFactory, dynamicEPackage, javaTypes);
 	}
 
 	/* 
@@ -185,16 +176,99 @@ abstract class AbstractJavaToEPackageConverter implements JavaToEPackageConverte
 		return convert(packageName, nsURI, nsPrefix, classes.toArray(Class[]::new));
 	}
 
+	/* 
+	 * (non-Javadoc)
+	 * @see org.gecko.emf.converter.JavaToEPackageConverter#convert(org.eclipse.emf.ecore.EPackage.Registry, java.lang.String, java.lang.String, java.lang.String, java.lang.Class[])
+	 */
+	@Override
+	public EPackage convert(EPackage.Registry attachedPackageRegistry, String packageName, String nsURI,
+			String nsPrefix, Class<?>... javaTypes) {
+		Objects.requireNonNull(attachedPackageRegistry, "Package registry is required!");
+		Objects.requireNonNull(packageName, "Package name is required!");
+		Objects.requireNonNull(nsURI, "nsURI is required!");
+		Objects.requireNonNull(nsPrefix, "nsPrefix is required!");
+		Objects.requireNonNull(javaTypes, "At least one Java type is required!");
+
+		if (attachedPackageRegistry.isEmpty()) {
+			return convert(packageName, nsURI, nsPrefix, javaTypes);
+		}
+
+		final EcoreFactory eFactory = EcoreFactory.eINSTANCE;
+
+		EPackage dynamicEPackage = createEPackage(packageName, nsURI, nsPrefix, eFactory);
+
+		addExistingEDataTypes(dynamicEPackage, attachedPackageRegistry);
+
+		return convert(eFactory, dynamicEPackage, javaTypes);
+	}
+
+	/* 
+	 * (non-Javadoc)
+	 * @see org.gecko.emf.converter.JavaToEPackageConverter#convert(org.eclipse.emf.ecore.EPackage.Registry, java.lang.String, java.lang.String, java.lang.String, java.nio.file.Path, java.nio.file.Path[])
+	 */
+	@Override
+	public EPackage convert(EPackage.Registry attachedPackageRegistry, String packageName, String nsURI,
+			String nsPrefix, Path mainJarFilePath, Path... dependenciesJarFilePaths)
+			throws ClassNotFoundException, IOException {
+		Objects.requireNonNull(attachedPackageRegistry, "Package registry is required!");
+		Objects.requireNonNull(mainJarFilePath, "Main JAR file path is required!");
+
+		if (attachedPackageRegistry.isEmpty()) {
+			return convert(packageName, nsURI, nsPrefix, mainJarFilePath, dependenciesJarFilePaths);
+		}
+
+		final EcoreFactory eFactory = EcoreFactory.eINSTANCE;
+
+		EPackage dynamicEPackage = createEPackage(packageName, nsURI, nsPrefix, eFactory);
+
+		addExistingEDataTypes(dynamicEPackage, attachedPackageRegistry);
+
+		return convert(eFactory, dynamicEPackage, mainJarFilePath, dependenciesJarFilePaths);
+	}
+
+	protected EPackage convert(EcoreFactory eFactory, EPackage ePackage, Class<?>... javaTypes) {
+		addBasePackageEAnnotation(ePackage, javaTypes);
+
+		for (Class<?> javaType : javaTypes) {
+			createEClassifier(eFactory, ePackage, javaType);
+		}
+
+		return ePackage;
+	}
+
+	protected EPackage convert(EcoreFactory eFactory, EPackage ePackage, Path mainJarFilePath,
+			Path... dependenciesJarFilePaths) throws ClassNotFoundException, IOException {
+		Set<Class<?>> classes = getClassesFromJarFile(mainJarFilePath, dependenciesJarFilePaths);
+
+		return convert(eFactory, ePackage, classes.toArray(Class[]::new));
+	}
+
+	protected EPackage createEPackage(String packageName, String nsURI, String nsPrefix, final EcoreFactory eFactory) {
+		EPackage dynamicEPackage = eFactory.createEPackage();
+		dynamicEPackage.setName(packageName);
+		dynamicEPackage.setNsURI(nsURI);
+		dynamicEPackage.setNsPrefix(nsPrefix);
+		return dynamicEPackage;
+	}
+
+	protected void addExistingEDataTypes(EPackage dynamicEPackage, EPackage.Registry attachedPackageRegistry) {
+		attachedPackageRegistry.forEach((attachedPackageNsURI, attachedPackage) -> {
+			((EPackage) attachedPackage).getEClassifiers().stream().filter(EDataType.class::isInstance)
+					.map(EDataType.class::cast).forEach(dt -> dynamicEPackage.getEClassifiers().add(dt));
+		});
+	}
+
 	protected EClassifier createEClassifier(EcoreFactory eFactory, EPackage ePackage, Class<?> javaType) {
 		String eClassifierName = constructEClassifierName(javaType);
+		String eClassifierPackageName = javaType.getPackageName();
 
-		if (dynamicEClassifierExists(ePackage, eClassifierName)) {
+		if (dynamicEClassifierExists(ePackage, eClassifierName, eClassifierPackageName)) {
 			logger.debug("EClassifier {} already exists!", eClassifierName);
 
 			if (isEnumType(javaType)) {
-				return (EEnum) findEClassifierByName(ePackage, eClassifierName);
+				return (EEnum) findEClassifierByName(ePackage, eClassifierName, eClassifierPackageName);
 			} else {
-				return (EClass) findEClassifierByName(ePackage, eClassifierName);
+				return (EClass) findEClassifierByName(ePackage, eClassifierName, eClassifierPackageName);
 			}
 		}
 
@@ -325,11 +399,12 @@ abstract class AbstractJavaToEPackageConverter implements JavaToEPackageConverte
 
 	protected void createEEnum(EcoreFactory eFactory, EPackage ePackage, EClass eClass, Field field) {
 		String eClassifierName = constructEClassifierName(field.getType());
+		String eClassifierPackageName = field.getType().getPackageName();
 
 		EEnum eEnum = null;
 
-		if (dynamicEClassifierExists(ePackage, eClassifierName)) {
-			eEnum = (EEnum) findEClassifierByName(ePackage, eClassifierName);
+		if (dynamicEClassifierExists(ePackage, eClassifierName, eClassifierPackageName)) {
+			eEnum = (EEnum) findEClassifierByName(ePackage, eClassifierName, eClassifierPackageName);
 		} else {
 			eEnum = createEEnum(eFactory, ePackage, field.getType(), eClassifierName);
 		}
@@ -421,16 +496,17 @@ abstract class AbstractJavaToEPackageConverter implements JavaToEPackageConverte
 
 	protected void createArray(EcoreFactory eFactory, EPackage ePackage, EClass eClass, Field field) {
 		String arrayTypeName = constructArrayTypeName(field);
+		String eClassifierPackageName = field.getType().getPackageName();
 
 		EDataType arrayType = null;
 
-		if (dynamicEClassifierExists(ePackage, arrayTypeName)) {
-			arrayType = (EDataType) findEClassifierByName(ePackage, arrayTypeName);
+		if (dynamicEClassifierExists(ePackage, arrayTypeName, eClassifierPackageName)) {
+			arrayType = (EDataType) findEClassifierByName(ePackage, arrayTypeName, eClassifierPackageName);
 		} else {
 			arrayType = eFactory.createEDataType();
 			arrayType.setName(arrayTypeName);
 
-			EPackage eSubPackage = getOrCreateESubPackage(eFactory, ePackage, field.getType().getPackageName());
+			EPackage eSubPackage = getOrCreateESubPackage(eFactory, ePackage, eClassifierPackageName);
 			eSubPackage.getEClassifiers().add(arrayType);
 		}
 
@@ -450,8 +526,9 @@ abstract class AbstractJavaToEPackageConverter implements JavaToEPackageConverte
 
 		EClass mapEntryEClass = null;
 
-		if (dynamicEClassifierExists(ePackage, mapEntryEClassName)) {
-			mapEntryEClass = (EClass) findEClassifierByName(ePackage, mapEntryEClassName);
+		if (dynamicEClassifierExists(ePackage, mapEntryEClassName, "java.util")) { // TODO: extract to constant
+			mapEntryEClass = (EClass) findEClassifierByName(ePackage, mapEntryEClassName, "java.util"); // TODO: extract
+																										// to constant
 		} else {
 			mapEntryEClass = eFactory.createEClass();
 			mapEntryEClass.setName(mapEntryEClassName);
@@ -469,8 +546,7 @@ abstract class AbstractJavaToEPackageConverter implements JavaToEPackageConverte
 			dynamicMapEntryValueEAttribute.setEType(getEClassifierForJavaType(eFactory, ePackage, mapValueActualType));
 			mapEntryEClass.getEStructuralFeatures().add(dynamicMapEntryValueEAttribute);
 
-			EPackage eSubPackage = getOrCreateESubPackage(eFactory, ePackage, "java.util");
-//			EPackage eSubPackage = getOrCreateESubPackage(eFactory, ePackage, field.getType().getPackageName()); // TODO: verify regarding package name for map entry class
+			EPackage eSubPackage = getOrCreateESubPackage(eFactory, ePackage, "java.util"); // TODO: extract to constant
 			eSubPackage.getEClassifiers().add(mapEntryEClass);
 		}
 
@@ -488,12 +564,15 @@ abstract class AbstractJavaToEPackageConverter implements JavaToEPackageConverte
 		return sb.toString();
 	}
 
-	protected boolean dynamicEClassifierExists(EPackage ePackage, String eClassifierName) {
+	protected boolean dynamicEClassifierExists(EPackage ePackage, String eClassifierName,
+			String eClassifierPackageName) {
+		String eClassifierPackageSanitizedName = sanitizePackageName(eClassifierPackageName);
+
 		// @formatter:off
 		return Stream
 					.concat(ePackage.getEClassifiers().stream(),
 							ePackage.getESubpackages().stream().flatMap(p -> p.getEClassifiers().stream()))
-					.anyMatch(eClassifier -> eClassifierName.equals(eClassifier.getName()));
+					.anyMatch(eClassifier -> eClassifierMatches(eClassifier, eClassifierName, eClassifierPackageSanitizedName) );
 		// @formatter:on
 	}
 
@@ -512,27 +591,35 @@ abstract class AbstractJavaToEPackageConverter implements JavaToEPackageConverte
 		// @formatter:on
 	}
 
-	protected EClassifier findEClassifierByName(EPackage ePackage, String eClassifierName) {
+	protected EClassifier findEClassifierByName(EPackage ePackage, String eClassifierName,
+			String eClassifierPackageName) {
+		String eClassifierPackageSanitizedName = sanitizePackageName(eClassifierPackageName);
+
 		// @formatter:off
 		return Stream
 				.concat(ePackage.getEClassifiers().stream(),
 						ePackage.getESubpackages().stream().flatMap(p -> p.getEClassifiers().stream()))
-				.filter(eClassifier -> eClassifierName.equals(eClassifier.getName()))
+				.filter(eClassifier -> eClassifierMatches(eClassifier, eClassifierName, eClassifierPackageSanitizedName) )
 				.findFirst()
 				.orElseThrow();
 		// @formatter:on
 	}
 
+	protected boolean eClassifierMatches(EClassifier eClassifier, String typeName, String packageName) {
+		return (typeName.equals(eClassifier.getName()) && packageName.equals(eClassifier.getEPackage().getName()));
+	}
+
 	protected EClassifier getEClassifierForJavaType(EcoreFactory eFactory, EPackage ePackage, Class<?> javaType) {
 		String eClassifierName = constructEClassifierName(javaType);
+		String eClassifierPackageName = javaType.getPackageName();
 
-		if (JAVATYPE_TO_EDATATYPE.containsKey(javaType)) {
+		if (isPredefinedEDataType(javaType)) {
 			return JAVATYPE_TO_EDATATYPE.get(javaType);
-		} else if (dynamicEClassifierExists(ePackage, eClassifierName)) {
+		} else if (dynamicEClassifierExists(ePackage, eClassifierName, eClassifierPackageName)) {
 			if (isEnumType(javaType)) {
-				return (EEnum) findEClassifierByName(ePackage, eClassifierName);
+				return (EEnum) findEClassifierByName(ePackage, eClassifierName, eClassifierPackageName);
 			} else {
-				return (EClass) findEClassifierByName(ePackage, eClassifierName);
+				return (EClass) findEClassifierByName(ePackage, eClassifierName, eClassifierPackageName);
 			}
 		} else {
 			if (isEnumType(javaType)) {
@@ -544,11 +631,15 @@ abstract class AbstractJavaToEPackageConverter implements JavaToEPackageConverte
 	}
 
 	protected EDataType getEDataTypeForJavaType(Class<?> javaType) {
-		if (JAVATYPE_TO_EDATATYPE.containsKey(javaType)) {
+		if (isPredefinedEDataType(javaType)) {
 			return JAVATYPE_TO_EDATATYPE.get(javaType);
 		} else {
 			throw new IllegalArgumentException(String.format("Type %s is not supported!", javaType.getName()));
 		}
+	}
+
+	protected boolean isPredefinedEDataType(Class<?> javaType) {
+		return JAVATYPE_TO_EDATATYPE.containsKey(javaType);
 	}
 
 	protected boolean isAttributeType(Class<?> javaType) {
@@ -676,7 +767,8 @@ abstract class AbstractJavaToEPackageConverter implements JavaToEPackageConverte
 			}
 		});
 
-		try (URLClassLoader cl = URLClassLoader.newInstance(jarFilesURLs.toArray(URL[]::new))) {
+		try (URLClassLoader cl = URLClassLoader.newInstance(jarFilesURLs.toArray(URL[]::new),
+				this.getClass().getClassLoader())) {
 			for (String name : classNames) {
 				Class<?> clazz = cl.loadClass(name);
 				classes.add(clazz);
@@ -748,22 +840,45 @@ abstract class AbstractJavaToEPackageConverter implements JavaToEPackageConverte
 	}
 	
 	protected EPackage getOrCreateESubPackage(EcoreFactory eFactory, EPackage ePackage, String subPackageName) {
-		Optional<EPackage> eSubPackageOptional = findESubPackageByName(ePackage, subPackageName);
+		String subPackageSanitizedName = sanitizePackageName(subPackageName);
+		
+		Optional<EPackage> eSubPackageOptional = findESubPackageByName(ePackage, subPackageSanitizedName);
 		if (eSubPackageOptional.isPresent()) {
 			return eSubPackageOptional.get();
 		}
 		
-		EPackage eSubPackage = eFactory.createEPackage();
-		eSubPackage.setName(subPackageName);
-//		eSubPackage.setNsURI(null); // TODO: if needed
-//		eSubPackage.setNsPrefix(null); // TODO: if needed
+		String subPackageNsPrefix = constructSubPackageNsPrefix(subPackageName);
 		
+		String subPackageNsURI = constructSubPackageNsURI(ePackage.getNsURI(), subPackageNsPrefix);
+
+		EPackage eSubPackage = eFactory.createEPackage();
+		eSubPackage.setName(subPackageSanitizedName);
+		eSubPackage.setNsURI(subPackageNsURI);
+		eSubPackage.setNsPrefix(subPackageNsPrefix);
+
 		ePackage.getESubpackages().add(eSubPackage);
 		
 		return eSubPackage;
 	}
 
-	// TODO: clarify if this is needed at all ( i.e. abbreviated package names, instead of full names / same as those found in JAR )
+	protected String sanitizePackageName(String packageName) {
+		return packageName.replaceAll("\\.", "_");
+	}	
+	
+	protected String constructSubPackageNsPrefix(String subPackageName) {
+		// @formatter:off
+		return Arrays.stream(StringUtils.split(subPackageName, '.'))
+				.map(s -> StringUtils.capitalize(s))
+				.collect(Collectors.joining());
+		// @formatter:on
+	}
+
+	protected String constructSubPackageNsURI(String nsUri, String suffix) {
+		return StringUtils.join(StringUtils.appendIfMissing(nsUri, "/"), suffix);
+	}
+
+	// TODO: clarify if this is needed at all ( i.e. abbreviated package names,
+	// instead of full names / same as those found in JAR )
 	protected Set<String> constructEPackageNames(Set<String> packageNames, String basePackageName) {
 		// @formatter:off
 		return packageNames.stream()

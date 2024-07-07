@@ -27,4 +27,10 @@ public interface JavaToEPackageConverter {
 
 	EPackage convert(String packageName, String nsURI, String nsPrefix, Path mainJarFilePath,
 			Path... dependenciesJarFilePaths) throws ClassNotFoundException, IOException;
+
+	EPackage convert(EPackage.Registry attachedPackageRegistry, String packageName, String nsURI, String nsPrefix,
+			Class<?>... javaTypes);
+
+	EPackage convert(EPackage.Registry attachedPackageRegistry, String packageName, String nsURI, String nsPrefix,
+			Path mainJarFilePath, Path... dependenciesJarFilePaths) throws ClassNotFoundException, IOException;
 }
