@@ -807,9 +807,11 @@ abstract class AbstractJavaToEPackageConverter implements JavaToEPackageConverte
 
 		String basePackageName = findBasePackageName(packageNames);
 
+		String basePackageSanitizedName = sanitizePackageName(basePackageName);
+
 		EAnnotation versionEAnnotation = EcoreFactory.eINSTANCE.createEAnnotation();
 		versionEAnnotation.setSource(BASEPACKAGE_GENMODEL_SOURCE);
-		versionEAnnotation.getDetails().put(BASEPACKAGE_GENMODEL_DETAILS, basePackageName);
+		versionEAnnotation.getDetails().put(BASEPACKAGE_GENMODEL_DETAILS, basePackageSanitizedName);
 		dynamicEPackage.getEAnnotations().add(versionEAnnotation);
 	}
 
