@@ -12,8 +12,8 @@
 package org.gecko.emf.converter.tests;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.gecko.emf.converter.tests.helper.DTOToEObjectConverterImplTestHelper.eClassifiersTotalCount;
-import static org.gecko.emf.converter.tests.helper.DTOToEObjectConverterImplTestHelper.findEClassifierByName;
+import static org.gecko.emf.converter.tests.helper.EPackageConverterTestHelper.eClassifiersTotalCount;
+import static org.gecko.emf.converter.tests.helper.EPackageConverterTestHelper.findEClassifierByName;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -92,8 +92,8 @@ public class DTOToEPackageConverterTest {
 
 		assertThat(eClassifiersTotalCount(dynamicEPackageFromDTOs)).isEqualTo(1);
 
-		EClassifier dynamicEClassifierFromDTO = findEClassifierByName(dynamicEPackageFromDTOs,
-				dtoClass.getSimpleName());
+		EClassifier dynamicEClassifierFromDTO = findEClassifierByName(dynamicEPackageFromDTOs, dtoClass.getSimpleName(),
+				dtoClass.getPackageName());
 		assertNotNull(dynamicEClassifierFromDTO);
 		assertTrue(dynamicEClassifierFromDTO instanceof EClass);
 		assertThat(((EClass) dynamicEClassifierFromDTO).getEAllStructuralFeatures()).hasSize(3);
@@ -140,8 +140,8 @@ public class DTOToEPackageConverterTest {
 
 		assertThat(eClassifiersTotalCount(dynamicEPackageFromDTOs)).isEqualTo(1);
 
-		EClassifier dynamicEClassifierFromDTO = findEClassifierByName(dynamicEPackageFromDTOs,
-				dtoClass.getSimpleName());
+		EClassifier dynamicEClassifierFromDTO = findEClassifierByName(dynamicEPackageFromDTOs, dtoClass.getSimpleName(),
+				dtoClass.getPackageName());
 		assertNotNull(dynamicEClassifierFromDTO);
 		assertTrue(dynamicEClassifierFromDTO instanceof EClass);
 		assertThat(((EClass) dynamicEClassifierFromDTO).getEAllStructuralFeatures()).hasSize(9);
@@ -213,8 +213,8 @@ public class DTOToEPackageConverterTest {
 
 		assertThat(eClassifiersTotalCount(dynamicEPackageFromDTOs)).isEqualTo(8);
 
-		EClassifier dynamicEClassifierFromDTO = findEClassifierByName(dynamicEPackageFromDTOs,
-				dtoClass.getSimpleName());
+		EClassifier dynamicEClassifierFromDTO = findEClassifierByName(dynamicEPackageFromDTOs, dtoClass.getSimpleName(),
+				dtoClass.getPackageName());
 		assertNotNull(dynamicEClassifierFromDTO);
 		assertTrue(dynamicEClassifierFromDTO instanceof EClass);
 		assertThat(((EClass) dynamicEClassifierFromDTO).getEAllStructuralFeatures()).hasSize(44);
@@ -517,8 +517,8 @@ public class DTOToEPackageConverterTest {
 
 		assertThat(eClassifiersTotalCount(dynamicEPackageFromDTOs)).isEqualTo(4);
 
-		EClassifier dynamicEClassifierFromDTO = findEClassifierByName(dynamicEPackageFromDTOs,
-				dtoClass.getSimpleName());
+		EClassifier dynamicEClassifierFromDTO = findEClassifierByName(dynamicEPackageFromDTOs, dtoClass.getSimpleName(),
+				dtoClass.getPackageName());
 		assertNotNull(dynamicEClassifierFromDTO);
 		assertTrue(dynamicEClassifierFromDTO instanceof EClass);
 		assertThat(((EClass) dynamicEClassifierFromDTO).getEAllStructuralFeatures()).hasSize(3);

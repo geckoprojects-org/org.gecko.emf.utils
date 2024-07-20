@@ -11,9 +11,11 @@
  */
 package org.gecko.emf.converter;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
@@ -33,15 +35,16 @@ import org.slf4j.LoggerFactory;
 class DTOToEObjectConverterUtil {
 	private final static Logger LOG = LoggerFactory.getLogger(DTOToEObjectConverterUtil.class);
 
-	public final static EObject convertDTO2EObject(Object dtoObject, EPackage... dynamicEPackages) {
+	public final static EObject convertDTO2EObject(Object dtoObject, EPackage... ePackages) {
 		String eClassifierName = dtoObject.getClass().getSimpleName();
+		String eClassifierPackageName = dtoObject.getClass().getPackageName();
 
 		if (!DTOUtil.isDTOType(dtoObject.getClass(), true, true)) {
 			LOG.warn(" {} is not DTO-like !", eClassifierName);
 			return null;
 		}
 
-		EPackage containingEPackage = findContainingEPackage(eClassifierName, dynamicEPackages);
+		EPackage containingEPackage = findContainingEPackage(eClassifierPackageName, ePackages);
 		if (containingEPackage == null) {
 			LOG.warn(" Could not find any EPackage containing EClassifier {} !", eClassifierName);
 			return null;
@@ -74,38 +77,21 @@ class DTOToEObjectConverterUtil {
 		return eObject;
 	}
 
-	private static EPackage findContainingEPackage(String eClassifierName, EPackage... dynamicEPackages) {
-		Optional<EPackage> ePackageInRootEPackages = findContainingEPackageInRootEPackages(eClassifierName,
-				dynamicEPackages);
-		if (ePackageInRootEPackages.isPresent()) {
-			return ePackageInRootEPackages.get();
-		} else {
-			return findContainingEPackageInESubpackages(eClassifierName, dynamicEPackages).orElseThrow();
-		}
-	}
+	private static EPackage findContainingEPackage(String eClassifierPackageName, EPackage... ePackages) {
+		String[] packageNameParts = extractPackageNameParts(eClassifierPackageName);
 
-	private static Optional<EPackage> findContainingEPackageInRootEPackages(String eClassifierName,
-			EPackage... dynamicEPackages) {
 		// @formatter:off
-		return Arrays.asList(dynamicEPackages).stream()
-				.filter(p -> ( p.getEClassifier(eClassifierName) != null ) )
-				.findFirst();
+		return Arrays.asList(ePackages).stream()
+				.flatMap(ePackage -> flattenEPackageTree(ePackage).stream())
+				.filter(eSubPackage -> Arrays.equals(packageNameParts, getEPackageFlattenedNameParts(eSubPackage)))
+				.findFirst()
+				.orElse(null);
 		// @formatter:on
 	}
 
-	private static Optional<EPackage> findContainingEPackageInESubpackages(String eClassifierName,
-			EPackage... dynamicEPackages) {
+	private static EClassifier findEClassifier(String name, EPackage ePackage) {
 		// @formatter:off
-		return Arrays.asList(dynamicEPackages).stream()
-				.flatMap(p -> p.getESubpackages().stream())
-				.filter(p -> ( p.getEClassifier(eClassifierName) != null ) )
-				.findFirst();
-		// @formatter:on
-	}
-
-	private static EClassifier findEClassifier(String name, EPackage dynamicEPackage) {
-		// @formatter:off
-		return dynamicEPackage.getEClassifiers().stream()
+		return ePackage.getEClassifiers().stream()
 				.filter(c -> name.equalsIgnoreCase(c.getName()))
 				.findFirst()
 				.orElse(null);
@@ -113,13 +99,58 @@ class DTOToEObjectConverterUtil {
 	}
 
 	@SuppressWarnings("unused")
-	private static EClassifier findEClassifier(String name, EPackage... dynamicEPackages) {
+	private static EClassifier findEClassifier(String name, EPackage... ePackages) {
 		// @formatter:off
-		return Arrays.asList(dynamicEPackages).stream()
+		return Arrays.asList(ePackages).stream()
 				.flatMap(p -> p.getEClassifiers().stream())
 				.filter(c -> name.equalsIgnoreCase(c.getName()))
 				.findFirst()
 				.orElse(null);
 		// @formatter:on
+	}
+
+	private static String[] getEPackageFlattenedNameParts(EPackage ePackage) {
+		List<String> flattenedEPackagNameParts = new ArrayList<>(List.of(ePackage.getName()));
+
+		getEPackageFlattenedNameParts(ePackage, flattenedEPackagNameParts);
+
+		// drop top-level package name
+		flattenedEPackagNameParts.remove(flattenedEPackagNameParts.size() - 1);
+
+		Collections.reverse(flattenedEPackagNameParts);
+
+		return flattenedEPackagNameParts.toArray(String[]::new);
+	}
+
+	private static void getEPackageFlattenedNameParts(EPackage ePackage, List<String> flattenedEPackagNameParts) {
+		if (ePackage.getESuperPackage() != null) {
+			flattenedEPackagNameParts.add(ePackage.getESuperPackage().getName());
+
+			getEPackageFlattenedNameParts(ePackage.getESuperPackage(), flattenedEPackagNameParts);
+		}
+	}
+
+	private static String[] extractPackageNameParts(String packageName) {
+		return packageName.split("\\.");
+	}
+
+	private static List<EPackage> flattenEPackageTree(EPackage ePackage) {
+		List<EPackage> flattenedEPackageTreeAsList = new ArrayList<>(List.of(ePackage));
+
+		flattenedEPackageTree(ePackage, flattenedEPackageTreeAsList);
+
+		return flattenedEPackageTreeAsList;
+	}
+
+	private static void flattenedEPackageTree(EPackage ePackage, List<EPackage> flattenedEPackageTreeAsList) {
+		if (ePackage.getESubpackages().size() > 0) {
+			for (EPackage eSubPackage : ePackage.getESubpackages()) {
+				if (!flattenedEPackageTreeAsList.contains(eSubPackage)) {
+					flattenedEPackageTreeAsList.add(eSubPackage);
+				}
+
+				flattenedEPackageTree(eSubPackage, flattenedEPackageTreeAsList);
+			}
+		}
 	}
 }

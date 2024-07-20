@@ -12,7 +12,7 @@
 package org.gecko.emf.converter.tests;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.gecko.emf.converter.tests.helper.DTOToEObjectConverterImplTestHelper.eClassifiersTotalCount;
+import static org.gecko.emf.converter.tests.helper.EPackageConverterTestHelper.eClassifiersTotalCount;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -59,9 +59,8 @@ public class JavaReferenceTypeToEPackageConverterTest {
 	private static final String ORG_APACHE_FELIX_HTTP_SERVLET_API = getArtifactM2RepoPath("org.apache.felix",
 			"org.apache.felix.http.servlet-api", "2.1.0");
 
-	private static final String PACKAGE_NAME = "javareferencetype_to_epackage_converter_test";
-	private static final String NS_URI = "http://gecko.org/test/model/converter/1.0";
-	private static final String NS_PREFIX = "tests";
+	private static final String PACKAGE_NAME = "root";
+	private static final String NS_PREFIX = "root";
 
 	@Order(value = -1)
 	@Test
@@ -96,13 +95,15 @@ public class JavaReferenceTypeToEPackageConverterTest {
 				.getService();
 		assertThat(javaReferenceTypeToEPackageConverterService).isNotNull();
 
+		String nsURI = "https://geckoprojects.org/jakarta/ws/rs-api/3.1.0/";
+
 		EPackage dynamicEPackageFromJavaReferenceTypes = javaReferenceTypeToEPackageConverterService.convert(
-				PACKAGE_NAME, NS_URI, NS_PREFIX, Paths.get(JAKARTA_WS_RS_API_JAR_PATH),
+				PACKAGE_NAME, nsURI, NS_PREFIX, Paths.get(JAKARTA_WS_RS_API_JAR_PATH),
 				Paths.get(JAKARTA_XML_BIND_API_JAR_PATH));
 		assertNotNull(dynamicEPackageFromJavaReferenceTypes);
 
 		assertEquals(PACKAGE_NAME, dynamicEPackageFromJavaReferenceTypes.getName());
-		assertEquals(NS_URI, dynamicEPackageFromJavaReferenceTypes.getNsURI());
+		assertEquals(nsURI, dynamicEPackageFromJavaReferenceTypes.getNsURI());
 		assertEquals(NS_PREFIX, dynamicEPackageFromJavaReferenceTypes.getNsPrefix());
 
 		EPackage.Registry.INSTANCE.put(dynamicEPackageFromJavaReferenceTypes.getNsURI(),
@@ -126,8 +127,10 @@ public class JavaReferenceTypeToEPackageConverterTest {
 		ResourceSet resourceSet = rsAware.getService();
 		assertNotNull(resourceSet);
 
+		String nsURI = "https://geckoprojects.org/jakarta/ws/rs-api/3.1.0/";
+
 		EPackage dynamicEPackageFromJavaReferenceTypes = javaReferenceTypeToEPackageConverterService.convert(
-				PACKAGE_NAME, NS_URI, NS_PREFIX, Paths.get(JAKARTA_WS_RS_API_JAR_PATH),
+				PACKAGE_NAME, nsURI, NS_PREFIX, Paths.get(JAKARTA_WS_RS_API_JAR_PATH),
 				Paths.get(JAKARTA_XML_BIND_API_JAR_PATH));
 		assertNotNull(dynamicEPackageFromJavaReferenceTypes);
 
@@ -137,7 +140,7 @@ public class JavaReferenceTypeToEPackageConverterTest {
 		dynamicEPackageFromJavaReferenceTypes.getEAnnotations().add(versionEAnnotation);
 
 		assertEquals(PACKAGE_NAME, dynamicEPackageFromJavaReferenceTypes.getName());
-		assertEquals(NS_URI, dynamicEPackageFromJavaReferenceTypes.getNsURI());
+		assertEquals(nsURI, dynamicEPackageFromJavaReferenceTypes.getNsURI());
 		assertEquals(NS_PREFIX, dynamicEPackageFromJavaReferenceTypes.getNsPrefix());
 
 		EPackage.Registry.INSTANCE.put(dynamicEPackageFromJavaReferenceTypes.getNsURI(),
@@ -170,7 +173,7 @@ public class JavaReferenceTypeToEPackageConverterTest {
 		ResourceSet resourceSet = rsAware.getService();
 		assertNotNull(resourceSet);
 
-		String nsURI = "https://geckoprojects.org/jakarta/servlet/2.1.0/";
+		String nsURI = "https://geckoprojects.org/org/apache/felix/http/servlet-api/2.1.0/";
 
 		EPackage dynamicEPackageFromJavaReferenceTypes = javaReferenceTypeToEPackageConverterService
 				.convert(PACKAGE_NAME, nsURI, NS_PREFIX, Paths.get(ORG_APACHE_FELIX_HTTP_SERVLET_API));
@@ -196,7 +199,7 @@ public class JavaReferenceTypeToEPackageConverterTest {
 		resource.getContents().add(dynamicEPackageFromJavaReferenceTypes);
 		resource.save(null);
 	}
-	
+
 	@Disabled
 	@Test
 	public void testConvertOrgApacheFelixHttpServletApiAndSerializeToStaticEMFReusingEDataTypes(
@@ -212,7 +215,7 @@ public class JavaReferenceTypeToEPackageConverterTest {
 		ResourceSet resourceSet = rsAware.getService();
 		assertNotNull(resourceSet);
 
-		String nsURI = "https://geckoprojects.org/jakarta/servlet/2.1.0/";
+		String nsURI = "https://geckoprojects.org/org/apache/felix/http/servlet-api/2.1.0/";
 
 		EPackage dynamicEPackageFromJavaReferenceTypes = javaReferenceTypeToEPackageConverterService.convert(
 				resourceSet.getPackageRegistry(), PACKAGE_NAME, nsURI, NS_PREFIX,

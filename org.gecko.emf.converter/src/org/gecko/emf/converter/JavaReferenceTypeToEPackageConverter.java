@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
-import java.util.stream.Stream;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
@@ -215,13 +214,12 @@ public class JavaReferenceTypeToEPackageConverter extends AbstractJavaToEPackage
 	}
 
 	private boolean isCustomEDataType(EPackage ePackage, String eClassifierName, String eClassifierPackageName) {
-		String eClassifierPackageSanitizedName = sanitizePackageName(eClassifierPackageName);
+		String[] packageNameParts = extractPackageNameParts(eClassifierPackageName);
 
 		// @formatter:off
-		return Stream
-				.concat(ePackage.getEClassifiers().stream(),
-						ePackage.getESubpackages().stream().flatMap(p -> p.getEClassifiers().stream()))
-				.anyMatch(eClassifier -> eClassifierMatches(eClassifier, eClassifierName, eClassifierPackageSanitizedName) && EDataType.class.isAssignableFrom(eClassifier.getClass()));
+		return flattenEClassifierTree(ePackage).stream()
+				.anyMatch(eClassifier -> eClassifierMatches(eClassifier, eClassifierName, packageNameParts)
+						&& EDataType.class.isAssignableFrom(eClassifier.getClass()));
 		// @formatter:on
 	}
 
