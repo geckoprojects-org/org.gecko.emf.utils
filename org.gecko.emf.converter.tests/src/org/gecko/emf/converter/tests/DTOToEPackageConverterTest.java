@@ -1,17 +1,19 @@
 /**
  * Copyright (c) 2012 - 2022 Data In Motion and others.
- * All rights reserved. 
- * 
- * This program and the accompanying materials are made available under the terms of the 
+ * All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the terms of the
  * Eclipse Public License v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
- * 
+ *
  * Contributors:
  *     Data In Motion - initial API and implementation
  */
 package org.gecko.emf.converter.tests;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.gecko.emf.converter.tests.helper.EPackageConverterTestHelper.eClassifiersTotalCount;
+import static org.gecko.emf.converter.tests.helper.EPackageConverterTestHelper.findEClassifierByName;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -20,38 +22,66 @@ import java.util.List;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.gecko.emf.converter.DTOToEPackageConverter;
-import org.gecko.emf.converter.tests.helper.DTOToEMFConverterTestHelper.ConverterTestAllSupportedTypesDTO;
-import org.gecko.emf.converter.tests.helper.DTOToEMFConverterTestHelper.ConverterTestBasicDTO;
-import org.gecko.emf.converter.tests.helper.DTOToEMFConverterTestHelper.ConverterTestInheritingDTO;
+import org.gecko.emf.converter.JavaToEPackageConverter;
+import org.gecko.emf.converter.tests.helper.ConverterTestAllSupportedTypesDTO;
+import org.gecko.emf.converter.tests.helper.ConverterTestBasicDTO;
+import org.gecko.emf.converter.tests.helper.ConverterTestInheritingDTO;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.platform.commons.annotation.Testable;
+import org.osgi.framework.ServiceReference;
 import org.osgi.framework.dto.FrameworkDTO;
+import org.osgi.test.common.annotation.InjectService;
+import org.osgi.test.common.service.ServiceAware;
 import org.osgi.test.junit5.context.BundleContextExtension;
 import org.osgi.test.junit5.service.ServiceExtension;
 
 /**
- * Integration test for {@link org.gecko.emf.converter.DTOToEPackageConverter}
- * 
+ * Integration test for
+ * {@link org.gecko.emf.converter.DTOToEPackageConverter}
+ *
  * @author Michal H. Siemaszko
  */
 @Testable
 @ExtendWith(BundleContextExtension.class)
 @ExtendWith(ServiceExtension.class)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class DTOToEPackageConverterTest {
-	private static final String PACKAGE_NAME = "org.gecko.emf.converter";
+	private static final String PACKAGE_NAME = "dto_to_epackage_converter_test";
 	private static final String NS_URI = "http://gecko.org/test/model/converter/1.0";
 	private static final String NS_PREFIX = "tests";
 
+	@Order(value = -1)
 	@Test
-	public void testConvertBasicDTO() throws Exception {
+	public void testServices(
+			@InjectService(cardinality = 1, timeout = 4000, filter = "(component.name=DTOToEPackageConverter)") ServiceAware<JavaToEPackageConverter> dtoToEPackageConverterAware) {
+
+		assertThat(dtoToEPackageConverterAware.getServices()).hasSize(1);
+		ServiceReference<JavaToEPackageConverter> dtoToEPackageConverterReference = dtoToEPackageConverterAware
+				.getServiceReference();
+		assertThat(dtoToEPackageConverterReference).isNotNull();
+	}
+
+	@Test
+	public void testConvertBasicDTO(
+			@InjectService(cardinality = 1, timeout = 4000, filter = "(component.name=DTOToEPackageConverter)") ServiceAware<JavaToEPackageConverter> dtoToEPackageConverterAware)
+			throws Exception {
+
+		assertThat(dtoToEPackageConverterAware.getServices()).hasSize(1);
+		JavaToEPackageConverter dtoToEPackageConverterService = dtoToEPackageConverterAware.getService();
+		assertThat(dtoToEPackageConverterService).isNotNull();
+
 		Class<ConverterTestBasicDTO> dtoClass = ConverterTestBasicDTO.class;
 
-		EPackage dynamicEPackageFromDTOs = DTOToEPackageConverter.convert(PACKAGE_NAME, NS_URI, NS_PREFIX, dtoClass);
+		EPackage dynamicEPackageFromDTOs = dtoToEPackageConverterService.convert(PACKAGE_NAME, NS_URI, NS_PREFIX,
+				dtoClass);
 		assertNotNull(dynamicEPackageFromDTOs);
 
 		assertEquals(PACKAGE_NAME, dynamicEPackageFromDTOs.getName());
@@ -60,16 +90,16 @@ public class DTOToEPackageConverterTest {
 
 		EPackage.Registry.INSTANCE.put(dynamicEPackageFromDTOs.getNsURI(), dynamicEPackageFromDTOs);
 
-		assertThat(dynamicEPackageFromDTOs.getEClassifiers()).hasSize(1);
+		assertThat(eClassifiersTotalCount(dynamicEPackageFromDTOs)).isEqualTo(1);
 
-		assertNotNull(dynamicEPackageFromDTOs.getEClassifier(dtoClass.getSimpleName()));
-		assertTrue(dynamicEPackageFromDTOs.getEClassifier(dtoClass.getSimpleName()) instanceof EClass);
-		assertThat(
-				((EClass) dynamicEPackageFromDTOs.getEClassifier(dtoClass.getSimpleName())).getEAllStructuralFeatures())
-				.hasSize(3);
+		EClassifier dynamicEClassifierFromDTO = findEClassifierByName(dynamicEPackageFromDTOs, dtoClass.getSimpleName(),
+				dtoClass.getPackageName());
+		assertNotNull(dynamicEClassifierFromDTO);
+		assertTrue(dynamicEClassifierFromDTO instanceof EClass);
+		assertThat(((EClass) dynamicEClassifierFromDTO).getEAllStructuralFeatures()).hasSize(3);
 
-		List<EStructuralFeature> eAllStructuralFeatures = ((EClass) dynamicEPackageFromDTOs
-				.getEClassifier(dtoClass.getSimpleName())).getEAllStructuralFeatures();
+		List<EStructuralFeature> eAllStructuralFeatures = ((EClass) dynamicEClassifierFromDTO)
+				.getEAllStructuralFeatures();
 
 		boolean hasLongPrimitiveEAttribute = eAllStructuralFeatures.stream()
 				.anyMatch(f -> ((f instanceof EAttribute) && "longPrimitiveField".equals(((EAttribute) f).getName())
@@ -88,10 +118,18 @@ public class DTOToEPackageConverterTest {
 	}
 
 	@Test
-	public void testConvertInheritingDTO() throws Exception {
+	public void testConvertInheritingDTO(
+			@InjectService(cardinality = 1, timeout = 4000, filter = "(component.name=DTOToEPackageConverter)") ServiceAware<JavaToEPackageConverter> dtoToEPackageConverterAware)
+			throws Exception {
+
+		assertThat(dtoToEPackageConverterAware.getServices()).hasSize(1);
+		JavaToEPackageConverter dtoToEPackageConverterService = dtoToEPackageConverterAware.getService();
+		assertThat(dtoToEPackageConverterService).isNotNull();
+
 		Class<ConverterTestInheritingDTO> dtoClass = ConverterTestInheritingDTO.class;
 
-		EPackage dynamicEPackageFromDTOs = DTOToEPackageConverter.convert(PACKAGE_NAME, NS_URI, NS_PREFIX, dtoClass);
+		EPackage dynamicEPackageFromDTOs = dtoToEPackageConverterService.convert(PACKAGE_NAME, NS_URI, NS_PREFIX,
+				dtoClass);
 		assertNotNull(dynamicEPackageFromDTOs);
 
 		assertEquals(PACKAGE_NAME, dynamicEPackageFromDTOs.getName());
@@ -100,16 +138,16 @@ public class DTOToEPackageConverterTest {
 
 		EPackage.Registry.INSTANCE.put(dynamicEPackageFromDTOs.getNsURI(), dynamicEPackageFromDTOs);
 
-		assertThat(dynamicEPackageFromDTOs.getEClassifiers()).hasSize(1);
+		assertThat(eClassifiersTotalCount(dynamicEPackageFromDTOs)).isEqualTo(1);
 
-		assertNotNull(dynamicEPackageFromDTOs.getEClassifier(dtoClass.getSimpleName()));
-		assertTrue(dynamicEPackageFromDTOs.getEClassifier(dtoClass.getSimpleName()) instanceof EClass);
-		assertThat(
-				((EClass) dynamicEPackageFromDTOs.getEClassifier(dtoClass.getSimpleName())).getEAllStructuralFeatures())
-				.hasSize(9);
+		EClassifier dynamicEClassifierFromDTO = findEClassifierByName(dynamicEPackageFromDTOs, dtoClass.getSimpleName(),
+				dtoClass.getPackageName());
+		assertNotNull(dynamicEClassifierFromDTO);
+		assertTrue(dynamicEClassifierFromDTO instanceof EClass);
+		assertThat(((EClass) dynamicEClassifierFromDTO).getEAllStructuralFeatures()).hasSize(9);
 
-		List<EStructuralFeature> eAllStructuralFeatures = ((EClass) dynamicEPackageFromDTOs
-				.getEClassifier(dtoClass.getSimpleName())).getEAllStructuralFeatures();
+		List<EStructuralFeature> eAllStructuralFeatures = ((EClass) dynamicEClassifierFromDTO)
+				.getEAllStructuralFeatures();
 
 		boolean hasBytePrimitiveEAttribute = eAllStructuralFeatures.stream()
 				.anyMatch(f -> ((f instanceof EAttribute) && "bytePrimitiveField".equals(((EAttribute) f).getName())
@@ -153,10 +191,18 @@ public class DTOToEPackageConverterTest {
 	}
 
 	@Test
-	public void testConvertAllSupportedTypesDTO() throws Exception {
+	public void testConvertAllSupportedTypesDTO(
+			@InjectService(cardinality = 1, timeout = 4000, filter = "(component.name=DTOToEPackageConverter)") ServiceAware<JavaToEPackageConverter> dtoToEPackageConverterAware)
+			throws Exception {
+
+		assertThat(dtoToEPackageConverterAware.getServices()).hasSize(1);
+		JavaToEPackageConverter dtoToEPackageConverterService = dtoToEPackageConverterAware.getService();
+		assertThat(dtoToEPackageConverterService).isNotNull();
+
 		Class<ConverterTestAllSupportedTypesDTO> dtoClass = ConverterTestAllSupportedTypesDTO.class;
 
-		EPackage dynamicEPackageFromDTOs = DTOToEPackageConverter.convert(PACKAGE_NAME, NS_URI, NS_PREFIX, dtoClass);
+		EPackage dynamicEPackageFromDTOs = dtoToEPackageConverterService.convert(PACKAGE_NAME, NS_URI, NS_PREFIX,
+				dtoClass);
 		assertNotNull(dynamicEPackageFromDTOs);
 
 		assertEquals(PACKAGE_NAME, dynamicEPackageFromDTOs.getName());
@@ -165,17 +211,16 @@ public class DTOToEPackageConverterTest {
 
 		EPackage.Registry.INSTANCE.put(dynamicEPackageFromDTOs.getNsURI(), dynamicEPackageFromDTOs);
 
-		assertThat(dynamicEPackageFromDTOs.getEClassifiers()).hasSize(8);
+		assertThat(eClassifiersTotalCount(dynamicEPackageFromDTOs)).isEqualTo(8);
 
-		assertNotNull(dynamicEPackageFromDTOs.getEClassifier(dtoClass.getSimpleName()));
-		assertTrue(dynamicEPackageFromDTOs.getEClassifier(dtoClass.getSimpleName()) instanceof EClass);
+		EClassifier dynamicEClassifierFromDTO = findEClassifierByName(dynamicEPackageFromDTOs, dtoClass.getSimpleName(),
+				dtoClass.getPackageName());
+		assertNotNull(dynamicEClassifierFromDTO);
+		assertTrue(dynamicEClassifierFromDTO instanceof EClass);
+		assertThat(((EClass) dynamicEClassifierFromDTO).getEAllStructuralFeatures()).hasSize(44);
 
-		assertThat(
-				((EClass) dynamicEPackageFromDTOs.getEClassifier(dtoClass.getSimpleName())).getEAllStructuralFeatures())
-				.hasSize(44);
-
-		List<EStructuralFeature> eAllStructuralFeatures = ((EClass) dynamicEPackageFromDTOs
-				.getEClassifier(dtoClass.getSimpleName())).getEAllStructuralFeatures();
+		List<EStructuralFeature> eAllStructuralFeatures = ((EClass) dynamicEClassifierFromDTO)
+				.getEAllStructuralFeatures();
 
 		// Primitive types
 		boolean hasBytePrimitiveEAttribute = eAllStructuralFeatures.stream()
@@ -450,10 +495,18 @@ public class DTOToEPackageConverterTest {
 	}
 
 	@Test
-	public void testConvertOSGiFrameworkDTO() throws Exception {
+	public void testConvertOSGiFrameworkDTO(
+			@InjectService(cardinality = 1, timeout = 4000, filter = "(component.name=DTOToEPackageConverter)") ServiceAware<JavaToEPackageConverter> dtoToEPackageConverterAware)
+			throws Exception {
+
+		assertThat(dtoToEPackageConverterAware.getServices()).hasSize(1);
+		JavaToEPackageConverter dtoToEPackageConverterService = dtoToEPackageConverterAware.getService();
+		assertThat(dtoToEPackageConverterService).isNotNull();
+
 		Class<FrameworkDTO> dtoClass = FrameworkDTO.class;
 
-		EPackage dynamicEPackageFromDTOs = DTOToEPackageConverter.convert(PACKAGE_NAME, NS_URI, NS_PREFIX, dtoClass);
+		EPackage dynamicEPackageFromDTOs = dtoToEPackageConverterService.convert(PACKAGE_NAME, NS_URI, NS_PREFIX,
+				dtoClass);
 		assertNotNull(dynamicEPackageFromDTOs);
 
 		assertEquals(PACKAGE_NAME, dynamicEPackageFromDTOs.getName());
@@ -462,16 +515,16 @@ public class DTOToEPackageConverterTest {
 
 		EPackage.Registry.INSTANCE.put(dynamicEPackageFromDTOs.getNsURI(), dynamicEPackageFromDTOs);
 
-		assertThat(dynamicEPackageFromDTOs.getEClassifiers()).hasSize(4);
+		assertThat(eClassifiersTotalCount(dynamicEPackageFromDTOs)).isEqualTo(4);
 
-		assertNotNull(dynamicEPackageFromDTOs.getEClassifier(dtoClass.getSimpleName()));
-		assertTrue(dynamicEPackageFromDTOs.getEClassifier(dtoClass.getSimpleName()) instanceof EClass);
-		assertThat(
-				((EClass) dynamicEPackageFromDTOs.getEClassifier(dtoClass.getSimpleName())).getEAllStructuralFeatures())
-				.hasSize(3);
+		EClassifier dynamicEClassifierFromDTO = findEClassifierByName(dynamicEPackageFromDTOs, dtoClass.getSimpleName(),
+				dtoClass.getPackageName());
+		assertNotNull(dynamicEClassifierFromDTO);
+		assertTrue(dynamicEClassifierFromDTO instanceof EClass);
+		assertThat(((EClass) dynamicEClassifierFromDTO).getEAllStructuralFeatures()).hasSize(3);
 
-		List<EStructuralFeature> eAllStructuralFeatures = ((EClass) dynamicEPackageFromDTOs
-				.getEClassifier(dtoClass.getSimpleName())).getEAllStructuralFeatures();
+		List<EStructuralFeature> eAllStructuralFeatures = ((EClass) dynamicEClassifierFromDTO)
+				.getEAllStructuralFeatures();
 
 		boolean hasBundlesEReference = eAllStructuralFeatures.stream()
 				.anyMatch(f -> ((f instanceof EReference) && "bundles".equals(((EReference) f).getName())

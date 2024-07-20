@@ -11,16 +11,23 @@
  */
 package org.gecko.emf.converter.tests;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.gecko.emf.converter.DTOToEObjectConverters;
-import org.gecko.emf.converter.DTOToEPackageConverter;
-import org.gecko.emf.converter.tests.helper.DTOToEMFConverterTestHelper.ConverterTestBasicDTO;
+import org.gecko.emf.converter.JavaToEPackageConverter;
+import org.gecko.emf.converter.tests.helper.ConverterTestBasicDTO;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.platform.commons.annotation.Testable;
+import org.osgi.framework.ServiceReference;
+import org.osgi.test.common.annotation.InjectService;
+import org.osgi.test.common.service.ServiceAware;
 import org.osgi.test.junit5.context.BundleContextExtension;
 import org.osgi.test.junit5.service.ServiceExtension;
 import org.osgi.util.converter.Converter;
@@ -35,20 +42,37 @@ import org.osgi.util.function.Function;
 @Testable
 @ExtendWith(BundleContextExtension.class)
 @ExtendWith(ServiceExtension.class)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class DTOToEObjectConverterTest {
-	private static final String PACKAGE_NAME = "org.gecko.emf.converter";
+	private static final String PACKAGE_NAME = "dto_to_eobject_converter_test";
 	private static final String NS_URI = "http://gecko.org/test/model/converter/1.0";
 	private static final String NS_PREFIX = "tests";
 
+	@Order(value = -1)
 	@Test
-	public void testDTO2EObjectConverterWithBuiltInTypeRule() {
+	public void testServices(
+			@InjectService(cardinality = 1, timeout = 4000, filter = "(component.name=DTOToEPackageConverter)") ServiceAware<JavaToEPackageConverter> dtoToEPackageConverterAware) {
+
+		assertThat(dtoToEPackageConverterAware.getServices()).hasSize(1);
+		ServiceReference<JavaToEPackageConverter> dtoToEPackageConverterReference = dtoToEPackageConverterAware
+				.getServiceReference();
+		assertThat(dtoToEPackageConverterReference).isNotNull();
+	}
+
+	@Test
+	public void testDTO2EObjectConverterWithBuiltInTypeRule(
+			@InjectService(cardinality = 1, timeout = 4000, filter = "(component.name=DTOToEPackageConverter)") ServiceAware<JavaToEPackageConverter> dtoToEPackageConverterAware) {
+
+		assertThat(dtoToEPackageConverterAware.getServices()).hasSize(1);
+		JavaToEPackageConverter dtoToEPackageConverterService = dtoToEPackageConverterAware.getService();
+		assertThat(dtoToEPackageConverterService).isNotNull();
 
 		ConverterTestBasicDTO dto = new ConverterTestBasicDTO();
 		dto.longPrimitiveField = Long.MIN_VALUE;
 		dto.booleanPrimitiveField = true;
 		dto.stringField = "hello";
 
-		EPackage dynamicEPackageFromDTOs = DTOToEPackageConverter.convert(PACKAGE_NAME, NS_URI, NS_PREFIX,
+		EPackage dynamicEPackageFromDTOs = dtoToEPackageConverterService.convert(PACKAGE_NAME, NS_URI, NS_PREFIX,
 				dto.getClass());
 		assertNotNull(dynamicEPackageFromDTOs);
 
@@ -61,14 +85,19 @@ public class DTOToEObjectConverterTest {
 	}
 
 	@Test
-	public void testDTO2EObjectConverterBuilderWithBuiltInTypeRule() {
+	public void testDTO2EObjectConverterBuilderWithBuiltInTypeRule(
+			@InjectService(cardinality = 1, timeout = 4000, filter = "(component.name=DTOToEPackageConverter)") ServiceAware<JavaToEPackageConverter> dtoToEPackageConverterAware) {
+
+		assertThat(dtoToEPackageConverterAware.getServices()).hasSize(1);
+		JavaToEPackageConverter dtoToEPackageConverterService = dtoToEPackageConverterAware.getService();
+		assertThat(dtoToEPackageConverterService).isNotNull();
 
 		ConverterTestBasicDTO dto = new ConverterTestBasicDTO();
 		dto.longPrimitiveField = Long.MIN_VALUE;
 		dto.booleanPrimitiveField = true;
 		dto.stringField = "hello";
 
-		EPackage dynamicEPackageFromDTOs = DTOToEPackageConverter.convert(PACKAGE_NAME, NS_URI, NS_PREFIX,
+		EPackage dynamicEPackageFromDTOs = dtoToEPackageConverterService.convert(PACKAGE_NAME, NS_URI, NS_PREFIX,
 				dto.getClass());
 		assertNotNull(dynamicEPackageFromDTOs);
 
@@ -86,14 +115,20 @@ public class DTOToEObjectConverterTest {
 	}
 
 	@Test
-	public void testDTO2EObjectConverterWithBuiltInFunction() throws Exception {
+	public void testDTO2EObjectConverterWithBuiltInFunction(
+			@InjectService(cardinality = 1, timeout = 4000, filter = "(component.name=DTOToEPackageConverter)") ServiceAware<JavaToEPackageConverter> dtoToEPackageConverterAware)
+			throws Exception {
+
+		assertThat(dtoToEPackageConverterAware.getServices()).hasSize(1);
+		JavaToEPackageConverter dtoToEPackageConverterService = dtoToEPackageConverterAware.getService();
+		assertThat(dtoToEPackageConverterService).isNotNull();
 
 		ConverterTestBasicDTO dto = new ConverterTestBasicDTO();
 		dto.longPrimitiveField = Long.MIN_VALUE;
 		dto.booleanPrimitiveField = true;
 		dto.stringField = "hello";
 
-		EPackage dynamicEPackageFromDTOs = DTOToEPackageConverter.convert(PACKAGE_NAME, NS_URI, NS_PREFIX,
+		EPackage dynamicEPackageFromDTOs = dtoToEPackageConverterService.convert(PACKAGE_NAME, NS_URI, NS_PREFIX,
 				dto.getClass());
 		assertNotNull(dynamicEPackageFromDTOs);
 
@@ -108,14 +143,20 @@ public class DTOToEObjectConverterTest {
 	}
 
 	@Test
-	public void testDTO2EObjectConverterBuilderWithBuiltInFunction() throws Exception {
+	public void testDTO2EObjectConverterBuilderWithBuiltInFunction(
+			@InjectService(cardinality = 1, timeout = 4000, filter = "(component.name=DTOToEPackageConverter)") ServiceAware<JavaToEPackageConverter> dtoToEPackageConverterAware)
+			throws Exception {
+
+		assertThat(dtoToEPackageConverterAware.getServices()).hasSize(1);
+		JavaToEPackageConverter dtoToEPackageConverterService = dtoToEPackageConverterAware.getService();
+		assertThat(dtoToEPackageConverterService).isNotNull();
 
 		ConverterTestBasicDTO dto = new ConverterTestBasicDTO();
 		dto.longPrimitiveField = Long.MIN_VALUE;
 		dto.booleanPrimitiveField = true;
 		dto.stringField = "hello";
 
-		EPackage dynamicEPackageFromDTOs = DTOToEPackageConverter.convert(PACKAGE_NAME, NS_URI, NS_PREFIX,
+		EPackage dynamicEPackageFromDTOs = dtoToEPackageConverterService.convert(PACKAGE_NAME, NS_URI, NS_PREFIX,
 				dto.getClass());
 		assertNotNull(dynamicEPackageFromDTOs);
 
