@@ -13,16 +13,26 @@
  */
 package org.gecko.util.emf;
 
+import java.util.Objects;
+
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.util.EcoreUtil.Copier;
 
 /**
- * 
- * @author mark
+ * An extension to {@link org.eclipse.emf.ecore.util.EcoreUtil} 
+ * @author Mark Hoffmann
  * @since 29.07.2024
  */
 public class EcoreUtil {
 
+	/**
+	 * Copies all content from the 'from' parameter into the 'into' object.
+	 * All values in the 'into' object will be overwritten 
+	 * @param <T>
+	 * @param from the source of the values
+	 * @param into the target where all data will be copied into
+	 */
 	public static <T extends EObject> void copyInto(T from, T into) {
 		GeckoCopier copier = new GeckoCopier(into);
 	    copier.copy(from);
@@ -30,6 +40,11 @@ public class EcoreUtil {
 	    
 	}
 	
+	/**
+	 * Extend {@link Copier} and make copy into an existing object possible
+	 * @author Mark Hoffmann
+	 * @since 29.07.2024
+	 */
 	static class GeckoCopier extends org.eclipse.emf.ecore.util.EcoreUtil.Copier {
 
 		/** serialVersionUID */
@@ -38,6 +53,7 @@ public class EcoreUtil {
 		
 		/**
 		 * Creates a new instance.
+		 * @param intoObject an object to copy into, can be <code>null</code>
 		 */
 		public GeckoCopier(EObject intoObject) {
 			this.intoObject = intoObject;
@@ -49,13 +65,14 @@ public class EcoreUtil {
 		 */
 		@Override
 		protected EObject createCopy(EObject eObject) {
-			EClass intoClass = intoObject.eClass();
-			EClass fromClass = eObject.eClass();
-			if (intoClass.equals(fromClass)) {
-				return intoObject;
-			} else {
-				return super.createCopy(eObject);
+			if (Objects.nonNull(intoObject)) {
+				EClass intoClass = intoObject.eClass();
+				EClass fromClass = eObject.eClass();
+				if (intoClass.equals(fromClass)) {
+					return intoObject;
+				}
 			}
+			return super.createCopy(eObject);
 		}
 		
 	}
