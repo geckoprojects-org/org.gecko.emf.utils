@@ -33,7 +33,6 @@
 	org.gecko.emf.exporter.ods.tests;version=snapshot,\
 	org.apache.commons.commons-text;version='[1.10.0,1.10.1)',\
 	org.apache.commons.lang3;version='[3.12.0,3.12.1)',\
-	com.github.miachm.sods;version='[1.6.2,1.6.3)',\
 	slf4j.api;version='[1.7.36,1.7.37)',\
 	com.google.guava;version='[32.1.2,32.1.3)',\
 	com.google.guava.failureaccess;version='[1.0.1,1.0.2)',\
@@ -52,19 +51,16 @@
 	org.osgi.test.common;version='[1.2.1,1.2.2)',\
 	org.osgi.test.junit5;version='[1.2.1,1.2.2)',\
 	org.gecko.emf.util.model;version=snapshot,\
-	org.apache.commons.logging;version='[1.2.0,1.2.1)',\
 	org.osgi.service.component;version='[1.5.1,1.5.2)',\
 	org.osgi.util.function;version='[1.2.0,1.2.1)',\
 	org.osgi.util.promise;version='[1.3.0,1.3.1)',\
-	slf4j.jcl;version='[1.7.36,1.7.37)',\
-	org.apache.felix.configadmin;version='[1.9.26,1.9.27)',\
-	org.osgi.util.converter;version='[1.0.9,1.0.10)',\
 	org.eclipse.emf.common;version='[2.29.0,2.29.1)',\
 	org.eclipse.emf.ecore;version='[2.35.0,2.35.1)',\
 	org.eclipse.emf.ecore.xmi;version='[2.36.0,2.36.1)',\
-	org.gecko.emf.osgi.api;version='[6.1.1,6.1.2)',\
-	org.gecko.emf.osgi.component.config;version='[6.1.1,6.1.2)',\
 	org.gecko.emf.osgi.component.minimal;version='[6.1.1,6.1.2)',\
 	org.gecko.emf.osgi.example.model.basic;version='[6.1.0,6.1.1)',\
-	org.osgi.service.cm;version='[1.6.1,1.6.2)'
+	org.osgi.service.cm;version='[1.6.1,1.6.2)',\
+	org.gecko.com.github.miachm.sods;version=snapshot,\
+	slf4j.simple;version='[1.7.36,1.7.37)',\
+	org.osgi.util.converter;version='[1.0.9,1.0.10)'
 -resolve: auto

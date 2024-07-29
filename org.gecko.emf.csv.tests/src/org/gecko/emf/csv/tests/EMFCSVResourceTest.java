@@ -35,9 +35,12 @@ import org.gecko.emf.exporter.csv.api.EMFCSVExportOptions;
 import org.gecko.emf.osgi.example.model.basic.BasicFactory;
 import org.gecko.emf.osgi.example.model.basic.BusinessPerson;
 import org.gecko.emf.osgi.example.model.basic.Family;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.platform.commons.annotation.Testable;
 import org.osgi.framework.ServiceReference;
 import org.osgi.test.common.annotation.InjectService;
 import org.osgi.test.common.service.ServiceAware;
@@ -49,8 +52,10 @@ import org.osgi.test.junit5.service.ServiceExtension;
  * 
  * @author Michal H. Siemaszko
  */
+@Testable
 @ExtendWith(BundleContextExtension.class)
 @ExtendWith(ServiceExtension.class)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @RequireEMFCSV
 public class EMFCSVResourceTest {
 

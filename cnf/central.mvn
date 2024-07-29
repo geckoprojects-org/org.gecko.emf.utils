@@ -144,7 +144,7 @@ org.geckoprojects.bnd:org.gecko.bnd.osgitest.library:1.5.0
 org.geckoprojects.bnd:org.gecko.bnd.jacoco.library:1.5.0
 org.geckoprojects.utils:org.gecko.util.bnd.library.workspace:1.0.0
 
-org.geckoprojects.emf:org.gecko.emf.osgi.bnd.library.workspace:6.1.1
+org.geckoprojects.emf:org.gecko.emf.osgi.bnd.library.workspace:6.2.0
 
 com.fasterxml.jackson.core:jackson-core:2.14.1
 com.fasterxml.jackson.core:jackson-databind:2.14.1
