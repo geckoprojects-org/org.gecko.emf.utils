@@ -52,11 +52,11 @@
 	org.eclipse.emf.common;version='[2.29.0,2.29.1)',\
 	org.eclipse.emf.ecore;version='[2.35.0,2.35.1)',\
 	org.eclipse.emf.ecore.xmi;version='[2.36.0,2.36.1)',\
-	org.gecko.emf.osgi.api;version='[6.1.1,6.1.2)',\
-	org.gecko.emf.osgi.component.minimal;version='[6.1.1,6.1.2)',\
 	org.gecko.emf.osgi.example.model.basic;version='[6.1.0,6.1.1)',\
 	org.osgi.service.cm;version='[1.6.1,1.6.2)',\
-	org.gecko.emf.osgi.component.config;version='[6.1.1,6.1.2)',\
 	de.dim.eclipse.core.runtime;version='[3.14.0,3.14.1)',\
 	de.dim.equinox.common;version='[3.9.0,3.9.1)',\
-	org.eclipse.core.runtime;version='[3.14.0,3.14.1)'
+	org.eclipse.core.runtime;version='[3.14.0,3.14.1)',\
+	org.gecko.emf.osgi.api;version='[6.2.0,6.2.1)',\
+	org.gecko.emf.osgi.component.minimal;version='[6.2.0,6.2.1)',\
+	org.gecko.qvt.osgi.api;version=snapshot
