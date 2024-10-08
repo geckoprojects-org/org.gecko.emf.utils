@@ -65,7 +65,8 @@
 	org.eclipse.emf.ecore.xmi;version='[2.36.0,2.36.1)',\
 	org.osgi.service.cm;version='[1.6.1,1.6.2)',\
 	de.siegmar.fastcsv;version='[3.0.0,3.0.1)',\
-	org.gecko.emf.osgi.component.minimal;version='[6.2.0,6.2.1)'
+	org.gecko.emf.osgi.component.minimal;version='[6.2.0,6.2.1)',\
+	org.gecko.emf.osgi.api;version='[6.2.0,6.2.1)'
 -runrepos: \
 	Workspace,\
 	Central,\
