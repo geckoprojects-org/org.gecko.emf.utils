@@ -37,6 +37,9 @@ public class XMLURIHandler implements XMLResource.URIHandler{
 
 	@Override
 	public URI resolve(URI uri) {
+		if(uri.hasAbsolutePath()) {
+			return uri;
+		}
 		if(uri.lastSegment() != null && uri.lastSegment().endsWith(".ecore")){
 			//Due to he fact that the Server should
 			List<String> segmentsList = uri.segmentsList();
