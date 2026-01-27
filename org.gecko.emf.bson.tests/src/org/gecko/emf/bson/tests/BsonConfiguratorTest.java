@@ -40,6 +40,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
+import org.osgi.service.cm.annotations.RequireConfigurationAdmin;
 import org.osgi.test.common.annotation.InjectService;
 import org.osgi.test.common.service.ServiceAware;
 import org.osgi.test.junit5.context.BundleContextExtension;
@@ -53,10 +54,11 @@ import de.undercouch.bson4jackson.BsonFactory;
 @ExtendWith(BundleContextExtension.class)
 @ExtendWith(ServiceExtension.class)
 @RequireEMFBson
+@RequireConfigurationAdmin
 public class BsonConfiguratorTest {
 
 	@Test
-	public void testBson(@InjectService ConfigurationAdmin ca) throws IOException {
+	public void testBson(@InjectService(timeout = 500) ConfigurationAdmin ca) throws IOException {
 		Configuration c = ca.getConfiguration("foo");
 		System.out.println(c.getPid());
 		System.out.println(c.getFactoryPid());

@@ -33,3 +33,10 @@ org.geckoprojects.emf.utils:org.gecko.emf.util.jaxrs.bnd.library.workspace:2.2.0
 org.geckoprojects.emf.utils:org.gecko.emf.util.model:2.2.1
 org.geckoprojects.emf.utils:org.gecko.emf.xlsx:1.1.0
 org.geckoprojects.emf.utils:org.gecko.emf.xlsx.tests:1.0.1
+org.geckoprojects.emf.utils:org.eclipse.emf.ecore.fragment:2.0.0
+org.geckoprojects.emf.utils:org.eclipse.ocl.fragment:2.0.0
+org.geckoprojects.emf.utils:org.gecko.emf.util.common:1.0.0.202402061826
+org.geckoprojects.emf.utils:org.gecko.emf.util.qvt.bnd.library.workspace.felix:2.0.0
+org.geckoprojects.emf.utils:org.gecko.qvt.osgi.api:5.0.0
+org.geckoprojects.emf.utils:org.gecko.qvt.osgi.component:1.0.6
+org.geckoprojects.emf.utils:org.gecko.qvt.osgi.tests:2.0.0

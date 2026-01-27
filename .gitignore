@@ -6,3 +6,6 @@ generated/
 cnf/release/
 src-gen
 **/ARCHIVE/**
+bin/
+bin_test/
+*.log

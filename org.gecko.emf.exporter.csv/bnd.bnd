@@ -7,7 +7,7 @@ Bundle-Description: CSV (Comma-separated values) Exporter for EMF
 -buildpath: \
 	org.gecko.emf.exporter;version=latest,\
 	org.gecko.emf.exporter.csv.api;version=latest,\
-	de.siegmar.fastcsv,\
+	de.siegmar.fastcsv;version=latest,\
 	com.google.guava,\
 	slf4j.api
 
