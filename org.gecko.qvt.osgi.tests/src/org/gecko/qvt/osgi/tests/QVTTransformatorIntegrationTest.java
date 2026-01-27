@@ -64,8 +64,34 @@ public class QVTTransformatorIntegrationTest  {
 	BundleContext context;
 	
 	@Test
-	@WithFactoryConfiguration(name = "testExample", factoryPid = ModelTransformationConstants.TRANSFORMATOR_COMPONENT_NAME, location = "?", properties = @Property(key = ModelTransformationConstants.TEMPLATE_PATH, value = "org.gecko.qvt.osgi.tests/PersonTransformation.qvto"))
-	public void testExample(
+	@WithFactoryConfiguration(name = "testSimple", factoryPid = ModelTransformationConstants.TRANSFORMATOR_COMPONENT_NAME, location = "?", properties = @Property(key = ModelTransformationConstants.TEMPLATE_PATH, value = "org.gecko.qvt.osgi.tests/PersonTransformation.qvto"))
+	public void testSimple(
+			@InjectService ResourceSet rs, 
+			@InjectService BasicFactory factory,
+			@InjectService(cardinality = 0) ServiceAware<ModelTransformator> transformatorAware
+			) throws InterruptedException{
+		Resource r1 = rs.createResource(URI.createURI("tmp.test"));
+		Person p1 = BasicFactory.eINSTANCE.createPerson();
+		p1.setFirstName("Mark");
+		p1.setLastName("Hoffmann");
+		p1.setGender(GenderType.MALE);
+		r1.getContents().add(p1);
+		
+		ModelTransformator transformator = transformatorAware.waitForService(500);
+		assertNotNull(transformator);
+		
+		EObject result = transformator.doTransformation(p1);
+		assertNotNull(result);
+		assertTrue(result instanceof Person);
+		Person resultPerson = (Person) result;
+		assertEquals(GenderType.FEMALE, resultPerson.getGender());
+		assertEquals("Markin", resultPerson.getFirstName());
+		assertEquals("Hoffmannin", resultPerson.getLastName());
+	}
+
+	@Test
+	@WithFactoryConfiguration(name = "testWithRemoteTemplate", factoryPid = ModelTransformationConstants.TRANSFORMATOR_COMPONENT_NAME, location = "?", properties = @Property(key = ModelTransformationConstants.TEMPLATE_URI, value = "https://raw.githubusercontent.com/geckoprojects-org/org.gecko.emf.utils/main/org.gecko.qvt.osgi.tests/transforms/PersonTransformation.qvto"))
+	public void testWithRemoteTemplate(
 			@InjectService ResourceSet rs, 
 			@InjectService BasicFactory factory,
 			@InjectService(cardinality = 0) ServiceAware<ModelTransformator> transformatorAware

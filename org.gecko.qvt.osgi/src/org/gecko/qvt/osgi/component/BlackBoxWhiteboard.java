@@ -38,6 +38,7 @@ import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.condition.Condition;
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -59,6 +60,9 @@ public class BlackBoxWhiteboard {
 	List<String> unitQualifiedNames = new CopyOnWriteArrayList<>();
 	
 	Map<ServiceReference<?>, Configuration> configs = new ConcurrentHashMap<>();
+	
+	@Reference
+	ConfigurationAdmin configAdmin;
 	
 	@Activate
 	public void activate(BundleContext context) {
@@ -143,9 +147,6 @@ public class BlackBoxWhiteboard {
 	}
 
 	private void registerTransformator(ServiceReference<Object> reference, Object blackbox) {
-		ServiceReference<ConfigurationAdmin> configAdminRef = reference.getBundle().getBundleContext().getServiceReference(ConfigurationAdmin.class);
-		ConfigurationAdmin configAdmin = reference.getBundle().getBundleContext().getService(configAdminRef);
-		
 		try {
 			Configuration configuration = configAdmin.createFactoryConfiguration(ModelTransformationConstants.TRANSFORMATOR_COMPONENT_NAME, "?");
 			configs.put(reference, configuration);
@@ -153,8 +154,6 @@ public class BlackBoxWhiteboard {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} finally {
-			reference.getBundle().getBundleContext().ungetService(configAdminRef);
 		} 
 	}
 

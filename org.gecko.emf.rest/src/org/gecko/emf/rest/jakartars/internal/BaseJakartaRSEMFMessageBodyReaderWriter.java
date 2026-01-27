@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,6 +30,7 @@ import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.gecko.emf.json.constants.EMFJs;
 import org.gecko.emf.osgi.ResourceSetFactory;
 import org.gecko.emf.osgi.model.info.EMFModelInfo;
+import org.gecko.emf.rest.annotations.RessourceOverwriteContentType;
 import org.gecko.emf.rest.common.internal.XMLURIHandler;
 import org.gecko.emf.rest.jakartars.AbstractJakartaRSEMFAnnotationHandler;
 import org.osgi.service.component.annotations.Reference;
@@ -73,10 +75,12 @@ public abstract class BaseJakartaRSEMFMessageBodyReaderWriter<R, W> extends Abst
 			MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
 			throws IOException, WebApplicationException {
 		try {
+			
+			String contentType = determinContentType(mediaType,annotations);
 			ResourceSetFactory setFactory = getResourceSetFactory();
 			ResourceSet resourceSet = setFactory.createResourceSet();
 			ResourceFactoryImpl factory = (ResourceFactoryImpl) resourceSet.getResourceFactoryRegistry()
-					.getContentTypeToFactoryMap().get(mediaType.getType() + "/" + mediaType.getSubtype());
+					.getContentTypeToFactoryMap().get(contentType);
 			Resource referenceResource = factory.createResource(URI.createURI("http://test.test"));
 			resourceSet.getResources().add(referenceResource);
 			boolean removeFromResourceSet = true;
@@ -128,8 +132,9 @@ public abstract class BaseJakartaRSEMFMessageBodyReaderWriter<R, W> extends Abst
 		try {
 			ResourceSetFactory setFactory = getResourceSetFactory();
 			ResourceSet resourceSet = setFactory.createResourceSet();
+			String contentType = determinContentType(mediaType,annotations);
 			ResourceFactoryImpl factory = (ResourceFactoryImpl) resourceSet.getResourceFactoryRegistry()
-					.getContentTypeToFactoryMap().get(mediaType.getType() + "/" + mediaType.getSubtype());
+					.getContentTypeToFactoryMap().get(contentType);
 			Resource resource = factory.createResource(URI.createURI("temp/id"));
 			resourceSet.getResources().add(resource);
 			Map<Object, Object> options = new HashMap<>();
@@ -154,6 +159,16 @@ public abstract class BaseJakartaRSEMFMessageBodyReaderWriter<R, W> extends Abst
 			throw new WebApplicationException(e, r);
 		}
 	}
+	
 
 	protected abstract ResourceSetFactory getResourceSetFactory();
+	
+	private String determinContentType(MediaType mediatype, Annotation[] annotations) {
+		return Arrays.asList(annotations).stream().filter(RessourceOverwriteContentType.class::isInstance)
+				.map(RessourceOverwriteContentType.class::cast)
+				.map(RessourceOverwriteContentType::value).findFirst()
+				.orElseGet(()->mediatype.getType() + "/" + mediatype.getSubtype());	
+				
+	
+	}
 }
