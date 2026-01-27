@@ -139,7 +139,6 @@ org.eclipse.jdt:org.eclipse.jdt.core:3.26.0
 org.freemarker:freemarker:2.3.31
 org.apiguardian:apiguardian-api:1.1.2
 
-org.geckoprojects.bnd:org.gecko.bnd.dimc.library:1.5.0
 org.geckoprojects.bnd:org.gecko.bnd.osgitest.library:1.5.0
 org.geckoprojects.bnd:org.gecko.bnd.jacoco.library:1.5.0
 org.geckoprojects.utils:org.gecko.util.bnd.library.workspace:1.0.0
@@ -185,3 +184,4 @@ org.apache.felix:org.apache.felix.configadmin:1.9.26
 org.apache.felix:org.apache.felix.configurator:1.0.18
 
 de.siegmar:fastcsv:3.0.0
+org.geckoprojects.bnd:org.gecko.bnd.dimc.library:2.0.1
