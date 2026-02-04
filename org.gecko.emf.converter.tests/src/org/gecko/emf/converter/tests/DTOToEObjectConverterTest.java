@@ -36,7 +36,7 @@ import org.osgi.util.function.Function;
 @ExtendWith(BundleContextExtension.class)
 @ExtendWith(ServiceExtension.class)
 public class DTOToEObjectConverterTest {
-	private static final String PACKAGE_NAME = "org.gecko.emf.converter";
+	private static final String PACKAGE_NAME = "dto_to_eobject_converter_test";
 	private static final String NS_URI = "http://gecko.org/test/model/converter/1.0";
 	private static final String NS_PREFIX = "tests";
 
